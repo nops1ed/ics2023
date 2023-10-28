@@ -19,6 +19,8 @@
 #include <readline/history.h>
 #include "sdb.h"
 
+#include <memory/vaddr.h>
+
 static int is_batch_mode = false;
 
 void init_regex();
@@ -49,10 +51,137 @@ static int cmd_c(char *args) {
 
 
 static int cmd_q(char *args) {
+  nemu_state.state = NEMU_QUIT;
   return -1;
 }
 
 static int cmd_help(char *args);
+
+static int cmd_si(char *args) {	
+  //parse args
+  char *arg = strtok(NULL," ");
+  int i = 0;
+  if (!arg)	i = 1;
+	else sscanf(arg , "%d" , &i);
+  cpu_exec(i);	  
+  return 0;
+}
+
+static int cmd_info(char *args) {
+  //parse args
+  char *arg = strtok(NULL , " ");
+  //Note: feature of fall through
+  if (!strcmp(arg , "r"))
+		isa_reg_display();
+  else if (!strcmp(arg , "w"))
+    sdb_watchpoint_display();
+  else if (!strcmp(arg , "f")) {
+    char buf[64];
+    //getline(buf , 64 , 0);
+    bool success = true;
+    word_t val = expr(buf , &success);
+    if (!success) {
+      printf("Error\n");
+      return 0;
+    }
+    else printf("The val is %d\n" , val);
+  }
+  else {
+    printf("Undefined info command: \"%s\".  Try \"help info\".\n" , arg);
+  }
+  return 0;
+}
+
+static int cmd_x(char *args) {
+  char *arg = strtok(NULL , " ");
+  int i = 0;
+  if (!arg) {
+    printf("Arguments parse failed.\n");
+    return 0;
+  } 
+  sscanf(arg , "%d" , &i);
+  arg = strtok(NULL , "\0");
+  if (!arg) {
+    printf("Arguments parse failed.\n");
+    return 0;
+  }
+  bool success = true;
+  vaddr_t addr = expr(arg , &success);
+  if (!success) {
+    printf("A syntax error in expression, near '%s'.\n" , arg);
+    return 0;
+  }
+  for (int j = 0 ; j < i ; j++) {
+    //printf("0x%x: %08x\n" , addr + 4 * j, vaddr_read(addr + 4 * j , 4));
+		printf("0x%x: " , addr + 4 * j);
+		for (int k = 3 ; k >= 0 ; k--)
+			//Little endian
+			printf("%02x " , vaddr_read(addr + 4 * j + k, 1));		
+		printf("\n");
+	}
+  return 0;
+}
+
+static int cmd_p(char *args) {
+  char *arg = strtok(NULL , "\0");
+  if (!arg) {
+    printf("Missing Arguments. \n");
+    return 0;
+  }
+  bool success = true;
+  word_t val = expr(arg , &success);
+  if (!success) {
+    printf("A syntax error in expression, near '%s'.\n" , arg);
+    return 0;
+  }
+  printf("%-10s : 0x%-5x\n" ,arg , val);
+  return 0;
+}
+
+static int cmd_w(char *args) {
+  char *arg = strtok(NULL , "\0");
+  if (!arg) {
+    printf("Missing Arguments. \n");
+    return 0;
+  }
+  int wp_no = sdb_watchpoint_create(arg);
+  if (wp_no == -1) return 0;
+  printf("Hardware watchpoint %d: %s\n" , wp_no , arg);
+  return 0;
+}
+
+static int cmd_d(char *args) {
+  char *arg = strtok(NULL , "\0");
+  /* Default behavior indicates deleting all WPs */
+  if (!arg) {
+    printf("Delete all breakpoints? (y or n) ");
+    char buf[128];
+    if(!fgets(buf , sizeof(buf) , stdin)) {
+      puts("Valid Arguments\n");
+      return 0;
+    }
+    /* It does not work on Linux */
+    //fflush(0);
+    //if(!scanf("%*[^\n] %*s"));
+    char c = buf[0];
+    switch(c) {
+      case 'Y':
+      case 'y':
+        sdb_watchpoint_delete_all();
+        return 0;
+      case 'N':
+      case 'n':
+        return 0;
+      default:
+        printf("\nUndefined choice %c\n" , c);
+        return 0;
+    }
+  }
+  int wp_no;
+  sscanf(arg , "%d" , &wp_no);
+  sdb_watchpoint_delete(wp_no);
+  return 0;
+}
 
 static struct {
   const char *name;
@@ -62,9 +191,13 @@ static struct {
   { "help", "Display information about all supported commands", cmd_help },
   { "c", "Continue the execution of the program", cmd_c },
   { "q", "Exit NEMU", cmd_q },
-
-  /* TODO: Add more commands */
-
+  { "si" , "Execute by single step" , cmd_si },
+  { "info" , "Show information" , cmd_info },
+  { "x" , "Scan Memory" , cmd_x },
+  { "p" , "Evaluate the expression" , cmd_p },
+  { "w" , "Set watchpoint" , cmd_w },
+  { "d" , "Delete watchpoint" , cmd_d },
+//{ "b" , "Set breakpoint" , cmd_b },
 };
 
 #define NR_CMD ARRLEN(cmd_table)
@@ -76,14 +209,18 @@ static int cmd_help(char *args) {
 
   if (arg == NULL) {
     /* no argument given */
+    puts("List of classes of commands:\n");
     for (i = 0; i < NR_CMD; i ++) {
-      printf("%s - %s\n", cmd_table[i].name, cmd_table[i].description);
+      printf("%-5s - %-20s\n", cmd_table[i].name, cmd_table[i].description);
     }
+    puts("\nType \"help\" followed by command name for full documentation.");
   }
   else {
     for (i = 0; i < NR_CMD; i ++) {
       if (strcmp(arg, cmd_table[i].name) == 0) {
-        printf("%s - %s\n", cmd_table[i].name, cmd_table[i].description);
+        printf("%-5s - %-20s\n", cmd_table[i].name, cmd_table[i].description);
+        //TODO
+        puts("Full descriptions todo ...");
         return 0;
       }
     }
@@ -95,6 +232,7 @@ static int cmd_help(char *args) {
 void sdb_set_batch_mode() {
   is_batch_mode = true;
 }
+
 
 void sdb_mainloop() {
   if (is_batch_mode) {
