@@ -17,6 +17,7 @@
 #include <cpu/decode.h>
 #include <cpu/difftest.h>
 #include <locale.h>
+#include "../monitor/sdb/sdb.h"
 
 /* The assembly code of instructions executed is only output to the screen
  * when the number of instructions executed is less than this value.
@@ -30,14 +31,20 @@ uint64_t g_nr_guest_inst = 0;
 static uint64_t g_timer = 0; // unit: us
 static bool g_print_step = false;
 
+
 void device_update();
 
 static void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
-#ifdef CONFIG_ITRACE_COND
-  if (ITRACE_COND) { log_write("%s\n", _this->logbuf); }
-#endif
   if (g_print_step) { IFDEF(CONFIG_ITRACE, puts(_this->logbuf)); }
   IFDEF(CONFIG_DIFFTEST, difftest_step(_this->pc, dnpc));
+#ifdef CONFIG_WATCHPOINT
+  /* DiffTest all watchpoints */ 
+  if(trace_watchpoint_diff_test()) {
+    /* Stop the execution and print difference of WPs */
+    trace_watchpoint_diff_display();
+    nemu_state.state = NEMU_STOP;
+  }
+#endif
 }
 
 static void exec_once(Decode *s, vaddr_t pc) {
@@ -45,7 +52,6 @@ static void exec_once(Decode *s, vaddr_t pc) {
   s->snpc = pc;
   isa_exec_once(s);
   cpu.pc = s->dnpc;
-#ifdef CONFIG_ITRACE
   char *p = s->logbuf;
   p += snprintf(p, sizeof(s->logbuf), FMT_WORD ":", s->pc);
   int ilen = s->snpc - s->pc;
@@ -67,7 +73,6 @@ static void exec_once(Decode *s, vaddr_t pc) {
       MUXDEF(CONFIG_ISA_x86, s->snpc, s->pc), (uint8_t *)&s->isa.inst.val, ilen);
 #else
   p[0] = '\0'; // the upstream llvm does not support loongarch32r
-#endif
 #endif
 }
 

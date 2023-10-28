@@ -23,9 +23,23 @@ const char *regs[] = {
   "s8", "s9", "s10", "s11", "t3", "t4", "t5", "t6"
 };
 
+static uint32_t size = sizeof(regs) / sizeof(regs[0]);
+
 void isa_reg_display() {
+	//Do not put any overlap calculations in ur iteration statement , which causes additional load
+  for (int i = 1 ; i < size; i++)
+    printf("%-10s 0x%-20x %-20u\n" , regs[i] , cpu.gpr[i] , cpu.gpr[i]);
 }
 
 word_t isa_reg_str2val(const char *s, bool *success) {
-  return 0;
+	//Formal parameter could be like "$reg"
+	//What should first be done is to locate the reg we should return
+	for (int i = 0 ; i < size; i++)
+		if (!strcmp(s + 1 , regs[i]))
+		{
+			*success = true;
+			return cpu.gpr[i];
+		}
+	*success = false;
+	return 0;
 }
