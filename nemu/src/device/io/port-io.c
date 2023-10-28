@@ -29,7 +29,6 @@ void add_pio_map(const char *name, ioaddr_t addr, void *space, uint32_t len, io_
     .space = space, .callback = callback };
   Log("Add port-io map '%s' at [" FMT_PADDR ", " FMT_PADDR "]",
       maps[nr_map].name, maps[nr_map].low, maps[nr_map].high);
-
   nr_map ++;
 }
 

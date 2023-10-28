@@ -35,6 +35,9 @@ static bool g_print_step = false;
 void device_update();
 
 static void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
+#ifdef CONFIG_ITRACE_COND
+  if (ITRACE_COND) { log_write("%s\n", _this->logbuf); }
+#endif
   if (g_print_step) { IFDEF(CONFIG_ITRACE, puts(_this->logbuf)); }
   IFDEF(CONFIG_DIFFTEST, difftest_step(_this->pc, dnpc));
 #ifdef CONFIG_WATCHPOINT
@@ -52,7 +55,9 @@ static void exec_once(Decode *s, vaddr_t pc) {
   s->snpc = pc;
   isa_exec_once(s);
   cpu.pc = s->dnpc;
+#ifdef CONFIG_ITRACE
   char *p = s->logbuf;
+  char *tmp = p;
   p += snprintf(p, sizeof(s->logbuf), FMT_WORD ":", s->pc);
   int ilen = s->snpc - s->pc;
   int i;
@@ -68,11 +73,14 @@ static void exec_once(Decode *s, vaddr_t pc) {
   p += space_len;
 
 #ifndef CONFIG_ISA_loongarch32r
-  void disassemble(char *str, int size, uint64_t pc, uint8_t *code, int nbyte);
+  uint32_t _len = 0;
+  void disassemble(char *str, int size, uint64_t pc, uint8_t *code, int nbyte, uint32_t *_len);
   disassemble(p, s->logbuf + sizeof(s->logbuf) - p,
-      MUXDEF(CONFIG_ISA_x86, s->snpc, s->pc), (uint8_t *)&s->isa.inst.val, ilen);
+      MUXDEF(CONFIG_ISA_x86, s->snpc, s->pc), (uint8_t *)&s->isa.inst.val, ilen, &_len);
 #else
   p[0] = '\0'; // the upstream llvm does not support loongarch32r
+#endif
+  Insert_RingBuffer(tmp, p - tmp + _len);
 #endif
 }
 
@@ -97,6 +105,9 @@ static void statistic() {
 }
 
 void assert_fail_msg() {
+  #ifdef CONFIG_ITRACE
+    Display_RingBuffer();
+  #endif
   isa_reg_display();
   statistic();
 }

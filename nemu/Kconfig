@@ -146,10 +146,28 @@ config ITRACE
   bool "Enable instruction tracer"
   default y
 
+config ITRACE_COND
+  depends on ITRACE
+  string "Only trace instructions when the condition is true"
+  default "true"
+
+config RSIZE 
+  depends on ITRACE
+  int "Size of RingBuffer"
+  default 10
+
 config WATCHPOINT
   bool "Enable watchpoint difftest"
   default y
 
+config FTRACE
+  depends on TRACE
+  bool "Enable function trace"
+  default y
+
+config DTRACE
+  bool "Enable device trace"
+  default y
 
 config DIFFTEST
   depends on TARGET_NATIVE_ELF
@@ -192,6 +210,12 @@ config DIFFTEST_REF_NAME
   default "none"
 endmenu
 
+menu "Sdb Configuration"
+
+config BATCH_MODE 
+  bool "Set batch mode for sdb"
+  default y
+endmenu 
 
 if MODE_SYSTEM
 source "src/memory/Kconfig"

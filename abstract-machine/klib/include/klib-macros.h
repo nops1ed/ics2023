@@ -7,10 +7,25 @@
 #define RANGE(st, ed)       (Area) { .start = (void *)(st), .end = (void *)(ed) }
 #define IN_RANGE(ptr, area) ((area).start <= (ptr) && (ptr) < (area).end)
 
+/* Some macros used in memmory operation */
+#define __BYTE unsigned char
+
 #define STRINGIFY(s)        #s
 #define TOSTRING(s)         STRINGIFY(s)
 #define _CONCAT(x, y)       x ## y
 #define CONCAT(x, y)        _CONCAT(x, y)
+
+#define BYTE_COPY_FWD(dst_bp, src_bp, nbytes) \
+  ({do {  \
+    size_t __nbytes = (nbytes); \
+    while (__nbytes > 0) {  \
+	    __BYTE __x = ((__BYTE *) src_bp)[0];  \
+	    src_bp += 1;  \
+	    __nbytes -= 1;  \
+	    ((__BYTE *) dst_bp)[0] = __x; \
+	    dst_bp += 1;  \
+	  } \
+  } while (0);})
 
 #define putstr(s) \
   ({ for (const char *p = s; *p; p++) putch(*p); })
