@@ -24,6 +24,7 @@ static void Branch_Cond(Decode *s, word_t src1, word_t src2, word_t imm, uint32_
 static void ftrace(Decode *s, word_t snpc, word_t dnpc);
 static uint64_t _unsigned_multiply_high(uint64_t a, uint64_t b);
 static int64_t _multiply_high(int64_t a, int64_t b);
+static void ecall_ctrl(Decode *s);
 //static word_t csr_ctrl(Decode *s, word_t src1, word_t imm);
 
 #define R(i) gpr(i)
@@ -122,7 +123,7 @@ static int decode_exec(Decode *s) {
 
   INSTPAT("??????? ????? ????? 001 ????? 11100 11", csrrw  , I, R(rd) = CR(imm), CR(imm) = src1);
   INSTPAT("??????? ????? ????? 010 ????? 11100 11", csrrs  , I, R(rd) = CR(imm), CR(imm) |= src1);
-  INSTPAT("0000000 00000 00000 000 00000 11100 11", ecall  , I, s->dnpc = isa_raise_intr(1, s->pc));
+  INSTPAT("0000000 00000 00000 000 00000 11100 11", ecall  , I, ecall_ctrl(s));
   INSTPAT("0000000 ????? ????? 000 ????? 01100 11", add    , R, R(rd) = src1 + src2);
   INSTPAT("0000000 ????? ????? 000 ????? 01110 11", addw   , R, R(rd) = SEXT(BITS(src1 + src2, 31, 0), 32));
   INSTPAT("0100000 ????? ????? 000 ????? 01100 11", sub    , R, R(rd) = src1 - src2);
@@ -233,6 +234,14 @@ static int64_t _multiply_high(int64_t a, int64_t b) {
     int64_t high_result = high_product + (int64_t)(int32_t)(low_result >> 32) + (int64_t)(int32_t)(a_high * b_high);
 
     return high_result;
+}
+
+static void ecall_ctrl(Decode *s) {
+  word_t NO = 1;
+#ifdef CONFIG_ETRACE
+  Log("An exception occured at pc:" FMT_WORD " Event number: " FMT_WORD, s->pc, NO);
+#endif
+  isa_raise_intr(NO, s->pc);
 }
 
 /*
