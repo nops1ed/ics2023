@@ -23,6 +23,7 @@ word_t vaddr_ifetch(vaddr_t addr, int len) {
 word_t vaddr_read(vaddr_t addr, int len) {
 #ifdef CONFIG_MTRACE
   //Log("Memory Read: " FMT_PADDR "at pc: " FMT_WORD, addr, cpu.pc);
+  /* This performed better */
   printf("Memory Read : 0x%lx at pc: 0x%lx\n", addr, cpu.pc);
 #endif
   return paddr_read(addr, len);
@@ -30,10 +31,8 @@ word_t vaddr_read(vaddr_t addr, int len) {
 
 void vaddr_write(vaddr_t addr, int len, word_t data) {
 #ifdef CONFIG_MTRACE
-  //Log("Memory Write: " FMT_PADDR "at pc: " FMT_WORD, addr, cpu.pc);
+  Log("Memory Write: " FMT_PADDR "at pc: " FMT_WORD, addr, cpu.pc);
   Log("Try to write  " FMT_WORD, data);
-  printf("Memory Write: 0x%lx at pc: 0x%lx\n", addr, cpu.pc);
-  printf("Try to write: 0x%lx\n", data);
 #endif
   paddr_write(addr, len, data);
 }
