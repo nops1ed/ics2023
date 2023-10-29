@@ -30,7 +30,13 @@ const char *csrs[] = {
 };
 
 static uint32_t size = sizeof(regs) / sizeof(regs[0]);
-//static uint32_t csr_size = sizeof(csrs) / sizeof(csrs[0]);
+static uint32_t csr_size = sizeof(csrs) / sizeof(csrs[0]);
+
+void isa_csr_display() {
+	//Do not put any overlap calculations in ur iteration statement , which causes additional load
+  for (int i = 1 ; i < csr_size; i++)
+    printf("%-10s 0x%-20lx %-20lu\n" , csrs[i] , cpu.csr[i] , cpu.csr[i]);
+}
 
 void isa_reg_display() {
 	//Do not put any overlap calculations in ur iteration statement , which causes additional load

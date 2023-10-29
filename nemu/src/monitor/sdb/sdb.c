@@ -71,8 +71,10 @@ static int cmd_info(char *args) {
   //parse args
   char *arg = strtok(NULL , " ");
   //Note: feature of fall through
-  if (!strcmp(arg , "r"))
+  if (!strcmp(arg , "r")) {
 		isa_reg_display();
+    isa_csr_display();
+  }
   else if (!strcmp(arg , "w"))
     sdb_watchpoint_display();
   else if (!strcmp(arg , "f")) {
