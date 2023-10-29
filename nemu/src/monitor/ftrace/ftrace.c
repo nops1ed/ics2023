@@ -25,12 +25,14 @@ typedef struct symbol_table{
 static symbol_table ST[NR_ST] = {};
 static uint64_t ST_SIZE = 0;
 
+/*
 static void debug_SYMTAB() {
     for (int i = 0; i < ST_SIZE; i++) {
         printf("func_name : %s\n",ST[i].func_name);
         printf("address : 0x%lx\n",ST[i].addr);
     }
 }
+*/
 
 /* Description in manual
 *   The ELF header is described by the type Elf32_Ehdr or Elf64_Ehdr:
@@ -114,8 +116,10 @@ void INIT_SYMBOL_TABLE(const char *elf_filename) {
             }
         }
     }
-    printf("SYMTAB initialized\n");
-    debug_SYMTAB();
+    /* Some Debug info may be useful
+    //printf("SYMTAB initialized\n");
+    //debug_SYMTAB();
+    */
 }
 
 /* Establish mini Trapframe to record jmp action */
