@@ -7,12 +7,8 @@
 #define W 400
 #define H 300
 
-static uint64_t _width, _height;
-
 void __am_gpu_init() {
-  uint64_t vga_info = inl(VGACTL_ADDR);
-  _width = (vga_info >> 16) & 0xFFFF;
-  _height = vga_info & 0xFFFF;
+
   /*
   uint32_t vga_info = inl(VGACTL_ADDR);
   int w = (vga_info >> 16) & 0xFFFF;
@@ -26,6 +22,9 @@ void __am_gpu_init() {
 }
 
 void __am_gpu_config(AM_GPU_CONFIG_T *cfg) {
+  uint64_t vga_info = inl(VGACTL_ADDR);
+  uint32_t _width = (vga_info >> 16) & 0xFFFF;
+  uint32_t _height = vga_info & 0xFFFF;
   *cfg = (AM_GPU_CONFIG_T) {
     .present = true, .has_accel = false,
     .width = _width, .height = _height,
