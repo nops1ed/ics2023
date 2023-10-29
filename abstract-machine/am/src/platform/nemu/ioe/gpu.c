@@ -10,7 +10,7 @@
 static uint64_t _width, _height;
 
 void __am_gpu_init() {
-  uint32_t vga_info = inl(VGACTL_ADDR);
+  uint64_t vga_info = inl(VGACTL_ADDR);
   _width = (vga_info >> 16) & 0xFFFF;
   _height = vga_info & 0xFFFF;
   /*
