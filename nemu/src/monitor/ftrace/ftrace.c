@@ -136,7 +136,7 @@ static void Init_Trace_Node(void) {
   _depth = 0;
 }
 
-#define FFFFFF 1
+#define FFFFFF 0
 
 /* trace frame should store present addr and its indent */
 static void Push_Trace_Frame(word_t _addr) {
