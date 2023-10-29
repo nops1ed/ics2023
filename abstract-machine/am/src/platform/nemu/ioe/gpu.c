@@ -63,10 +63,7 @@ int x = ctl->x, y = ctl->y, w = ctl->w, h = ctl->h;
       fb[screen_w * i + j] = pixels[w * (i - y) + (j - x)];
     }
   }
-  if (ctl->sync)
-  {
     outl(SYNC_ADDR, 1);
-  }
 }
 
 void __am_gpu_status(AM_GPU_STATUS_T *status) {
