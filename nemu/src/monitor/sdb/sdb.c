@@ -73,7 +73,7 @@ static int cmd_info(char *args) {
   //Note: feature of fall through
   if (!strcmp(arg , "r")) {
 		isa_reg_display();
-    isa_csr_display();
+    //isa_csr_display();
   }
   else if (!strcmp(arg , "w"))
     sdb_watchpoint_display();
