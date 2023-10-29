@@ -23,8 +23,14 @@ const char *regs[] = {
   "s8", "s9", "s10", "s11", "t3", "t4", "t5", "t6"
 };
 
+/* We just use 3 CSRs in PA. */
+const char *csrs[] = {
+	"mtvec", "mepc", "mstatus", "mcause", "mie",
+	"mip", "mtval", "mscratch"
+};
 
 static uint32_t size = sizeof(regs) / sizeof(regs[0]);
+//static uint32_t csr_size = sizeof(csrs) / sizeof(csrs[0]);
 
 void isa_reg_display() {
 	//Do not put any overlap calculations in ur iteration statement , which causes additional load
