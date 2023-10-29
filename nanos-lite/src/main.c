@@ -21,8 +21,6 @@ int main() {
 
 #ifdef HAS_CTE
   init_irq();
-  
-  panic("F**k you");
 #endif
 
   init_fs();
