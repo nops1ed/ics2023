@@ -55,7 +55,7 @@ static void debug_SYMTAB() {
 void INIT_SYMBOL_TABLE(const char *elf_filename) {
     FILE *fp;
     assert((fp = fopen(elf_filename, "rb")) != NULL);
-    Elf32_Ehdr _ehdr;
+    Elf64_Ehdr _ehdr;
     assert(fread(&_ehdr, sizeof(_ehdr), 1, fp));
         /*
         * typedef struct {
