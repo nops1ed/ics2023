@@ -78,6 +78,7 @@ static int decode_exec(Decode *s) {
   __VA_ARGS__ ; \
 }
 
+  /* Some commands set for RISC-V32*/
   INSTPAT_START();
   /* need sext here. */
   INSTPAT("??????? ????? ????? ??? ????? 11011 11", jal    , J, R(rd) = s->snpc , s->dnpc = imm + s->pc, ftrace(s, s->pc, s->dnpc));
