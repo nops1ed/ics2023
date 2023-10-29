@@ -23,8 +23,8 @@ void __am_gpu_init() {
 
 void __am_gpu_config(AM_GPU_CONFIG_T *cfg) {
   uint32_t vga_info = inl(VGACTL_ADDR);
-  uint16_t _width = (uint16_t)(vga_info >> 16) & 0xFFFF;
-  uint16_t _height = (uint16_t)(vga_info & 0xFFFF);
+  uint32_t _width = (uint32_t)((vga_info >> 16) & 0xFFFF);
+  uint32_t _height = (uint32_t)(vga_info & 0xFFFF);
   *cfg = (AM_GPU_CONFIG_T) {
     .present = true, .has_accel = false,
     .width = _width, .height = _height,
