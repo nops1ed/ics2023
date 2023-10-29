@@ -4,7 +4,10 @@
 
 #if !defined(__ISA_NATIVE__) || defined(__NATIVE_USE_KLIB__)
 static unsigned long int next = 1;
-static char *hbrk;
+/* Keep align. */
+//static char *brk = (void*)ROUNDUP(heap.start, 8);
+static char *brk;
+static bool flag = false;
 
 int rand(void) {
   // RAND_MAX assumed to be 32767
@@ -30,21 +33,22 @@ int atoi(const char* nptr) {
   return x;
 }
 
+static void malloc_reset(void) {
+  brk = (void*)ROUNDUP(heap.start, 8);
+  flag = true;
+}
+
 void *malloc(size_t size) {
+  if(!flag) malloc_reset();
   // On native, malloc() will be called during initializaion of C runtime.
   // Therefore do not call panic() here, else it will yield a dead recursion:
   //   panic() -> putchar() -> (glibc) -> malloc() -> panic()
-// #if !(defined(__ISA_NATIVE__) && defined(__NATIVE_USE_KLIB__))
-//   panic("Not implemented");
-// #endif
-  size = (size + 7) & ~7;   // 意思是size+7后，取反，然后再取反，这样就是8的倍数了
-  if (hbrk == NULL) {
-    hbrk = (char *)heap.start;
-  }
-  char *old = hbrk;
-  hbrk += size;
-  if (hbrk > (char *)heap.end) {
-    return NULL;
+  size = (size_t)ROUNDUP(size, 8);
+  char *old = brk;
+  brk += size;
+  assert((uintptr_t)heap.start <= (uintptr_t)brk && (uintptr_t)brk < (uintptr_t)heap.end);
+  for (uint64_t *p = (uint64_t *)old; p != (uint64_t *)brk; p++) {
+    *p = 0;
   }
   return old;
 }
