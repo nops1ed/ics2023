@@ -1,10 +1,8 @@
 #include <common.h>
 
 static Context* do_event(Event e, Context* c) {
-
-  Log("Huh,seems like you trap here successfully\n");
   switch (e.event) {
-    case 1:
+    case EVENT_YIELD:
       printf("Huh,seems like you trap here successfully\n");
       break;
     default: panic("Unhandled event ID = %d", e.event);
@@ -16,5 +14,4 @@ static Context* do_event(Event e, Context* c) {
 void init_irq(void) {
   Log("Initializing interrupt/exception handler...");
   cte_init(do_event);
-  Log("Huh,seems like you trap here successfully\n");
 }
