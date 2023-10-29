@@ -22,9 +22,9 @@ static void _writeC(char *out, char c) {
 /* Well, this is not a good practice 
  * But putch is a default function so we have to treat it differently instead of a file stream
  */
-static int _writeI(char *out, uint64_t _offset_, int num, size_t *n, uint64_t width, 
+static int _writeI(char *out, uint64_t _offset_, int64_t num, size_t *n, uint64_t width, 
                        uint64_t type) {
-  long int _num = num;
+  long long _num = num;
   /* This should be enough, or we consider it as overflow and cut it down */
   char buf[MAX_IBUF];
   uint64_t offset = 0;  
