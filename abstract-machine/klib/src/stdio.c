@@ -5,7 +5,7 @@
 
 #if !defined(__ISA_NATIVE__) || defined(__NATIVE_USE_KLIB__)
 
-#define MAX_IBUF 64
+#define MAX_IBUF 1024
 
 enum {
   NUM_DEC = 10, NUM_OCT = 8,  NUM_HEX = 16,
