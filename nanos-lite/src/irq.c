@@ -2,7 +2,7 @@
 
 static Context* do_event(Event e, Context* c) {
 
-      printf("Huh,seems like you trap here successfully\n");
+  Log("Huh,seems like you trap here successfully\n");
   switch (e.event) {
     case 1:
       printf("Huh,seems like you trap here successfully\n");
