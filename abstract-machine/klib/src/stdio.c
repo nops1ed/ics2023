@@ -60,7 +60,7 @@ static int _writeS(char *out, uint64_t _offset_, const char *buffer, size_t *n, 
 int printf(const char *fmt, ...) {
   va_list ap;
   va_start(ap , fmt);
-  int ret = vsnprintf(NULL, -1, fmt, ap);
+  int ret = vsprintf(NULL, fmt, ap);
   va_end(ap);
   return ret;
 }
