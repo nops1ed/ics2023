@@ -7,7 +7,7 @@
 #define W 400
 #define H 300
 
-static uint32_t _width, _height;
+static uint64_t _width, _height;
 
 void __am_gpu_init() {
   uint32_t vga_info = inl(VGACTL_ADDR);
@@ -41,8 +41,8 @@ void __am_gpu_fbdraw(AM_GPU_FBDRAW_T *ctl) {
 */
   int x = ctl->x, y = ctl->y, w = ctl->w, h = ctl->h;
   if (w == 0 || h == 0) return;
-  uint32_t *fb = (uint32_t *)(uintptr_t)FB_ADDR;
-  uint32_t *pi = ctl->pixels;
+  uint64_t *fb = (uint64_t *)(uintptr_t)FB_ADDR;
+  uint64_t *pi = ctl->pixels;
   for (int i = 0; i < h; i ++) {
     for (int j = 0; j < w; j ++) {
       fb[(y + i) * W + x + j] = pi[i * w + j];
