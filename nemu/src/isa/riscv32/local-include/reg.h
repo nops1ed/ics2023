@@ -49,7 +49,7 @@ static inline int csr_idx(uint32_t idx) {
   return 0;
 } 
 
-#define csr(idx) (csr[csr_idx(idx)]);
+#define csr(idx) (cpu.csr[csr_idx(idx)])
 /*
   0x300 MRW mstatus     Machine status register.
   0x304 MRW mie         Machine interrupt-enable register.

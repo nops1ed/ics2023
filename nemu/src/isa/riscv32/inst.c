@@ -24,6 +24,7 @@ static void Branch_Cond(Decode *s, word_t src1, word_t src2, word_t imm, uint32_
 static void ftrace(Decode *s, word_t snpc, word_t dnpc);
 static uint64_t _unsigned_multiply_high(uint64_t a, uint64_t b);
 static int64_t _multiply_high(int64_t a, int64_t b);
+static word_t csr_ctrl(Decode *s, word_t src1, word_t imm);
 
 #define R(i) gpr(i)
 #define CR(i) csr(i)
@@ -40,6 +41,10 @@ enum {
 enum {
   TYPE_I, TYPE_U, TYPE_S, TYPE_J, TYPE_R, TYPE_B,
   TYPE_N, // none
+};
+
+enum {
+  CSR_RS,
 };
 
 #define src1R() do { *src1 = R(rs1); } while (0)
@@ -113,7 +118,7 @@ static int decode_exec(Decode *s) {
 //INSTPAT("0000001 ????? ????? 101 ????? 00100 11", srliDis, I, /* Nop Instrction */);
   INSTPAT("??????? ????? ????? 110 ????? 00100 11", ori    , I, R(rd) = src1 | imm);
   INSTPAT("??????? ????? ????? 100 ????? 00100 11", xori   , I, R(rd) = src1 ^ imm);
-//INSTPAT("??????? ????? ????? 010 ????? 11100 11", csrrs  , I, word_t _tmp = imm, )
+  INSTPAT("??????? ????? ????? 010 ????? 11100 11", csrrs  , I, R(rd) = csr_ctrl(s, src1, imm));
   INSTPAT("0000000 ????? ????? 000 ????? 01100 11", add    , R, R(rd) = src1 + src2);
   INSTPAT("0000000 ????? ????? 000 ????? 01110 11", addw   , R, R(rd) = SEXT(BITS(src1 + src2, 31, 0), 32));
   INSTPAT("0100000 ????? ????? 000 ????? 01100 11", sub    , R, R(rd) = src1 - src2);
@@ -136,7 +141,7 @@ static int decode_exec(Decode *s) {
   INSTPAT("0000000 ????? ????? 100 ????? 01100 11", xor    , R, R(rd) = src1 ^ src2);
   INSTPAT("0000001 ????? ????? 100 ????? 01100 11", div    , R, R(rd) = (int64_t)src1 / (int64_t)src2);
   INSTPAT("0000001 ????? ????? 101 ????? 01100 11", divu   , R, R(rd) = src1 / src2);
-  //shit
+  //piece of shit
   INSTPAT("0000001 ????? ????? 100 ????? 01110 11", divw   , R, R(rd) = SEXT((int32_t)BITS(src1, 31, 0) / (int32_t)BITS(src2, 31, 0), 32));
   INSTPAT("0000001 ????? ????? 101 ????? 01110 11", divuw  , R, R(rd) = SEXT(BITS(src1, 31, 0) / BITS(src2, 31, 0), 32));
   INSTPAT("0000001 ????? ????? 000 ????? 01100 11", mul    , R, R(rd) = src1 * src2);
@@ -222,6 +227,12 @@ static int64_t _multiply_high(int64_t a, int64_t b) {
     int64_t high_result = high_product + (int64_t)(int32_t)(low_result >> 32) + (int64_t)(int32_t)(a_high * b_high);
 
     return high_result;
+}
+
+static word_t csr_ctrl(Decode *s, word_t src1, word_t imm) {
+  word_t ret_val = CR(imm);
+  CR(imm) = ret_val | src1;
+  return ret_val;
 }
 
 int isa_exec_once(Decode *s) {
