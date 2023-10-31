@@ -237,7 +237,9 @@ static int64_t _multiply_high(int64_t a, int64_t b) {
 }
 
 static void ecall_ctrl(Decode *s) {
-  word_t NO = 1;
+  bool success = false;
+  word_t NO = isa_reg_str2val("a7", &success);
+  assert(success);
 #ifdef CONFIG_ETRACE
   Log("An exception occured at pc:" FMT_WORD " Event number: " FMT_WORD, s->pc, NO);
 #endif
