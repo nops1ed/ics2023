@@ -58,9 +58,11 @@ static uintptr_t loader(PCB *pcb, const char *filename) {
   Elf_Addr _p_vaddr;
   uint64_t _p_filesz, _p_memsz;
 
-  printf("f**k you\n");
+  //printf("f**k you\n");
   for(int i = 0; i < _phnum; i++) {
     ramdisk_read(&_phdr, _phoff + i * sizeof(_phdr), sizeof(_phdr));
+
+    printf("f**k you\n");
     _poff = _phdr.p_offset;
     _p_vaddr = _phdr.p_vaddr;
     _p_filesz = _phdr.p_filesz;
