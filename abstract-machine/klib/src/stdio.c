@@ -30,14 +30,14 @@ static int _writeI(char *out, uint64_t _offset_, int64_t num, size_t *n, uint64_
   uint64_t offset = 0;  
   if(_num == 0) buf[offset++] = '0';
   else { 
-    if(type == NUM_HEX) {
-      buf[offset++] = '0';
-      buf[offset++] = 'x';
-    }
     while(_num) {
       buf[offset++] = (_num % type) > 9? 'a' + (_num % type) - 10: _num % type + '0';
       _num /= type;
     }     
+  }
+  if(type == NUM_HEX) {
+    buf[offset++] = '0';
+    buf[offset++] = 'x';
   }
   for(int j = offset; j < width; j++) {
     if (out)  _writeC(out + _offset_ + j, '0'); 
