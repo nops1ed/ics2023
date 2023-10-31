@@ -48,8 +48,7 @@ word_t isa_reg_str2val(const char *s, bool *success) {
 	//Formal parameter could be like "$reg"
 	//What should first be done is to locate the reg we should return
 	for (int i = 0 ; i < size; i++)
-		if (!strcmp(s + 1 , regs[i]))
-		{
+		if (!strcmp(s + 1 , regs[i])) {
 			*success = true;
 			return cpu.gpr[i];
 		}

@@ -66,8 +66,9 @@ static uintptr_t loader(PCB *pcb, const char *filename) {
   Elf_Ehdr ehdr;
   ramdisk_read(&ehdr, 0, sizeof(Elf_Ehdr));
 
-  // check magic number 
+  /* check magic number. */
   assert((*(uint64_t *)ehdr.e_ident == 0x010102464c457f));
+  /* check architecture. */
   assert(ehdr.e_machine == EXPECT_TYPE);
 
   Elf_Phdr phdr[ehdr.e_phnum];

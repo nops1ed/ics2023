@@ -20,11 +20,6 @@ word_t isa_raise_intr(word_t NO, vaddr_t epc) {
    * Then return the address of the interrupt/exception vector.
    */
 
-  /*
-  * SR[mepc] <- PC
-  * SR[mcause] <- 一个描述失败原因的号码
-  * PC <- SR[mtvec]
-  */
   cpu.csr[CSR_MEPC] = epc;
   cpu.csr[CSR_MCAUSE] = NO;
 
