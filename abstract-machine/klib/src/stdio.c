@@ -121,6 +121,11 @@ int vsnprintf(char *out, size_t n, const char *fmt, va_list ap) {
         *buf = (char)va_arg(ap, int);  
         offset += _writeS(out, offset, buf, &n, 1);
 		  }
+      else if(*p == 'p') {
+        char *buf = va_arg(ap, char *);
+        len = strlen(buf);
+        offset += _writeS(out, offset, buf, &n, len);
+      }
 			else {
 				char *buf = "%%";
         offset += _writeS(out, offset, buf, &n, 2);
