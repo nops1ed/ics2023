@@ -4,10 +4,6 @@
 
 #if !defined(__ISA_NATIVE__) || defined(__NATIVE_USE_KLIB__)
 static unsigned long int next = 1;
-/* Keep align. */
-//static char *brk = (void*)ROUNDUP(heap.start, 8);
-static char *brk;
-static bool flag = false;
 
 int rand(void) {
   // RAND_MAX assumed to be 32767
@@ -33,24 +29,37 @@ int atoi(const char* nptr) {
   return x;
 }
 
-static void malloc_reset(void) {
-  brk = (void*)ROUNDUP(heap.start, 8);
-  flag = true;
-}
-
+#define HEAP_SIZE 1000000
+static uint8_t mem[HEAP_SIZE] = {0};
+typedef struct heap
+{
+  uint8_t *start;
+  uint8_t *end;
+  uint8_t *hbrk;
+  uint8_t *mem;
+  uint32_t size;
+  /* data */
+} Heap;
+static Heap mem_heap = {
+  .mem = mem,
+  .start = mem,
+  .hbrk = mem,
+  .size = HEAP_SIZE,
+  .end = mem + HEAP_SIZE -1,
+};
 void *malloc(size_t size) {
-  if(!flag) malloc_reset();
   // On native, malloc() will be called during initializaion of C runtime.
   // Therefore do not call panic() here, else it will yield a dead recursion:
   //   panic() -> putchar() -> (glibc) -> malloc() -> panic()
-  size = (size_t)ROUNDUP(size, 8);
-  char *old = brk;
-  brk += size;
-  assert((uintptr_t)heap.start <= (uintptr_t)brk && (uintptr_t)brk < (uintptr_t)heap.end);
-  for (uint64_t *p = (uint64_t *)old; p != (uint64_t *)brk; p++) {
-    *p = 0;
-  }
-  return old;
+#if !(defined(__ISA_NATIVE__) && defined(__NATIVE_USE_KLIB__))
+  uint8_t *old_hbrk = mem_heap.hbrk;
+  mem_heap.hbrk += size;
+
+  printf("the alloced heap of [%x,%x] adress is %x with size %d", mem_heap.start, mem_heap.end ,old_hbrk, size);
+  printf("\n");
+  assert( (mem_heap.hbrk >= mem_heap.start) && (mem_heap.hbrk < mem_heap.end) );
+#endif
+  return (void*)old_hbrk;
 }
 
 void free(void *ptr) {
