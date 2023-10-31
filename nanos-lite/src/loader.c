@@ -49,7 +49,6 @@ size_t ramdisk_write(const void *buf, size_t offset, size_t len);
   } Elf64_Phdr;
 */
 static uintptr_t loader(PCB *pcb, const char *filename) {
-  /*
   Elf_Ehdr _ehdr;
   ramdisk_read(&_ehdr, 0, sizeof(_ehdr));
 
@@ -73,8 +72,8 @@ static uintptr_t loader(PCB *pcb, const char *filename) {
     ramdisk_read((void *)_p_vaddr, _poff, _p_filesz);
     memset((void *)(_p_vaddr + _p_filesz), 0, _p_memsz - _p_filesz);
   }
-  */
 
+/*
   Elf_Ehdr ehdr;
   ramdisk_read(&ehdr, 0, sizeof(Elf_Ehdr));
   // check valid elf
@@ -92,6 +91,7 @@ static uintptr_t loader(PCB *pcb, const char *filename) {
     }
   }
   return ehdr.e_entry;
+  */
 
   return 0;
 }
