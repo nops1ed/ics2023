@@ -29,15 +29,21 @@ static int _writeI(char *out, uint64_t _offset_, int64_t num, size_t *n, uint64_
   char buf[MAX_IBUF];
   uint64_t offset = 0;  
   if(_num == 0) buf[offset++] = '0';
-  else 
+  else { 
+    if(type == NUM_HEX) {
+      buf[offset++] = '0';
+      buf[offset++] = 'x';
+    }
     while(_num) {
       buf[offset++] = (_num % type) > 9? 'a' + (_num % type) - 10: _num % type + '0';
       _num /= type;
     }     
+  }
   for(int j = offset; j < width; j++) {
     if (out)  _writeC(out + _offset_ + j, '0'); 
     else _writeC(out, '0');
   }
+
   int i;
   for(i = 0; i < offset && *n > 0; i++, (*n)--)  
     if (out)  _writeC(out + _offset_ + i, *(buf + offset - 1 - i)); 
