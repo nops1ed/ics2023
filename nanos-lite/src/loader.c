@@ -93,7 +93,7 @@ static uintptr_t loader(PCB *pcb, const char *filename) {
   return ehdr.e_entry;
   */
 
-  return 0;
+  return _ehdr.e_entry;
 }
 
 void naive_uload(PCB *pcb, const char *filename) {
