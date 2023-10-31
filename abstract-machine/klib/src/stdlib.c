@@ -5,64 +5,61 @@
 #if !defined(__ISA_NATIVE__) || defined(__NATIVE_USE_KLIB__)
 static unsigned long int next = 1;
 
-int rand(void) {
+int rand(void)
+{
   // RAND_MAX assumed to be 32767
   next = next * 1103515245 + 12345;
-  return (unsigned int)(next/65536) % 32768;
+  return (unsigned int)(next / 65536) % 32768;
 }
 
-void srand(unsigned int seed) {
+void srand(unsigned int seed)
+{
   next = seed;
 }
 
-int abs(int x) {
+int abs(int x)
+{
   return (x < 0 ? -x : x);
 }
 
-int atoi(const char* nptr) {
+int atoi(const char *nptr)
+{
   int x = 0;
-  while (*nptr == ' ') { nptr ++; }
-  while (*nptr >= '0' && *nptr <= '9') {
+  while (*nptr == ' ')
+  {
+    nptr++;
+  }
+  while (*nptr >= '0' && *nptr <= '9')
+  {
     x = x * 10 + *nptr - '0';
-    nptr ++;
+    nptr++;
   }
   return x;
 }
 
-#define HEAP_SIZE 1000000
-static uint8_t mem[HEAP_SIZE] = {0};
-typedef struct heap
+void *malloc(size_t size)
 {
-  uint8_t *start;
-  uint8_t *end;
-  uint8_t *hbrk;
-  uint8_t *mem;
-  uint32_t size;
-  /* data */
-} Heap;
-static Heap mem_heap = {
-  .mem = mem,
-  .start = mem,
-  .hbrk = mem,
-  .size = HEAP_SIZE,
-  .end = mem + HEAP_SIZE -1,
-};
-void *malloc(size_t size) {
   // On native, malloc() will be called during initializaion of C runtime.
   // Therefore do not call panic() here, else it will yield a dead recursion:
   //   panic() -> putchar() -> (glibc) -> malloc() -> panic()
 #if !(defined(__ISA_NATIVE__) && defined(__NATIVE_USE_KLIB__))
-  uint8_t *old_hbrk = mem_heap.hbrk;
-  mem_heap.hbrk += size;
+  // panic("Not implemented");
+  static int addr = 0;
+  size = (size_t)ROUNDUP(size, 4);
+  void *old = addr + heap.start;
+  addr += size;
+  for (uint32_t *p = (uint32_t *)old; p != (uint32_t *)(addr + heap.start); p++)
+  {
+    *p = 0;
+  }
+  return old;
 
-  printf("the alloced heap of [%x,%x] adress is %x with size %d", mem_heap.start, mem_heap.end ,old_hbrk, size);
-  printf("\n");
-  assert( (mem_heap.hbrk >= mem_heap.start) && (mem_heap.hbrk < mem_heap.end) );
 #endif
-  return (void*)old_hbrk;
+  return NULL;
 }
 
-void free(void *ptr) {
+void free(void *ptr)
+{
 }
 
 #endif
