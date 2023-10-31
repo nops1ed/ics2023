@@ -122,7 +122,7 @@ int vsnprintf(char *out, size_t n, const char *fmt, va_list ap) {
         offset += _writeS(out, offset, buf, &n, 1);
 		  }
       else if(*p == 'p') {
-        int num = va_arg(ap, int);
+        unsigned long long num = (unsigned long long)(uintptr_t)va_arg(ap, void *);
         offset += _writeI(out, offset, num, &n, width, NUM_HEX);
       }
 			else {
