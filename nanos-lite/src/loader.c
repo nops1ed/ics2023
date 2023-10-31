@@ -50,26 +50,20 @@ size_t ramdisk_write(const void *buf, size_t offset, size_t len);
 */
 static uintptr_t loader(PCB *pcb, const char *filename) {
   Elf_Ehdr _ehdr;
-  ramdisk_read(&_ehdr, 0, sizeof(_ehdr));
+  ramdisk_read(&_ehdr, 0, sizeof(Elf_Ehdr));
 
   Elf_Phdr _phdr;
   uint32_t _phnum = _ehdr.e_phnum;
-  uint32_t _phoff = _ehdr.e_phoff, _poff;
+  uint32_t _phoff = _ehdr.e_phoff;
   printf("The phoff = %d\n", _phoff);
-  Elf_Addr _p_vaddr;
-  uint64_t _p_filesz, _p_memsz;
 
   //printf("f**k you\n");
   for(int i = 0; i < _phnum; i++) {
     printf("The offset = %d\n", _phoff + i * sizeof(_phdr));
     ramdisk_read(&_phdr, _phoff + i * sizeof(_phdr), sizeof(_phdr));
     if(_phdr.p_type == PT_LOAD) {
-      _poff = _phdr.p_offset;
-      _p_vaddr = _phdr.p_vaddr;
-      _p_filesz = _phdr.p_filesz;
-      _p_memsz = _phdr.p_memsz;
-      ramdisk_read((void *)_p_vaddr, _poff, _p_filesz);
-      memset((void *)(_p_vaddr + _p_filesz), 0, _p_memsz - _p_filesz);
+      ramdisk_read((void *)_phdr.p_vaddr, _phdr.p_offset, _phdr.p_filesz);
+      memset((void *)(_phdr.p_vaddr + _phdr.p_filesz), 0, _phdr.p_filesz - _phdr.p_memsz);
     }
   }
 
