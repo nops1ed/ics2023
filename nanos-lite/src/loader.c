@@ -61,6 +61,7 @@ static uintptr_t loader(PCB *pcb, const char *filename) {
 
   //printf("f**k you\n");
   for(int i = 0; i < _phnum; i++) {
+    printf("The offset = %d\n", _phoff + i * sizeof(_phdr));
     ramdisk_read(&_phdr, _phoff + i * sizeof(_phdr), sizeof(_phdr));
 
     printf("f**k you\n");
