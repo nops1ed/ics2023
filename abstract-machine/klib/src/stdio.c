@@ -36,8 +36,8 @@ static int _writeI(char *out, uint64_t _offset_, int64_t num, size_t *n, uint64_
     }     
   }
   if(type == NUM_HEX) {
-    buf[offset++] = '0';
     buf[offset++] = 'x';
+    buf[offset++] = '0';
   }
   for(int j = offset; j < width; j++) {
     if (out)  _writeC(out + _offset_ + j, '0'); 
