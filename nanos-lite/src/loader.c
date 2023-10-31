@@ -64,7 +64,6 @@ static uintptr_t loader(PCB *pcb, const char *filename) {
     printf("The offset = %d\n", _phoff + i * sizeof(_phdr));
     ramdisk_read(&_phdr, _phoff + i * sizeof(_phdr), sizeof(_phdr));
     if(_phdr.p_type == PT_LOAD) {
-      printf("f**k you\n");
       _poff = _phdr.p_offset;
       _p_vaddr = _phdr.p_vaddr;
       _p_filesz = _phdr.p_filesz;
@@ -74,6 +73,7 @@ static uintptr_t loader(PCB *pcb, const char *filename) {
     }
   }
 
+      printf("f**k you\n");
 /*
   Elf_Ehdr ehdr;
   ramdisk_read(&ehdr, 0, sizeof(Elf_Ehdr));
