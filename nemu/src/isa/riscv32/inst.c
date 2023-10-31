@@ -244,6 +244,7 @@ static void ecall_ctrl(Decode *s) {
   Log("An exception occured at pc:" FMT_WORD " Event number: " FMT_WORD, s->pc, NO);
 #endif
   s->dnpc = isa_raise_intr(NO, s->snpc);
+  Log("Seems like ecall emits\n");
 }
 
 /*
