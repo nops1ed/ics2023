@@ -1,6 +1,13 @@
 #include "ftrace.h"
 #include <elf.h>
 
+
+/*
+* Warning:
+* Ftrace should be portable so we cannot define Elf32 or 64
+*/
+
+
 #define MAX_BUF_SIZE 64;
 #define MAX_DEPTH 32;
 
