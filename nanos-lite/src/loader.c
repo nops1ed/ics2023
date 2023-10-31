@@ -79,7 +79,7 @@ static uintptr_t loader(PCB *pcb, const char *filename) {
       printf("Read data from %p, size %d\n", phdr[i].p_offset, phdr[i].p_memsz);
       printf("Write it to %p\n", phdr[i].p_vaddr);
       // set .bss to zero
-      //memset((void *)(phdr[i].p_vaddr + phdr[i].p_filesz), 0, phdr[i].p_memsz - phdr[i].p_filesz);
+      memset((void *)(phdr[i].p_vaddr + phdr[i].p_filesz), 0, phdr[i].p_memsz - phdr[i].p_filesz);
     }
   }
 
@@ -89,6 +89,6 @@ static uintptr_t loader(PCB *pcb, const char *filename) {
 void naive_uload(PCB *pcb, const char *filename) {
   uintptr_t entry = loader(pcb, filename);
   Log("Jump to entry = %p", entry);
-  ((void(*)())entry) ();
+  ((void(*)())entry)();
 }
 
