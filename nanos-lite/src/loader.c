@@ -65,6 +65,7 @@ size_t ramdisk_write(const void *buf, size_t offset, size_t len);
 static uintptr_t loader(PCB *pcb, const char *filename) {
   Elf_Ehdr ehdr;
   ramdisk_read(&ehdr, 0, sizeof(Elf_Ehdr));
+  Elf_Addr entry = ehdr.e_entry;
 
   /* check magic number. */
   assert((*(uint64_t *)ehdr.e_ident == 0x010102464c457f));
@@ -83,7 +84,7 @@ static uintptr_t loader(PCB *pcb, const char *filename) {
     }
   }
 
-  return ehdr.e_entry;
+  return entry;
 }
 
 void naive_uload(PCB *pcb, const char *filename) {
