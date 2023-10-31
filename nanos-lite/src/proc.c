@@ -30,7 +30,6 @@ void init_proc() {
 
   // load program here
   naive_uload(NULL, NULL);
-  printf("What ?\n");
 }
 
 Context* schedule(Context *prev) {
