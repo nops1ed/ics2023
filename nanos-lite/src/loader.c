@@ -57,7 +57,7 @@ static uintptr_t loader(PCB *pcb, const char *filename) {
   uint32_t _phoff = _ehdr.e_phoff, _poff;
   printf("The phoff = %d\n", _phoff);
   Elf_Addr _p_vaddr;
-  uint64_t _p_filesz, _p_memsz;
+  uint64_t _p_filesz;//,_p_memsz;
 
   //printf("f**k you\n");
   for(int i = 0; i < _phnum; i++) {
@@ -68,9 +68,9 @@ static uintptr_t loader(PCB *pcb, const char *filename) {
     _poff = _phdr.p_offset;
     _p_vaddr = _phdr.p_vaddr;
     _p_filesz = _phdr.p_filesz;
-    _p_memsz = _phdr.p_memsz;
+    //_p_memsz = _phdr.p_memsz;
     ramdisk_read((void *)_p_vaddr, _poff, _p_filesz);
-    memset((void *)(_p_vaddr + _p_filesz), 0, _p_memsz - _p_filesz);
+    //memset((void *)(_p_vaddr + _p_filesz), 0, _p_memsz - _p_filesz);
   }
 
   return 0;
