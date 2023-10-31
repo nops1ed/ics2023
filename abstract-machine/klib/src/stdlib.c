@@ -4,62 +4,56 @@
 
 #if !defined(__ISA_NATIVE__) || defined(__NATIVE_USE_KLIB__)
 static unsigned long int next = 1;
+/* Keep align. */
+//static char *brk = (void*)ROUNDUP(heap.start, 8);
+static char *brk;
+static bool flag = false;
 
-int rand(void)
-{
+int rand(void) {
   // RAND_MAX assumed to be 32767
   next = next * 1103515245 + 12345;
-  return (unsigned int)(next / 65536) % 32768;
+  return (unsigned int)(next/65536) % 32768;
 }
 
-void srand(unsigned int seed)
-{
+void srand(unsigned int seed) {
   next = seed;
 }
 
-int abs(int x)
-{
+int abs(int x) {
   return (x < 0 ? -x : x);
 }
 
-int atoi(const char *nptr)
-{
+int atoi(const char* nptr) {
   int x = 0;
-  while (*nptr == ' ')
-  {
-    nptr++;
-  }
-  while (*nptr >= '0' && *nptr <= '9')
-  {
+  while (*nptr == ' ') { nptr ++; }
+  while (*nptr >= '0' && *nptr <= '9') {
     x = x * 10 + *nptr - '0';
-    nptr++;
+    nptr ++;
   }
   return x;
 }
 
-void *malloc(size_t size)
-{
+static void malloc_reset(void) {
+  brk = (void*)ROUNDUP(heap.start, 8);
+  flag = true;
+}
+
+void *malloc(size_t size) {
+  if(!flag) malloc_reset();
   // On native, malloc() will be called during initializaion of C runtime.
   // Therefore do not call panic() here, else it will yield a dead recursion:
   //   panic() -> putchar() -> (glibc) -> malloc() -> panic()
-#if !(defined(__ISA_NATIVE__) && defined(__NATIVE_USE_KLIB__))
-  // panic("Not implemented");
-  static int addr = 0;
-  size = (size_t)ROUNDUP(size, 4);
-  void *old = addr + heap.start;
-  addr += size;
-  for (uint32_t *p = (uint32_t *)old; p != (uint32_t *)(addr + heap.start); p++)
-  {
+  size = (size_t)ROUNDUP(size, 8);
+  char *old = brk;
+  brk += size;
+  assert((uintptr_t)heap.start <= (uintptr_t)brk && (uintptr_t)brk < (uintptr_t)heap.end);
+  for (uint64_t *p = (uint64_t *)old; p != (uint64_t *)brk; p++) {
     *p = 0;
   }
   return old;
-
-#endif
-  return NULL;
 }
 
-void free(void *ptr)
-{
+void free(void *ptr) {
 }
 
 #endif

@@ -1,4 +1,3 @@
-/*
 #include <am.h>
 #include <klib.h>
 #include <klib-macros.h>
@@ -6,435 +5,148 @@
 
 #if !defined(__ISA_NATIVE__) || defined(__NATIVE_USE_KLIB__)
 
-int printf(const char *fmt, ...)
-{
-  char buf[1024];
+#define MAX_IBUF 1024
+
+enum {
+  NUM_DEC = 10, NUM_OCT = 8,  NUM_HEX = 16,
+};
+
+/* Write a single char to file stream or call putch() */
+static void _writeC(char *out, char c) {
+  if(out) *out = c;
+  else putch(c);
+}
+
+/* Write an interger into the buffer according to type we wanna convert to. */
+
+/* Well, this is not a good practice 
+ * But putch is a default function so we have to treat it differently instead of a file stream
+ */
+static int _writeI(char *out, uint64_t _offset_, int64_t num, size_t *n, uint64_t width, 
+                       uint64_t type) {
+  long long _num = num;
+  /* This should be enough, or we consider it as overflow and cut it down */
+  char buf[MAX_IBUF];
+  uint64_t offset = 0;  
+  if(_num == 0) buf[offset++] = '0';
+  else { 
+    while(_num) {
+      buf[offset++] = (_num % type) > 9? 'a' + (_num % type) - 10: _num % type + '0';
+      _num /= type;
+    }     
+  }
+  if(type == NUM_HEX) {
+    buf[offset++] = 'x';
+    buf[offset++] = '0';
+  }
+  for(int j = offset; j < width; j++) {
+    if (out)  _writeC(out + _offset_ + j, '0'); 
+    else _writeC(out, '0');
+  }
+
+  int i;
+  for(i = 0; i < offset && *n > 0; i++, (*n)--)  
+    if (out)  _writeC(out + _offset_ + i, *(buf + offset - 1 - i)); 
+    else _writeC(out, *(buf + offset - 1 - i));
+    //*(out + offset - 1 - i) = buf[i];
+  return i; 
+}
+
+/* Write a string to buffer */
+static int _writeS(char *out, uint64_t _offset_, const char *buffer, size_t *n, int len) {
+  uint64_t offset;
+  for (offset = 0; offset < len && *n > 0; offset++, (*n)--) {
+    if(out) _writeC(out + _offset_ + offset, *(buffer + offset));
+    else _writeC(out, *(buffer + offset));
+    //*(out + _offset_ + offset) = *(buffer + offset);
+  }
+  return offset;
+}
+
+int printf(const char *fmt, ...) {
   va_list ap;
-  va_start(ap, fmt);
-
-  int ret = vsprintf(buf, fmt, ap);
-  // va_end(ap);
-
-  if (ret > 0)
-    putstr(buf);
-
+  va_start(ap , fmt);
+  int ret = vsprintf(NULL, fmt, ap);
+  va_end(ap);
   return ret;
 }
 
-int vsprintf(char *out, const char *fmt, va_list ap)
-{
-  int d;
-  // char c;
-  char buf[1024];
-  size_t out_idx = 0;
-  size_t fmt_idx = 0;
-  int format_state = 0;
-
-  for (; fmt[fmt_idx] != '\0'; fmt_idx++)
-  {
-    switch (format_state)
-    {
-    case 0:
-      if (fmt[fmt_idx] == '%')
-        format_state = 1;
-      else
-        out[out_idx++] = fmt[fmt_idx];
-      break;
-
-    case 1:
-      format_state = 0;
-      switch (fmt[fmt_idx])
-      {
-      case 'd':
-        d = va_arg(ap, int);
-        if (d == 0)
-        {
-          out[out_idx++] = '0';
-          break;
-        }
-        int d_tmp = d;
-        int buf_idx = 0;
-        while (d_tmp)
-        {
-          buf[buf_idx++] = (char)(d_tmp % 10 + '0');
-          d_tmp /= 10;
-        }
-        if (d < 0)
-          buf[buf_idx] = '-';
-        else
-          buf_idx--;
-        while (buf_idx >= 0)
-        {
-          out[out_idx++] = buf[buf_idx--];
-        }
-        break;
-
-      case 's':
-        char *tmp = va_arg(ap, char *);
-        while (*tmp != '\0')
-        {
-          out[out_idx++] = *tmp++;
-        }
-        break;
-
-      default:
-        assert(0);
-      }
-    }
-  }
-  va_end(ap);
-  out[out_idx] = '\0';
-  return out_idx;
+int vsprintf(char *out, const char *fmt, va_list ap) {
+  return vsnprintf(out, -1, fmt, ap);
 }
 
-int sprintf(char *out, const char *fmt, ...)
-{
-  va_list ap;
+/* Trivial implement , We didn`t call _vsprintf_internal 
+ * The behavior of copy we implement is just byte copy 
+ */
+int sprintf(char *out, const char *fmt, ...) {
+  va_list ap;  
   va_start(ap, fmt);
-
-  int ret = vsprintf(out, fmt, ap);
-
+  int ret = vsnprintf(out, -1, fmt, ap);
+  va_end(ap);
   return ret;
 }
 
-int snprintf(char *out, size_t n, const char *fmt, ...)
-{
-  panic("Not implemented");
-}
-
-int vsnprintf(char *out, size_t n, const char *fmt, va_list ap)
-{
-  panic("Not implemented");
-}
-
-#endif
-*/
-
-#include <am.h>
-#include <klib-macros.h>
-#include <klib.h>
-#include <stdarg.h>
-
-#if !defined(__ISA_NATIVE__) || defined(__NATIVE_USE_KLIB__)
-
-static inline unsigned int __mulu10(unsigned int n)
-{
-  return (n << 3) + (n << 1);
-}
-
-static inline unsigned int __divu10(unsigned int n)
-{
-  unsigned int q, r;
-  q = (n >> 1) + (n >> 2);
-  q = q + (q >> 4);
-  q = q + (q >> 8);
-  q = q + (q >> 16);
-  q = q >> 3;
-  r = n - __mulu10(q);
-  return q + ((r + 6) >> 4);
-}
-
-static unsigned long long getuint(va_list *ap, int lflag)
-{
-  if (lflag >= 2)
-  {
-    return va_arg(*ap, unsigned long long);
-  }
-  else if (lflag)
-  {
-    return va_arg(*ap, unsigned long);
-  }
-  else
-  {
-    return va_arg(*ap, unsigned int);
-  }
-}
-static long long getint(va_list *ap, int lflag)
-{
-  if (lflag >= 2)
-  {
-    return va_arg(*ap, long long);
-  }
-  else if (lflag)
-  {
-    return va_arg(*ap, long);
-  }
-  else
-  {
-    return va_arg(*ap, int);
-  }
-}
-static void printnum(void (*_putch)(char, void *), void *cnt, unsigned int num,
-                     unsigned int base, int width, int padc)
-{
-  unsigned int result = num;
-  unsigned int mod = 0;
-  if (base == 10)
-  {
-    unsigned int t = __divu10(result);
-    mod = result - __mulu10(t);
-    result = t;
-  }
-  else if (base == 8)
-  {
-    mod = result & 0x7;
-    result = result >> 3;
-  }
-  else
-  {
-    mod = result & 0xF;
-    result = result >> 4;
-  }
-
-  // first recursively print all preceding (more significant) digits
-  if (num >= base)
-  {
-    printnum(_putch, cnt, result, base, width - 1, padc);
-  }
-  else
-  {
-    // print any needed pad characters before first digit
-    while (--width > 0)
-    {
-      _putch(padc, cnt);
-    }
-  }
-  // then print this (the least significant) digit
-  _putch("0123456789abcdef"[mod], cnt);
-}
-static void vprintfmt(void (*_putch)(char, void *), void *cnt, const char *fmt,
-                      va_list ap)
-{
-  register const char *p;
-  register int ch;
-  unsigned long long num;
-  int base, width, precision, lflag, altflag;
-  while (1)
-  {
-    while ((ch = *(unsigned char *)fmt++) != '%')
-    {
-      if (ch == '\0')
-      {
-        return;
-      }
-      _putch(ch, cnt);
-    }
-
-    // Process a %-escape sequence
-    char padc = ' ';
-    width = precision = -1;
-    lflag = altflag = 0;
-
-  reswitch:
-    switch (ch = *(unsigned char *)fmt++)
-    {
-    // flag to pad on the right
-    case '-':
-      padc = '-';
-      goto reswitch;
-
-    // flag to pad with 0's instead of spaces
-    case '0':
-      padc = '0';
-      goto reswitch;
-
-    // width field
-    case '1' ... '9':
-      for (precision = 0;; ++fmt)
-      {
-        precision = precision * 10 + ch - '0';
-        ch = *fmt;
-        if (ch < '0' || ch > '9')
-        {
-          break;
-        }
-      }
-      goto process_precision;
-
-    case '*':
-      precision = va_arg(ap, int);
-      goto process_precision;
-
-    case '.':
-      if (width < 0)
-        width = 0;
-      goto reswitch;
-
-    case '#':
-      altflag = 1;
-      goto reswitch;
-
-    process_precision:
-      if (width < 0)
-        width = precision, precision = -1;
-      goto reswitch;
-
-    // long flag (doubled for long long)
-    case 'l':
-      lflag++;
-      goto reswitch;
-
-    // character
-    case 'c':
-      _putch(va_arg(ap, int), cnt);
-      break;
-    // string
-    case 's':
-      if ((p = va_arg(ap, char *)) == NULL)
-      {
-        p = "(null)";
-      }
-      if (width > 0 && padc != '-')
-      {
-        for (width -= strnlen(p, precision); width > 0; width--)
-        {
-          _putch(padc, cnt);
-        }
-      }
-      for (; (ch = *p++) != '\0' && (precision < 0 || --precision >= 0);
-           width--)
-      {
-        if (altflag && (ch < ' ' || ch > '~'))
-        {
-          _putch('?', cnt);
-        }
-        else
-        {
-          _putch(ch, cnt);
-        }
-      }
-      for (; width > 0; width--)
-      {
-        _putch(' ', cnt);
-      }
-      break;
-
-    // (signed) decimal
-    case 'd':
-      num = getint(&ap, lflag);
-      if ((long long)num < 0)
-      {
-        _putch('-', cnt);
-        num = -(long long)num;
-      }
-      base = 10;
-      goto number;
-    // pointer
-    case 'p':
-      _putch('0', cnt);
-      _putch('x', cnt);
-      num = (unsigned long long)(uintptr_t)va_arg(ap, void *);
-      base = 16;
-      goto number;
-
-    // (unsigned) hexadecimal
-    case 'x':
-      num = getuint(&ap, lflag);
-      base = 16;
-    number:
-      printnum(_putch, cnt, num, base, width, padc);
-      break;
-
-    // escaped '%' character
-    case '%':
-      _putch(ch, cnt);
-      break;
-
-    // unrecognized escape sequence - just print it literally
-    default:
-      _putch('%', cnt);
-      for (fmt--; fmt[-1] != '%'; fmt--) /* do nothing */
-        ;
-      break;
-    }
-  }
-}
-
-static void putch_cnt(int ch, int *cnt)
-{
-  putch(ch);
-  (*cnt)++;
-}
-
-static int vprintf(const char *fmt, va_list ap)
-{
-  int cnt = 0;
-  vprintfmt((void *)putch_cnt, &cnt, fmt, ap);
-  return cnt;
-}
-
-int printf(const char *fmt, ...)
-{
-  va_list ap;
-  int cnt;
+int snprintf(char *out, size_t n, const char *fmt, ...) {
+  va_list ap;  
   va_start(ap, fmt);
-  cnt = vprintf(fmt, ap);
+  int ret = vsnprintf(out, n, fmt, ap);
   va_end(ap);
-  return cnt;
+  return ret;
 }
 
-typedef struct
-{
-  char *buf_s;
-  char *buf_e;
-  int cnt;
-} sprintbuf;
-
-static void putch_str(int ch, sprintbuf *buf)
-{
-  buf->cnt++;
-  *buf->buf_s++ = ch;
-}
-
-int vsprintf(char *out, const char *fmt, va_list ap)
-{
-  sprintbuf buf;
-  buf.buf_s = out;
-  buf.buf_e = NULL; // we are not using this without size specified
-  buf.cnt = 0;
-  vprintfmt((void *)putch_str, &buf, fmt, ap);
-  *(buf.buf_s) = '\0';
-  return buf.cnt;
-}
-
-int sprintf(char *out, const char *fmt, ...)
-{
-  va_list ap;
-  int cnt;
-  va_start(ap, fmt);
-  cnt = vsprintf(out, fmt, ap);
+int vsnprintf(char *out, size_t n, const char *fmt, va_list ap) {
+  uint64_t offset = 0, len, width;
+  for (const char *p = fmt; *p != '\0'; p++) {
+    if (*p == '%') {  
+      width = 0;
+      p++;  
+      for ( ; *p != '\0' && *p >= '0' && *p <= '9'; ++p) {
+        width *= 10;
+        width += *p - '0';
+      }
+			if (*p == 'd') {
+        /* Some functions should be implemented here 
+        * which returns a value: len, it symbolizes the length we write into 
+        * the buffer
+        */
+        int num = va_arg(ap, int);
+        //offset += _writeI(out + offset, va_arg(ap, int), &n, NUM_DEC);
+        offset += _writeI(out, offset, num, &n, width, NUM_DEC);
+			}
+			else if (*p == 'x' || *p == 'X') {
+        int num = va_arg(ap, int);
+        offset += _writeI(out, offset, num, &n, width, NUM_HEX);
+			}
+			else if(*p == 's') {
+        char *buf = va_arg(ap, char *);  
+				len = strlen(buf);
+        offset += _writeS(out, offset, buf, &n, len);
+			}
+			else if(*p == 'c') {
+        char buf[8];
+        *buf = (char)va_arg(ap, int);  
+        offset += _writeS(out, offset, buf, &n, 1);
+		  }
+      else if(*p == 'p') {
+        unsigned long long num = (unsigned long long)(uintptr_t)va_arg(ap, void *);
+        offset += _writeI(out, offset, num, &n, width, NUM_HEX);
+      }
+			else {
+				char *buf = "%%";
+        offset += _writeS(out, offset, buf, &n, 2);
+		  }
+    }  
+		else {  
+			char buf[8];
+			buf[0] = *p;
+      offset += _writeS(out, offset, buf, &n, 1);
+    }  
+  }  
+  if(out && out + offset) _writeC(out + offset, '\0'); 
+  else _writeC(out, '\0');
+  //*(out + offset) = '\0'; 
   va_end(ap);
-  return cnt;
-}
-
-static void putch_strn(int ch, sprintbuf *buf)
-{
-  if (buf->buf_s < buf->buf_e)
-  {
-    (buf->cnt)++;
-    *buf->buf_s++ = ch;
-  }
-}
-
-int vsnprintf(char *out, size_t n, const char *fmt, va_list ap)
-{
-  sprintbuf buf;
-  buf.buf_s = out;
-  buf.buf_e = out + n - 1;
-  buf.cnt = 0;
-  vprintfmt((void *)putch_strn, &buf, fmt, ap);
-  *(buf.buf_s) = '\0';
-  return buf.cnt;
-}
-
-int snprintf(char *out, size_t n, const char *fmt, ...)
-{
-  va_list ap;
-  int cnt;
-  va_start(ap, fmt);
-  cnt = vsnprintf(out, n, fmt, ap);
-  va_end(ap);
-  return cnt;
+  return offset;
 }
 
 #endif
