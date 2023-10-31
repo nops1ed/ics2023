@@ -55,6 +55,7 @@ static uintptr_t loader(PCB *pcb, const char *filename) {
   Elf_Phdr _phdr;
   uint32_t _phnum = _ehdr.e_phnum;
   uint32_t _phoff = _ehdr.e_phoff, _poff;
+  printf("The phoff = %d\n", _phoff);
   Elf_Addr _p_vaddr;
   uint64_t _p_filesz, _p_memsz;
 
