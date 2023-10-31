@@ -2,6 +2,9 @@
 
 static Context* do_event(Event e, Context* c) {
   switch (e.event) {
+    case EVENT_SYSCALL:
+      printf("F**k you \n");
+      break;
     case EVENT_YIELD:
       printf("Huh,seems like you trap here successfully\n");
       break;
