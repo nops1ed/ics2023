@@ -1,5 +1,6 @@
 #include <proc.h>
 #include <fs.h>
+#include <common.h>
 
 #define MAX_NR_PROC 4
 
@@ -29,7 +30,7 @@ void init_proc() {
 
   // load program here
   naive_uload(NULL, NULL);
-
+  printf("What ?\n");
 }
 
 Context* schedule(Context *prev) {
