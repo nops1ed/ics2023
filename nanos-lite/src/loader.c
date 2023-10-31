@@ -56,14 +56,15 @@ static uintptr_t loader(PCB *pcb, const char *filename) {
   uint16_t _phnum = _ehdr.e_phnum;
   Elf_Off _phoff = _ehdr.e_phoff, _poff;
   Elf_Addr _p_vaddr;
-  uint64_t _p_memsz;
+  uint64_t _p_filesz;
 
   for(uint16_t i = 0; i < _phnum; i++) {
     ramdisk_read(&_phdr, _phoff + i * sizeof(_phdr), sizeof(_phdr));
     _poff = _phdr.p_offset;
     _p_vaddr = _phdr.p_vaddr;
-    _p_memsz = _phdr.p_memsz;
-    ramdisk_read((void *)_p_vaddr, _poff, _p_memsz);
+    _p_filesz = _phdr.p_filesz;
+    //_p_memsz = _phdr.p_memsz;
+    ramdisk_read((void *)_p_vaddr, _poff, _p_filesz);
   }
 
   return 0;
