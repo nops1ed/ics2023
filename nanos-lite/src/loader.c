@@ -59,7 +59,7 @@ static uintptr_t loader(PCB *pcb, const char *filename) {
   uint64_t _p_memsz;
 
   for(uint16_t i = 0; i < _phnum; i++) {
-    ramdisk_read(&_phdr, _phoff + i * sizeof(Elf_Phdr), sizeof(Elf_Phdr));
+    ramdisk_read(&_phdr, _phoff + i * sizeof(_phdr), sizeof(_phdr));
     _poff = _phdr.p_offset;
     _p_vaddr = _phdr.p_vaddr;
     _p_memsz = _phdr.p_memsz;
