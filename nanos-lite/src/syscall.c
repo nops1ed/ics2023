@@ -1,18 +1,20 @@
 #include <common.h>
 #include "syscall.h"
 
+#define CONFIG_STRACE 1
+
 int sys_yield() {
   yield();
   int ret_val = 0;
 #ifdef CONFIG_STRACE
-  Log("sys_yield(NULL) = " FMT_WORD, ret_val);
+  printf("sys_yield(NULL) = %d\n", ret_val);
 #endif
   return ret_val;  
 }
 
 void sys_exit(int a) {
 #ifdef CONFIG_STRACE
-  Log("sys_exit("FMT_WORD") = 0", a);
+  printf("sys_exit(%d) = 0\n", a);
 #endif
   halt(a);
 }
