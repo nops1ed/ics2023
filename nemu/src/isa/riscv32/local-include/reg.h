@@ -43,8 +43,7 @@ static inline int csr_idx(uint32_t idx) {
     case 0x343: return CSR_MTVAL;
     case 0x344: return CSR_MIP;
     default:
-      printf("Undefined CSR.\n");
-      assert(0); 
+      panic("Undefined CSR\n");
   }
   return 0;
 } 
