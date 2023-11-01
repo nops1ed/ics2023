@@ -3,10 +3,17 @@
 
 int sys_yield() {
   yield();
-  return 0;  
+  int ret_val = 0;
+#ifdef CONFIG_STRACE
+  Log("sys_yield(NULL) = " FMT_WORD, ret_val);
+#endif
+  return ret_val;  
 }
 
 void sys_exit(int a) {
+#ifdef CONFIG_STRACE
+  Log("sys_exit("FMT_WORD") = 0", a);
+#endif
   halt(a);
 }
 

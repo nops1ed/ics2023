@@ -173,6 +173,10 @@ config ETRACE
   bool "Enable exception trace"
   default y
 
+config STARCE
+  bool "Enable syscall trace"
+  default y
+
 config DIFFTEST
   depends on TARGET_NATIVE_ELF
   bool "Enable differential testing"
