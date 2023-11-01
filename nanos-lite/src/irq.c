@@ -4,7 +4,8 @@ void do_syscall(Context*);
 static Context* do_event(Event e, Context* c) {
   switch (e.event) {
     case EVENT_SYSCALL:
-      do_syscall(c);
+      printf("Huh,seems like you trap here successfully\n");
+      //do_syscall(c);
       break;
     case EVENT_YIELD:
       printf("Huh,seems like you trap here successfully\n");
