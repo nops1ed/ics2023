@@ -72,7 +72,7 @@ int _write(int fd, void *buf, size_t count) {
 
 void *_sbrk(intptr_t increment) {
   extern char end;
-  static intptr_t _program_break = end;
+  static intptr_t _program_break = (intptr_t)&end;
 
   if(increment == 0) {
     panic("sbrk(0) emit");
