@@ -2,6 +2,7 @@
 #include "syscall.h"
 
 int sys_yield() {
+  printf("nano: In sys_yield now\n");
   yield();
   return 1145;  
 }
