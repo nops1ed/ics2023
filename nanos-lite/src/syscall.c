@@ -2,12 +2,12 @@
 #include "syscall.h"
 
 int sys_yield() {
-  printf("nano: In sys_yield now\n");
   yield();
-  return 1145;  
+  return 0;  
 }
 
 void sys_exit(int a) {
+  printf("syscall: program exiting...\n");
   halt(a);
 }
 
@@ -23,7 +23,7 @@ void do_syscall(Context *c) {
   printf("syscall: a[3] has val %d\n", a[3]);
   switch (a[0]) {
     case SYS_yield: sys_yield(); break;
-    case SYS_exit:  sys_exit(0);  break;
+    case SYS_exit:  sys_exit((int)c->GPR2);  break;
     default: panic("Unhandled syscall ID = %d", a[0]);
   }
 }
