@@ -4,7 +4,6 @@ void do_syscall(Context*);
 
 static Context* do_event(Event e, Context* c) {
   switch (e.event) {
-    /*
     case EVENT_SYSCALL:
       printf("Huh,seems like you trap here successfully\n");
       Log("Event SYSCALL emit");
@@ -14,7 +13,6 @@ static Context* do_event(Event e, Context* c) {
       printf("Huh,seems like you trap here successfully\n");
       Log("Event YIELD emit");
       break;
-      */
     default: panic("Unhandled event ID = %d", e.event);
   }
 
