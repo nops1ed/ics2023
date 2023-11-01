@@ -7,8 +7,8 @@ int sys_yield() {
   return 1145;  
 }
 
-void sys_exit() {
-  panic("No exit function defined here.");
+void sys_exit(int a) {
+  halt(a);
 }
 
 void do_syscall(Context *c) {
@@ -23,7 +23,7 @@ void do_syscall(Context *c) {
   printf("syscall: a[3] has val %d\n", a[3]);
   switch (a[0]) {
     case SYS_yield: sys_yield(); break;
-    case SYS_exit:  sys_exit();  break;
+    case SYS_exit:  sys_exit((int)c->GPR2);  break;
     default: panic("Unhandled syscall ID = %d", a[0]);
   }
 }
