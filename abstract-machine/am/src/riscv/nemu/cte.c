@@ -7,16 +7,15 @@ static Context* (*user_handler)(Event, Context*) = NULL;
 Context* __am_irq_handle(Context *c) {
   if (user_handler) {
     Event ev = {0};
+    printf("AM: MCAUSE has val %d\n", c->mcause);
     switch (c->mcause) {
-      /*
       case -1:
         printf("AM: Event YIELD emit\n");
         ev.event = EVENT_YIELD;
         break;
-        */
       default: 
-        printf("AM: Event YIELD emit\n");
-        ev.event = EVENT_YIELD; 
+        printf("AM: Event SYSCALL emit\n");
+        ev.event = EVENT_SYSCALL; 
         break;
     }
 
