@@ -20,7 +20,24 @@ static void sys_exit(int a) {
 }
 
 size_t sys_write(int fd, const void *buf, size_t count) {
-  return 0;
+  unsigned long int stream = (long int)buf;
+  int ret_val = -1;
+  /* Indicate stdout/stderr and just call putch(). */
+  if((fd == 1 || fd == 2) && count != 0)
+    for(ret_val = 0; ret_val < count; ret_val++) {
+      unsigned char __x = ((unsigned char *) stream)[0];
+      stream++;
+      /* Write to serial. */
+      putch(__x);
+    }
+  else
+    printf("sys_write: Error\n");
+
+#ifdef CONFIG_STRACE
+  printf("sys_write(%d, %p, %d) = %d\n", fd, buf, count, ret_val);
+#endif
+
+  return ret_val;
 }
 
 void do_syscall(Context *c) {
