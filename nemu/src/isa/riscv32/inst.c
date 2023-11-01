@@ -238,7 +238,7 @@ static int64_t _multiply_high(int64_t a, int64_t b) {
 
 static void ecall_ctrl(Decode *s) {
   bool success = true;
-  word_t NO = isa_reg_str2val("$a7", &success);
+  word_t NO = 1;//isa_reg_str2val("$a7", &success);
   //printf("a7 has val  %ld\n", NO);
   assert(success);
 #ifdef CONFIG_ETRACE
