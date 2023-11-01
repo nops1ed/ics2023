@@ -16,6 +16,7 @@ Context* __am_irq_handle(Context *c) {
       case 0 ... 19:
         printf("AM: Event SYSCALL emit\n");
         ev.event = EVENT_SYSCALL;
+        break;
       default: 
         printf("AM: No certain event");
         assert(0);
