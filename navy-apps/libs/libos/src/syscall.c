@@ -74,7 +74,10 @@ void *_sbrk(intptr_t increment) {
   extern char end;
   static intptr_t _program_break = end;
 
-  if(increment == 0) return (void *)_program_break; 
+  if(increment == 0) {
+    panic("sbrk(0) emit");
+    return (void *)_program_break; 
+  }
   void *old = _program_break;
   /* Call SYS_brk to modify program break. */ 
   int ret_val = _syscall_((intptr_t)SYS_brk, (intptr_t)increment, 0, 0);
