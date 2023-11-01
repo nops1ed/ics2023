@@ -242,7 +242,7 @@ static void ecall_ctrl(Decode *s) {
   //printf("a7 has val  %ld\n", NO);
   assert(success);
 #ifdef CONFIG_ETRACE
-  Log("An exception occured at pc:" FMT_WORD " Event number: " FMT_WORD, s->pc, NO);
+  //Log("An exception occured at pc:" FMT_WORD " Event number: " FMT_WORD, s->pc, NO);
 #endif
   s->dnpc = isa_raise_intr(NO, s->snpc) + 4;
 }
