@@ -36,8 +36,11 @@ size_t sys_write(int fd, const void *buf, size_t count) {
 #ifdef CONFIG_STRACE
   printf("sys_write(%d, %p, %d) = %d\n", fd, buf, count, ret_val);
 #endif
-
   return ret_val;
+}
+
+int sys_brk(void *addr) {
+  return 0;
 }
 
 void do_syscall(Context *c) {
@@ -49,9 +52,10 @@ void do_syscall(Context *c) {
 
   //printf("do_syscall: %d\n", a[0]);
   switch (a[0]) {
-    case SYS_yield: sys_yield();            break;
-    case SYS_exit:  sys_exit((int)a[1]); break;
+    case SYS_yield: sys_yield();  break;
+    case SYS_exit:  sys_exit((int)a[1]);  break;
     case SYS_write: sys_write((int)a[1], (const void*)a[2], (size_t)a[3]);  break;
+    case SYS_brk:   sys_brk((void *)a[1]);  break;
     default: panic("Unhandled syscall ID = %d", a[0]);
   }
 }
