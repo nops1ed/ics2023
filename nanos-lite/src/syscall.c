@@ -3,7 +3,7 @@
 
 #define CONFIG_STRACE 1
 
-int sys_yield() {
+static int sys_yield() {
   yield();
   int ret_val = 0;
 #ifdef CONFIG_STRACE
@@ -12,11 +12,15 @@ int sys_yield() {
   return ret_val;  
 }
 
-void sys_exit(int a) {
+static void sys_exit(int a) {
 #ifdef CONFIG_STRACE
   printf("sys_exit(%d) = 0\n", a);
 #endif
   halt(a);
+}
+
+size_t sys_write(int fd, const void *buf, size_t count) {
+  return 0;
 }
 
 void do_syscall(Context *c) {
@@ -27,8 +31,9 @@ void do_syscall(Context *c) {
   a[3] = c->GPR4;
 
   switch (a[0]) {
-    case SYS_yield: sys_yield(); break;
-    case SYS_exit:  sys_exit((int)c->GPR2);  break;
+    case SYS_yield: sys_yield();            break;
+    case SYS_exit:  sys_exit((int)c->GPR2); break;
+    case SYS_write: sys_write(1, NULL, 0);  break;
     default: panic("Unhandled syscall ID = %d", a[0]);
   }
 }
