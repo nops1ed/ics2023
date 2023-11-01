@@ -3,7 +3,7 @@
 
 int sys_yield() {
   yield();
-  return 0;  
+  return 1145;  
 }
 
 void sys_exit() {
