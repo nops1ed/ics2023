@@ -5,11 +5,11 @@ void do_syscall(Context*);
 static Context* do_event(Event e, Context* c) {
   switch (e.event) {
     case EVENT_SYSCALL:
-      Log("Nano: Event SYSCALL emit");
+      //Log("Nano: Event SYSCALL emit");
       do_syscall(c);
       break;
     case EVENT_YIELD:
-      Log("Nano: Event yield emit\n");
+      //Log("Nano: Event yield emit\n");
       break;
     default: panic("Unhandled event ID = %d", e.event);
   }
