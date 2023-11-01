@@ -7,7 +7,6 @@ int sys_yield() {
 }
 
 void sys_exit(int a) {
-  printf("syscall: program exiting...\n");
   halt(a);
 }
 
@@ -17,12 +16,7 @@ void do_syscall(Context *c) {
   a[1] = c->GPR2;
   a[2] = c->GPR3;
   a[3] = c->GPR4;
-  /*
-  printf("syscall: a[0] has val %d\n", a[0]);
-  printf("syscall: a[1] has val %d\n", a[1]);
-  printf("syscall: a[2] has val %d\n", a[2]);
-  printf("syscall: a[3] has val %d\n", a[3]);
-  */
+
   switch (a[0]) {
     case SYS_yield: sys_yield(); break;
     case SYS_exit:  sys_exit((int)c->GPR2);  break;
