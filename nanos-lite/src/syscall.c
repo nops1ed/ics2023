@@ -34,7 +34,7 @@ size_t sys_write(int fd, const void *buf, size_t count) {
     printf("sys_write: Error\n");
 
 #ifdef CONFIG_STRACE
-  //printf("sys_write(%d, %p, %d) = %d\n", fd, buf, count, ret_val);
+  printf("sys_write(%d, %p, %d) = %d\n", fd, buf, count, ret_val);
 #endif
 
   return ret_val;
