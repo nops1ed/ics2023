@@ -78,10 +78,9 @@ void *_sbrk(intptr_t increment) {
     panic("sbrk(0) emit");
     return (void *)_program_break; 
   }
-  void *old = _program_break;
+  void *old = (void *)_program_break;
   /* Call SYS_brk to modify program break. */ 
-  int ret_val = _syscall_((intptr_t)SYS_brk, (intptr_t)increment, 0, 0);
-  if(ret_val == -1)
+  if(_syscall_((intptr_t)SYS_brk, (intptr_t)(_program_break + increment), 0, 0) == -1)
     return (void *)-1;
   _program_break += increment;
   return (void *)old;
