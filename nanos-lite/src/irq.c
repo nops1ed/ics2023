@@ -9,7 +9,7 @@ static Context* do_event(Event e, Context* c) {
       do_syscall(c);
       break;
     case EVENT_YIELD:
-      panic("Event YIELD emit");
+      yield();
       break;
     default: panic("Unhandled event ID = %d", e.event);
   }
