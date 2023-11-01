@@ -13,10 +13,12 @@ Context* __am_irq_handle(Context *c) {
         printf("AM: Event YIELD emit\n");
         ev.event = EVENT_YIELD;
         break;
-      default: 
+      case 0 ... 19:
         printf("AM: Event SYSCALL emit\n");
-        ev.event = EVENT_SYSCALL; 
-        break;
+        ev.event = EVENT_SYSCALL;
+      default: 
+        printf("AM: No certain event");
+        assert(0);
     }
 
     c = user_handler(ev, c);
