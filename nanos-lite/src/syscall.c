@@ -1,7 +1,7 @@
 #include <common.h>
 #include "syscall.h"
 
-//#define CONFIG_STRACE
+#define CONFIG_STRACE
 
 static int sys_yield() {
   yield();
