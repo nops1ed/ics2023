@@ -9,11 +9,11 @@ Context* __am_irq_handle(Context *c) {
     Event ev = {0};
     switch (c->mcause) {
       case -1:
-        printf("Event YIELD emit\n");
+        printf("AM: Event YIELD emit\n");
         ev.event = EVENT_YIELD;
         break;
       default: 
-        printf("Event SYSCALL emit\n");
+        printf("AM: Event SYSCALL emit\n");
         ev.event = EVENT_SYSCALL; 
         break;
     }
