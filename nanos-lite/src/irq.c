@@ -3,7 +3,6 @@
 void do_syscall(Context*);
 
 static Context* do_event(Event e, Context* c) {
-  printf("Nano: event is %d\n", e.event);
   switch (e.event) {
     case EVENT_SYSCALL:
       Log("Event SYSCALL emit");
