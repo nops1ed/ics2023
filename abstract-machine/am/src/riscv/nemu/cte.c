@@ -43,6 +43,7 @@ void yield() {
 #else
   asm volatile("li a7, -1; ecall");
 #endif
+  printf("Well, trap\n");
 }
 
 bool ienabled() {
