@@ -75,7 +75,6 @@ void *_sbrk(intptr_t increment) {
   static intptr_t _program_break = (intptr_t)&end;
 
   if(increment == 0) {
-    panic("sbrk(0) emit");
     return (void *)_program_break; 
   }
   void *old = (void *)_program_break;
