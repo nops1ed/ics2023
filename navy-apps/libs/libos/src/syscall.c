@@ -62,8 +62,7 @@ void _exit(int status) {
 }
 
 int _open(const char *path, int flags, mode_t mode) {
-  _exit(SYS_open);
-  return 0;
+  return _syscall_((intptr_t)SYS_open, (intptr_t)path, (intptr_t)flags, (intptr_t)mode);
 }
 
 int _write(int fd, void *buf, size_t count) {
@@ -74,9 +73,8 @@ void *_sbrk(intptr_t increment) {
   extern char end;
   static intptr_t _program_break = (intptr_t)&end;
 
-  if(increment == 0) {
+  if(increment == 0)
     return (void *)_program_break; 
-  }
   void *old = (void *)_program_break;
   /* Call SYS_brk to modify program break. */ 
   if(_syscall_((intptr_t)SYS_brk, (intptr_t)(_program_break + increment), 0, 0) == -1)
@@ -86,18 +84,15 @@ void *_sbrk(intptr_t increment) {
 }
 
 int _read(int fd, void *buf, size_t count) {
-  _exit(SYS_read);
-  return 0;
+  return _syscall_((intptr_t)SYS_read, (intptr_t)fd, (intptr_t)buf, (intptr_t)count);
 }
 
 int _close(int fd) {
-  _exit(SYS_close);
-  return 0;
+  return _syscall_((intptr_t)SYS_close, (intptr_t)fd, 0, 0);
 }
 
 off_t _lseek(int fd, off_t offset, int whence) {
-  _exit(SYS_lseek);
-  return 0;
+  return _syscall_((intptr_t)SYS_lseek, (intptr_t)fd, (intptr_t)offset, (intptr_t)whence);
 }
 
 int _gettimeofday(struct timeval *tv, struct timezone *tz) {

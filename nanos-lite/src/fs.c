@@ -34,12 +34,12 @@ static Finfo file_table[] __attribute__((used)) = {
 #include "files.h"
 };
 
-size_t do_read(int fd, void *buf, size_t len) {
+static size_t do_read(int fd, void *buf, size_t len) {
   ramdisk_read(buf, file_table[fd].open_offset, len);
   return len;
 }
 
-size_t do_write(int fd, const void *buf, size_t len) {
+static size_t do_write(int fd, const void *buf, size_t len) {
   ramdisk_write(buf, file_table[fd].open_offset, len);
   return len;
 }
@@ -51,7 +51,6 @@ void init_fs() {
 
 }
 
-/* SYS_open should be called here. */
 int fs_open(const char *pathname, int flags, int mode) {
   /* flags and mode are disabled in nano-lite. 
   * And in sFS we just return the index as the fd
@@ -80,10 +79,25 @@ size_t fs_read(int fd, void *buf, size_t len) {
 }
 
 size_t fs_write(int fd, const void *buf, size_t len) {
-  do_write(fd, buf, len);
-  file_table[fd].open_offset += len;
+  unsigned long int stream = (long int)buf;
+  int ret_val = -1;
+  /* Indicate stdout/stderr and just call putch(). */
+  if((fd == 1 || fd == 2) && len != 0)
+    for(ret_val = 0; ret_val < len ; ret_val++) {
+      unsigned char __x = ((unsigned char *) stream)[0];
+      stream++;
+      /* Write to serial. */
+      putch(__x);
+    }
+  else if(fd < NR_FILE) {
+    do_write(fd, buf, len);
+    file_table[fd].open_offset += len;
+  }
+  else
+    printf("sys_write: Error\n");
   return len;
 }
+
 size_t fs_lseek(int fd, size_t offset, int whence) {
   size_t cur;
   switch(whence) {

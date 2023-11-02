@@ -1,61 +1,73 @@
 #include <common.h>
+#include "fs.h"
 #include "syscall.h"
 
 #define CONFIG_STRACE
 
-static int sys_yield() {
+static void sys_yield(Context *c) {
   yield();
-  int ret_val = 0;
+  intptr_t ret_val = 0;
 #ifdef CONFIG_STRACE
   printf("sys_yield(NULL) = %d\n", ret_val);
 #endif
-  return ret_val;  
+  c->GPRx= ret_val;
 }
 
-static void sys_exit(int a) {
+static void sys_exit(Context *c) {
 #ifdef CONFIG_STRACE
-  printf("sys_exit(%d) = 0\n", a);
+  printf("sys_exit(%d) = 0\n", c->GPR2);
 #endif
-  halt(a);
+  halt(c->GPR2);
 }
 
-size_t sys_write(int fd, const void *buf, size_t count) {
-  unsigned long int stream = (long int)buf;
-  int ret_val = -1;
-  /* Indicate stdout/stderr and just call putch(). */
-  if((fd == 1 || fd == 2) && count != 0)
-    for(ret_val = 0; ret_val < count; ret_val++) {
-      unsigned char __x = ((unsigned char *) stream)[0];
-      stream++;
-      /* Write to serial. */
-      putch(__x);
-    }
-  else
-    printf("sys_write: Error\n");
-
+static void sys_write(Context *c) {
+  int ret_val = fs_write((int)c->GPR2, (const void *)c->GPR3, (size_t)c->GPR4);
 #ifdef CONFIG_STRACE
-  printf("sys_write(%d, %p, %d) = %d\n", fd, buf, count, ret_val);
+  printf("sys_write(%d, %p, %d) = %d\n", c->GPR2, c->GPR3, c->GPR4, ret_val);
 #endif
-  return ret_val;
+  c->GPRx = ret_val;
 }
 
-int sys_brk(void *addr) {
-  return 0;
+static void sys_read(Context *c) {
+  panic("Not implement");
 }
+
+static void sys_lseek(Context *c) {
+  panic("Not implement");
+}
+
+static void sys_open(Context *c) {
+  panic("Not implement");
+}
+
+static void sys_close(Context *c) {
+  panic("Not implement");
+}
+
+static void sys_brk(Context *c) {
+  c->GPRx = 0;
+}
+
+static void sys_kill(Context *c) {
+  panic("Not implement");
+}
+
+static void sys_getpid(Context *c) {
+  panic("Not implement");
+}
+
+
+void (*syscall_table[])() = {
+  &sys_exit, &sys_yield, &sys_open, &sys_read, &sys_write, &sys_kill,
+  &sys_getpid, &sys_close, &sys_lseek, &sys_brk,
+};
+
+#define NR_SYST sizeof(syscall_table) / sizeof(syscall_table[0])
 
 void do_syscall(Context *c) {
-  uintptr_t a[4];
-  a[0] = c->GPR1;
-  a[1] = c->GPR2;
-  a[2] = c->GPR3;
-  a[3] = c->GPR4;
-
-  //printf("do_syscall: %d\n", a[0]);
-  switch (a[0]) {
-    case SYS_yield: sys_yield();  break;
-    case SYS_exit:  sys_exit((int)a[1]);  break;
-    case SYS_write: sys_write((int)a[1], (const void*)a[2], (size_t)a[3]);  break;
-    case SYS_brk:   sys_brk((void *)a[1]);  break;
-    default: panic("Unhandled syscall ID = %d", a[0]);
-  }
+  uintptr_t a = c->GPR1;
+    if(a >= 0 && a < NR_SYST)
+      syscall_table[a](c);
+    else 
+      panic("Unhandled syscall ID = %d", a);
 }
