@@ -64,6 +64,7 @@ int fs_open(const char *pathname, int flags, int mode) {
   for(i = 0; i < NR_FILE; i++)
     if(!strcmp(pathname, file_table[i].name)) {
       file_table[i].open_offset = file_table[i].disk_offset;
+      printf("Find file:%s\n", pathname);
       return i;
     }
 
