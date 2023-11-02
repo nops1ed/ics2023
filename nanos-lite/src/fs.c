@@ -89,18 +89,8 @@ size_t fs_read(int fd, void *buf, size_t len) {
 }
 
 size_t fs_write(int fd, const void *buf, size_t len) {
-  unsigned long int stream = (long int)buf;
-  int ret_val = -1;
-  /* Indicate stdout/stderr and just call putch(). */
-  if((fd == 1 || fd == 2) && len != 0)
-    for(ret_val = 0; ret_val < len ; ret_val++) {
-      unsigned char __x = ((unsigned char *) stream)[0];
-      stream++;
-      /* Write to serial. */
-      putch(__x);
-    }
-  else if(fd < NR_FILE) {
-    //do_write(fd, buf, len);
+  int ret_val = -1;  
+  if(fd < NR_FILE) {
     ret_val = file_table[fd].write(buf, file_table[fd].disk_offset + file_table[fd].open_offset, len);
     file_table[fd].open_offset += ret_val;
   }

@@ -89,9 +89,51 @@ static void sys_getpid(Context *c) {
   panic("Not implement");
 }
 
+static void sys_fstat(Context *c) {
+  panic("Not implement");
+}
+
+static void sys_time(Context *c) {
+  panic("Not implement");
+}
+
+static void sys_signal(Context *c) {
+  panic("Not implement");
+}
+
+static void sys_execve(Context *c) {
+  panic("Not implement");
+}
+
+static void sys_fork(Context *c) {
+  panic("Not implement");
+}
+
+static void sys_link(Context *c) {
+  panic("Not implement");
+}
+
+static void sys_unlink(Context *c) {
+  panic("Not implement");
+}
+
+static void sys_wait(Context *c) {
+  panic("Not implement");
+}
+
+static void sys_times(Context *c) {
+  panic("Not implement");
+}
+
+static void sys_gettimeofday(Context *c) {
+  
+}
+
 void (*syscall_table[])() = {
   &sys_exit, &sys_yield, &sys_open, &sys_read, &sys_write, &sys_kill,
-  &sys_getpid, &sys_close, &sys_lseek, &sys_brk,
+  &sys_getpid, &sys_close, &sys_lseek, &sys_brk, &sys_fstat, &sys_time,
+  &sys_signal, &sys_execve, &sys_fork, &sys_link, &sys_unlink, &sys_wait,
+  &sys_times, &sys_gettimeofday,
 };
 
 #define NR_SYST (sizeof(syscall_table) / sizeof(syscall_table[0]))
