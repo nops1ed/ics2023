@@ -37,7 +37,11 @@ static void sys_read(Context *c) {
 }
 
 static void sys_lseek(Context *c) {
-  panic("Not implement");
+  size_t ret_val = fs_lseek((int)c->GPR2, (size_t)c->GPR3, (int)c->GPR4);
+#ifdef CONFIG_STRACE
+  printf("sys_lseek(%d, %p, %d) = %d\n", c->GPR2, c->GPR3, c->GPR4, ret_val);
+#endif
+  c->GPRx= ret_val;
 }
 
 static void sys_open(Context *c) {
