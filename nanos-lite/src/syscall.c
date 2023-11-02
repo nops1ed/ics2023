@@ -2,7 +2,7 @@
 #include "fs.h"
 #include "syscall.h"
 
-#define CONFIG_STRACE
+//#define CONFIG_STRACE
 
 static void sys_yield(Context *c) {
   yield();
