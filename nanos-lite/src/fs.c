@@ -47,8 +47,15 @@ static size_t do_write(int fd, const void *buf, size_t len) {
 #define NR_FILE sizeof(file_table) / sizeof(Finfo)
 
 void init_fs() {
+  /*
+  for (size_t fd = 0; fd < NR_FILE; ++fd) {
+    if (file_table[fd].write == NULL)
+      file_table[fd].write = do_write;
+    if (file_table[fd].read == NULL)
+      file_table[fd].read = do_read;
+  }
+  */
   // TODO: initialize the size of /dev/fb
-
 }
 
 int fs_open(const char *pathname, int flags, int mode) {
@@ -99,16 +106,14 @@ size_t fs_write(int fd, const void *buf, size_t len) {
 }
 
 size_t fs_lseek(int fd, size_t offset, int whence) {
-  size_t cur;
   switch(whence) {
-    case SEEK_SET: cur = file_table[fd].disk_offset; break;
-    case SEEK_CUR: cur = file_table[fd].open_offset; break;
-    case SEEK_END: cur = file_table[fd].disk_offset + file_table[fd].size; break;
+    case SEEK_SET: file_table[fd].open_offset = offset; break;
+    case SEEK_CUR: file_table[fd].open_offset += offset; break;
+    case SEEK_END: file_table[fd].open_offset = file_table[fd].size + offset; break;
     default:
       panic("No whence. \n");
   }
-  file_table[fd].open_offset = cur + offset;
-  return 0;
+  return file_table[fd].open_offset;
 }
 
 int fs_close(int fd) {

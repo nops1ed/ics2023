@@ -39,7 +39,7 @@ static void sys_read(Context *c) {
 #ifdef CONFIG_STRACE
   printf("sys_read(%d, %p, %d) = %d\n", c->GPR2, c->GPR3, c->GPR4, ret_val);
 #endif
-  c->GPRx = ret_val;
+  c->GPRx = (intptr_t)ret_val;
 }
 
 static void sys_lseek(Context *c) {
@@ -47,7 +47,7 @@ static void sys_lseek(Context *c) {
 #ifdef CONFIG_STRACE
   printf("sys_lseek(%d, %p, %d) = %d\n", c->GPR2, c->GPR3, c->GPR4, ret_val);
 #endif
-  c->GPRx= ret_val;
+  c->GPRx = (intptr_t)ret_val;
 }
 
 static void sys_open(Context *c) {
@@ -55,7 +55,7 @@ static void sys_open(Context *c) {
 #ifdef CONFIG_STRACE
   printf("sys_open(%d, %p, %d) = %d\n", c->GPR2, c->GPR3, c->GPR4, ret_val);
 #endif
-  c->GPRx = ret_val;
+  c->GPRx = (intptr_t)ret_val;
 }
 
 static void sys_close(Context *c) {
@@ -63,7 +63,7 @@ static void sys_close(Context *c) {
 #ifdef CONFIG_STRACE
   printf("sys_close(%d) = %d\n", c->GPR2, ret_val);
 #endif
-  c->GPRx = ret_val;
+  c->GPRx = (intptr_t)ret_val;
 }
 
 static void sys_brk(Context *c) {
