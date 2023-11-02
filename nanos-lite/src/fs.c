@@ -34,25 +34,23 @@ static Finfo file_table[] __attribute__((used)) = {
 #include "files.h"
 };
 
-static size_t do_read(int fd, void *buf, size_t len) {
-  return ramdisk_read(buf, file_table[fd].disk_offset + file_table[fd].open_offset, len);
+static size_t do_read(void *buf, size_t offset, size_t len) {
+  return ramdisk_read(buf, offset, len);
 }
 
-static size_t do_write(int fd, const void *buf, size_t len) {
-  return ramdisk_write(buf, file_table[fd].disk_offset + file_table[fd].open_offset, len);
+static size_t do_write(const void *buf, size_t offset, size_t len) {
+  return ramdisk_write(buf, offset, len);
 }
 
 #define NR_FILE sizeof(file_table) / sizeof(Finfo)
 
 void init_fs() {
-  /*
   for (size_t fd = 0; fd < NR_FILE; ++fd) {
     if (file_table[fd].write == NULL)
       file_table[fd].write = do_write;
     if (file_table[fd].read == NULL)
       file_table[fd].read = do_read;
   }
-  */
   // TODO: initialize the size of /dev/fb
 }
 
@@ -78,7 +76,8 @@ int fs_open(const char *pathname, int flags, int mode) {
 /* Same as above, we should call SYS_read here. */
 size_t fs_read(int fd, void *buf, size_t len) {
   /* Here we just call ramdisk_read().*/
-  do_read(fd, buf, len);
+  //do_read(fd, buf, len);
+  file_table[fd].read(buf, file_table[fd].open_offset, len);
   file_table[fd].open_offset += len;
   return len;
 }
@@ -95,7 +94,8 @@ size_t fs_write(int fd, const void *buf, size_t len) {
       putch(__x);
     }
   else if(fd < NR_FILE) {
-    do_write(fd, buf, len);
+    //do_write(fd, buf, len);
+    file_table[fd].write(buf, file_table[fd].open_offset, len);
     file_table[fd].open_offset += len;
   }
   else
