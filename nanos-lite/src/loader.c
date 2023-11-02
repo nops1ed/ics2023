@@ -1,5 +1,6 @@
 #include <proc.h>
 #include <elf.h>
+#include <fs.h>
 
 #if defined(__ISA_AM_NATIVE__)
 # define EXPECT_TYPE EM_X86_64
@@ -27,8 +28,6 @@
 # define Elf_Addr Elf32_Addr
 #endif
 
-size_t ramdisk_read(void *buf, size_t offset, size_t len);
-size_t ramdisk_write(const void *buf, size_t offset, size_t len);
 
 /*
  #define EI_NIDENT 16
@@ -64,7 +63,9 @@ size_t ramdisk_write(const void *buf, size_t offset, size_t len);
 */
 static uintptr_t loader(PCB *pcb, const char *filename) {
   Elf_Ehdr ehdr;
-  ramdisk_read(&ehdr, 0, sizeof(Elf_Ehdr));
+  //ramdisk_read(&ehdr, 0, sizeof(Elf_Ehdr));
+  int fd = fs_open(filename, 0, 0);
+  fs_read(fd, &ehdr, sizeof(ehdr));  
 
   /* check magic number. */
   assert((*(uint64_t *)ehdr.e_ident == 0x010102464c457f));
@@ -72,10 +73,14 @@ static uintptr_t loader(PCB *pcb, const char *filename) {
   assert(ehdr.e_machine == EXPECT_TYPE);
 
   Elf_Phdr phdr[ehdr.e_phnum];
-  ramdisk_read(phdr, ehdr.e_phoff, sizeof(Elf_Phdr) * ehdr.e_phnum);
+  //ramdisk_read(phdr, ehdr.e_phoff, sizeof(Elf_Phdr) * ehdr.e_phnum);
+  fs_lseek(fd, ehdr.e_phoff, SEEK_SET);
+  fs_read(fd, phdr, sizeof(Elf_Phdr) * ehdr.e_phnum);
   for (int i = 0; i < ehdr.e_phnum; i++) {
     if (phdr[i].p_type == PT_LOAD) {
-      ramdisk_read((void *)phdr[i].p_vaddr, phdr[i].p_offset, phdr[i].p_memsz);
+      //ramdisk_read((void *)phdr[i].p_vaddr, phdr[i].p_offset, phdr[i].p_memsz);
+      fs_lseek(fd, phdr[i].p_offset, SEEK_SET);
+      fs_read(fd, (void *)phdr[i].p_vaddr, phdr[i].p_memsz);
       //printf("Read data from %p, size %d\n", phdr[i].p_offset, phdr[i].p_memsz);
       //printf("Write it to %p\n", phdr[i].p_vaddr);
       memset((void *)(phdr[i].p_vaddr + phdr[i].p_filesz), 0, phdr[i].p_memsz - phdr[i].p_filesz);

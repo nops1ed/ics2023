@@ -29,7 +29,11 @@ static void sys_write(Context *c) {
 }
 
 static void sys_read(Context *c) {
-  panic("Not implement");
+  size_t ret_val = fs_read((int)c->GPR2, (void *)c->GPR3, (size_t)c->GPR4);
+#ifdef CONFIG_STRACE
+  printf("sys_read(%d, %p, %d) = %d\n", c->GPR2, c->GPR3, c->GPR4, ret_val);
+#endif
+  c->GPRx = ret_val;
 }
 
 static void sys_lseek(Context *c) {
@@ -37,15 +41,26 @@ static void sys_lseek(Context *c) {
 }
 
 static void sys_open(Context *c) {
-  panic("Not implement");
+  int ret_val = fs_open((const char *)c->GPR2, (int)c->GPR3, (int)c->GPR4);
+#ifdef CONFIG_STRACE
+  printf("sys_open(%d, %p, %d) = %d\n", c->GPR2, c->GPR3, c->GPR4, ret_val);
+#endif
+  c->GPRx = ret_val;
 }
 
 static void sys_close(Context *c) {
-  panic("Not implement");
+  int ret_val = fs_close((int)c->GPR2);
+#ifdef CONFIG_STRACE
+  printf("sys_close(%d) = %d\n", c->GPR2, ret_val);
+#endif
+  c->GPRx = ret_val;
 }
 
 static void sys_brk(Context *c) {
   c->GPRx = 0;
+#ifdef CONFIG_STRACE
+  printf("sys_brk(NULL) = %d\n", c->GPRx);
+#endif
 }
 
 static void sys_kill(Context *c) {
