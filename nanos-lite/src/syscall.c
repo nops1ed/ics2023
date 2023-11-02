@@ -14,10 +14,16 @@ static void sys_yield(Context *c) {
 }
 
 static void sys_exit(Context *c) {
+  /*
 #ifdef CONFIG_STRACE
   printf("sys_exit(%d) = 0\n", c->GPR2);
 #endif
   halt((int)c->GPR2);
+  */
+#ifdef CONFIG_STRACE
+  printf("sys_exit(0) = 0\n");
+#endif
+  halt(0);
 }
 
 static void sys_write(Context *c) {
