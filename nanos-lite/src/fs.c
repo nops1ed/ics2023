@@ -35,13 +35,11 @@ static Finfo file_table[] __attribute__((used)) = {
 };
 
 static size_t do_read(int fd, void *buf, size_t len) {
-  ramdisk_read(buf, file_table[fd].open_offset, len);
-  return len;
+  return ramdisk_read(buf, file_table[fd].disk_offset + file_table[fd].open_offset, len);
 }
 
 static size_t do_write(int fd, const void *buf, size_t len) {
-  ramdisk_write(buf, file_table[fd].open_offset, len);
-  return len;
+  return ramdisk_write(buf, file_table[fd].disk_offset + file_table[fd].open_offset, len);
 }
 
 #define NR_FILE sizeof(file_table) / sizeof(Finfo)
