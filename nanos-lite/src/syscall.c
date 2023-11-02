@@ -10,7 +10,7 @@ static void sys_yield(Context *c) {
 #ifdef CONFIG_STRACE
   printf("sys_yield(NULL) = %d\n", ret_val);
 #endif
-  c->GPRx= ret_val;
+  c->GPRx= (intptr_t)ret_val;
 }
 
 static void sys_exit(Context *c) {
@@ -31,7 +31,7 @@ static void sys_write(Context *c) {
 #ifdef CONFIG_STRACE
   printf("sys_write(%d, %p, %d) = %d\n", c->GPR2, c->GPR3, c->GPR4, ret_val);
 #endif
-  c->GPRx = ret_val;
+  c->GPRx = (intptr_t)ret_val;
 }
 
 static void sys_read(Context *c) {
