@@ -54,12 +54,13 @@ void init_fs() {
   // TODO: initialize the size of /dev/fb
 }
 
+static int i;
+
 int fs_open(const char *pathname, int flags, int mode) {
   /* flags and mode are disabled in nano-lite. 
   * And in sFS we just return the index as the fd
   */
   
-  int i;
   /* just compare the filename here. */
   for(i = 0; i < NR_FILE; i++)
     if(!strcmp(pathname, file_table[i].name)) {
@@ -72,6 +73,10 @@ int fs_open(const char *pathname, int flags, int mode) {
   assert(0);
   /* Should not reach here. */
   return -1;
+}
+
+void fs_curfilename(void) {
+  printf("%s ", file_table[i].name);
 }
 
 /* Same as above, we should call SYS_read here. */
