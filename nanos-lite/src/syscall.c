@@ -131,12 +131,11 @@ static void sys_times(Context *c) {
 }
 
 static void sys_gettimeofday(Context *c) {
-  timeval *time = (timeval *)&c->GPR2;
   static AM_TIMER_UPTIME_T timestamp;
   int ret_val = 0;
   ioe_read(AM_TIMER_UPTIME, &timestamp);
-  time->tv_usec = (int32_t)timestamp.us;
-  time->tv_sec = (int32_t)timestamp.us / 1000000;
+  c->GPR2 = (int32_t)timestamp.us;
+  c->GPR3 = (int32_t)timestamp.us / 1000000;
   c->GPRx = ret_val;
 #ifdef CONFIG_STRACE
   fs_curfilename();
