@@ -100,10 +100,13 @@ int NDL_Init(uint32_t flags) {
   fbdev = open("/dev/fb", 0, 0);
   dispinfodev = open("/proc/dispinfo", 0, 0);
 
+  /*
   FILE *fp = fopen("/proc/dispinfo", "r");
   fscanf(fp, "WIDTH:%d\nHEIGHT:%d", &www, &hhh);
+  */
+  www = 400;
+  hhh = 300;
   printf("NDL: Now www is %d, hhh is %d\n", www, hhh);
-  fclose(fp);
   return 0;
 }
 
