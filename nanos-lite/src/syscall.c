@@ -130,8 +130,8 @@ static void sys_times(Context *c) {
   panic("Not implement");
 }
 
+static AM_TIMER_UPTIME_T timestamp;
 static void sys_gettimeofday(Context *c) {
-  static AM_TIMER_UPTIME_T timestamp;
   int ret_val = 0;
   ioe_read(AM_TIMER_UPTIME, &timestamp);
   c->GPR2 = (int32_t)timestamp.us;
