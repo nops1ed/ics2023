@@ -8,7 +8,7 @@ int main(void) {
     for(int i = 1; i < 10; i++) {
         do {
             gettimeofday(&tv, NULL);
-        } while(tv.tv_sec < i);
+        } while(tv.tv_usec * 1000000 < i);
         printf("hello from timer %d time\n", i);
     }
     printf("PASS !!!\n");
