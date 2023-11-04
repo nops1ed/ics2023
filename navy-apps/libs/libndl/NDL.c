@@ -84,9 +84,11 @@ int NDL_Init(uint32_t flags) {
   }
   evtdev = open("/dev/events", 0, 0);
   fbdev = open("/dev/fb", 0, 0);
-  FILE *dispinfodev = fopen("/proc/dispinfo", "r");
-  fscanf(dispinfodev, "WIDTH:%d\nHEIGHT:%d", &www, &hhh);
-  fclose(dispinfodev);
+  dispinfodev = open("/proc/dispinfo", 0, 0);
+
+  FILE *fp = fopen("/proc/dispinfo", "r");
+  fscanf(fp, "WIDTH:%d\nHEIGHT:%d", &www, &hhh);
+  fclose(fp);
   return 0;
 }
 
