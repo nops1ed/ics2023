@@ -96,8 +96,15 @@ off_t _lseek(int fd, off_t offset, int whence) {
 }
 
 int _gettimeofday(struct timeval *tv, struct timezone *tz) {
-  _exit(SYS_gettimeofday);
-  return 0;
+  /*
+  * The tv argument is a struct timeval (as specified in <sys/time.h>):
+  *  struct timeval {
+  *      time_t      tv_sec;     // seconds
+  *      suseconds_t tv_usec;    // microseconds
+  *  };
+  *  and gives the number of seconds and microseconds since the Epoch (see time(2)). 
+  */
+  return _syscall_((intptr_t)SYS_gettimeofday, (intptr_t)tv->tv_sec, (intptr_t)tv->tv_usec, 0);
 }
 
 int _execve(const char *fname, char * const argv[], char *const envp[]) {

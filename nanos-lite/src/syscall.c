@@ -4,6 +4,11 @@
 
 #define CONFIG_STRACE
 
+typedef struct timeval {
+  int64_t tv_sec;     // seconds
+  int32_t tv_usec;    // microseconds
+}timeval;
+
 static void sys_yield(Context *c) {
   yield();
   intptr_t ret_val = 0;
@@ -126,7 +131,16 @@ static void sys_times(Context *c) {
 }
 
 static void sys_gettimeofday(Context *c) {
-  
+  static AM_TIMER_UPTIME_T timestamp;
+  int ret_val = 0;
+  ioe_read(AM_TIMER_UPTIME, &timestamp);
+  c->GPR3 = timestamp.us;
+  c->GPR2 = timestamp.us / 1000000;
+  c->GPRx = ret_val;
+#ifdef CONFIG_STRACE
+  fs_curfilename();
+  printf("sys_gettimeofday() = %d\n", c->GPRx);
+#endif
 }
 
 void (*syscall_table[])() = {
