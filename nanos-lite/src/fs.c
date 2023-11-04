@@ -62,6 +62,7 @@ void init_fs() {
   AM_GPU_CONFIG_T gpuinfo;
   ioe_read(AM_GPU_CONFIG, &gpuinfo);
   file_table[FD_FB].size = gpuinfo.width * gpuinfo.height * 4;
+  printf("FD_FB was initialized to %ld\n", file_table[FD_FB].size);
 }
 
 static int i;
