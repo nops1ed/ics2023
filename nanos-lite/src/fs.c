@@ -34,8 +34,8 @@ static Finfo file_table[] __attribute__((used)) = {
   [FD_STDIN]  = {"stdin", 0, 0, 0, invalid_read, invalid_write},
   [FD_STDOUT] = {"stdout", 0, 0, 0, invalid_read, serial_write},
   [FD_STDERR] = {"stderr", 0, 0, 0, invalid_read, serial_write},
+  [FD_FB]     = {"/dev/fb", 0, 0, 0, invalid_read, invalid_write},
                 {"/dev/events", 0, 0, 0, events_read, invalid_write},
-                {"/dev/fb", 0, 0, 0, invalid_read, invalid_write},
                 {"/proc/dispinfo", 0, 0, 0, dispinfo_read, invalid_write},
 #include "files.h"
 };
@@ -58,6 +58,9 @@ void init_fs() {
       file_table[fd].read = do_read;
   }
   // TODO: initialize the size of /dev/fb
+  AM_GPU_CONFIG_T gpuinfo;
+  ioe_read(AM_GPU_CONFIG, &gpuinfo);
+  file_table[FD_FB].size = gpuinfo.width * gpuinfo.height * 4;
 }
 
 static int i;

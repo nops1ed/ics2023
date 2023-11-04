@@ -55,6 +55,9 @@ void NDL_OpenCanvas(int *w, int *h) {
 }
 
 void NDL_DrawRect(uint32_t *pixels, int x, int y, int w, int h) {
+  int offset = x * w + y;
+  lseek(fbdev, offset, SEEK_SET);
+  write(fbdev, pixels, sizeof(pixels));
 }
 
 void NDL_OpenAudio(int freq, int channels, int samples) {
@@ -76,6 +79,7 @@ int NDL_Init(uint32_t flags) {
     evtdev = 3;
   }
   evtdev = open("/dev/events", 0, 0);
+  fbdev = open("/dev/fb", 0, 0);
   FILE *dispinfodev = fopen("/proc/dispinfo", "r");
   fscanf(dispinfodev, "WIDTH:%d\nHEIGHT:%d", &w, &h);
   return 0;

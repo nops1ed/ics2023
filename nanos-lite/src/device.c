@@ -79,6 +79,12 @@ size_t dispinfo_read(void *buf, size_t offset, size_t len) {
 }
 
 size_t fb_write(const void *buf, size_t offset, size_t len) {
+  AM_GPU_CONFIG_T gpuinfo;
+  ioe_read(AM_GPU_CONFIG, &gpuinfo);
+  int w = gpuinfo.width, h = gpuinfo.height;
+  /* Call IOE to draw pixels. */
+  AM_GPU_FBDRAW_T fbdraw = {offset / w, offset % w, (void *)buf, w, h, 1};
+  ioe_write(AM_GPU_FBDRAW, &fbdraw);
   return 0;
 }
 
