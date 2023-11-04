@@ -7,7 +7,7 @@ int main(void) {
     int half_sec = 500000;
     printf("Entering program...\n");
     while(1) {
-        gettimeofday(tv, NULL);
+        gettimeofday(&tv, NULL);
         while(tv.tv_usec < half_sec) {
             printf("Hello \n");
         }
