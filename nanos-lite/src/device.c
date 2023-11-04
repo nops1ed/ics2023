@@ -35,9 +35,8 @@ size_t events_read(void *buf, size_t offset, size_t len) {
   if (kbd.keydown) strncat(buf, "kd ", len);
   else
     strncat(buf, "ku ", len);
-  // printf("key name is %s\n",keyname[kbd.keycode]);
   strncat(buf, keyname[kbd.keycode], len - 3);
-  strncat(buf, "\n", len - 3 - strlen(keyname[kbd.keycode]));
+  strncat(buf, "\n", len - strlen(keyname[kbd.keycode] - 3));
   return strlen(buf);
 }
 
