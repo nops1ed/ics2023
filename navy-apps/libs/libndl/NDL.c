@@ -27,9 +27,8 @@ int NDL_PollEvent(char *buf, int len) {
 }
 
 void NDL_OpenCanvas(int *w, int *h) {
-  //printf("Now the w is %d and h is %d\n", *w, *h);
+  printf("Now the w is %d and h is %d\n", *w, *h);
   if (getenv("NWM_APP")) {
-    printf("Now the w is %d and h is %d\n", *w, *h);
     int fbctl = 4;
     fbdev = 5;
     screen_w = *w; screen_h = *h;
@@ -59,6 +58,7 @@ void NDL_DrawRect(uint32_t *pixels, int x, int y, int w, int h) {
   assert(h > 0);
   for (size_t row = 0; row < h; ++row) {
     lseek(fbdev, x + (y + row) * w, SEEK_SET);
+    printf("NDL: Writing to offset %ld\n", x + (y + row) * w);
     write(fbdev, pixels + row * w, w);
     printf("NDL: Writing\n");
   }
