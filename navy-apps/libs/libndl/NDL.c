@@ -48,7 +48,7 @@ void NDL_OpenCanvas(int *w, int *h) {
 }
 
 void NDL_DrawRect(uint32_t *pixels, int x, int y, int w, int h) {
-  int offset =  h * y + x;
+  int offset =  w * y + x;
     lseek(fbdev, offset, SEEK_SET);
     write(fbdev, pixels, sizeof(pixels));
   /*
