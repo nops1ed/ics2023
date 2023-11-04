@@ -14,13 +14,6 @@ static int screen_w = 0, screen_h = 0;
 static int dispinfodev = -1;
 static int w, h;
 
-/*
-struct timeval {
-  uint32_t      tv_sec;     // seconds
-  uint32_t tv_usec;    // microseconds 
-};
-*/
-
 uint32_t NDL_GetTicks() {
   static struct timeval time;
   gettimeofday(&time, NULL);
