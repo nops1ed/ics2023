@@ -54,6 +54,8 @@ void NDL_DrawRect(uint32_t *pixels, int x, int y, int w, int h) {
     write(fbdev, pixels, sizeof(pixels));
   }
   */
+  assert(w > 0);
+  assert(h > 0);
   for (size_t row = 0; row < h; ++row) {
     lseek(fbdev, x + (y + row) * w, SEEK_SET);
     write(fbdev, pixels + row * w, w);
