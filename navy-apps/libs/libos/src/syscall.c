@@ -104,7 +104,7 @@ int _gettimeofday(struct timeval *tv, struct timezone *tz) {
   *  };
   *  and gives the number of seconds and microseconds since the Epoch (see time(2)). 
   */
-  return _syscall_((intptr_t)SYS_gettimeofday, (intptr_t)tv->tv_usec, (intptr_t)tv->tv_sec, (intptr_t)tz);
+  return _syscall_((intptr_t)SYS_gettimeofday, (intptr_t)&(tv->tv_usec), (intptr_t)&(tv->tv_sec), (intptr_t)tz);
 }
 
 int _execve(const char *fname, char * const argv[], char *const envp[]) {
