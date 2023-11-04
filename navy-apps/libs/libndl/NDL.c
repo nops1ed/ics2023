@@ -48,10 +48,14 @@ void NDL_OpenCanvas(int *w, int *h) {
 }
 
 void NDL_DrawRect(uint32_t *pixels, int x, int y, int w, int h) {
-  int offset =  h * y + x;
+  /*
+  for(int row = 0; row < h; row++) {
     lseek(fbdev, offset, SEEK_SET);
     write(fbdev, pixels, sizeof(pixels));
-  /*
+  }
+  */
+
+  /**/
   assert(w > 0);
   assert(h > 0);
   for (size_t row = 0; row < h; ++row) {
@@ -61,7 +65,6 @@ void NDL_DrawRect(uint32_t *pixels, int x, int y, int w, int h) {
     printf("NDL: Writing\n");
   }
   //write(fbdev, 0, 0);
-  */
 }
 
 void NDL_OpenAudio(int freq, int channels, int samples) {
