@@ -58,11 +58,10 @@ void init_fs() {
     if (file_table[fd].read == NULL)
       file_table[fd].read = do_read;
   }
-  // TODO: initialize the size of /dev/fb
   AM_GPU_CONFIG_T gpuinfo;
   ioe_read(AM_GPU_CONFIG, &gpuinfo);
   file_table[FD_FB].size = gpuinfo.width * gpuinfo.height * 4;
-  printf("FD_FB was initialized to %d\n", file_table[FD_FB].size);
+  printf("sFS: FD_FB was initialized as %d\n", file_table[FD_FB].size);
 }
 
 static int i;
