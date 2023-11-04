@@ -67,6 +67,7 @@ void NDL_DrawRect(uint32_t *pixels, int x, int y, int w, int h) {
 
   // write(1, "here\n", 10);
   // printf("draw [%d, %d] to [%d, %d]\n", w, h, x, y);
+  /*
   for (size_t row = 0; row < h; ++row)
   {
      printf("draw row %ld with len %d\n", row, w);
@@ -76,6 +77,11 @@ void NDL_DrawRect(uint32_t *pixels, int x, int y, int w, int h) {
     printf("draw row %ld with len %d\n", row, w);
   }
   write(fbdev, 0, 0);
+  */
+  for(size_t row = 0; row < h; row++) {
+    lseek(fbdev, x + (y + row) * w, SEEK_SET);
+    write(fbdev, pixels + row * w, w);  
+  }
 }
 
 void NDL_OpenAudio(int freq, int channels, int samples) {

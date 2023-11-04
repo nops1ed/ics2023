@@ -36,7 +36,6 @@ char* itoa(int num, char* str, int base) {
   return str;  
 }  
 
-
 size_t serial_write(const void *buf, size_t offset, size_t len) {
   unsigned long int stream = (long int)buf;
   int ret_val = -1;
