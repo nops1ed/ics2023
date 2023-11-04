@@ -12,7 +12,7 @@ static int evtdev = -1;
 static int fbdev = -1;
 static int screen_w = 0, screen_h = 0;
 static int dispinfodev = -1;
-static int w, h;
+static int www, hhh;
 
 uint32_t NDL_GetTicks() {
   static struct timeval time;
@@ -85,7 +85,7 @@ int NDL_Init(uint32_t flags) {
   evtdev = open("/dev/events", 0, 0);
   fbdev = open("/dev/fb", 0, 0);
   FILE *dispinfodev = fopen("/proc/dispinfo", "r");
-  fscanf(dispinfodev, "WIDTH:%d\nHEIGHT:%d", &w, &h);
+  fscanf(dispinfodev, "WIDTH:%d\nHEIGHT:%d", &www, &hhh);
   fclose(dispinfodev);
   return 0;
 }
