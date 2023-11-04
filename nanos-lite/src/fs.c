@@ -61,7 +61,7 @@ void init_fs() {
   // TODO: initialize the size of /dev/fb
   AM_GPU_CONFIG_T gpuinfo;
   ioe_read(AM_GPU_CONFIG, &gpuinfo);
-  file_table[FD_FB].size = gpuinfo.width * gpuinfo.height * 4;
+  file_table[FD_FB].size = gpuinfo.width * gpuinfo.height;
 }
 
 static int i;
