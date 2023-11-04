@@ -69,10 +69,12 @@ size_t dispinfo_read(void *buf, size_t offset, size_t len) {
   ioe_read(AM_GPU_CONFIG, &gpuinfo);
   strncpy(buf, "WIDTH:", len);
   strncpy(buf, itoa(gpuinfo.width, _tmp, 10), len - 6);
+  printf("nano: the width is %s\n", _tmp);
   int sssss = strlen(_tmp);
   strncpy(buf, "\n", len - 7 - sssss);
   strncpy(buf, "HEIGHT:", len - 8 - sssss);
   strncpy(buf, itoa(gpuinfo.height, _tmp, 10), len - 15 - sssss);
+  printf("nano: the height is %s\n", _tmp);
   return strlen(buf);
 }
 
