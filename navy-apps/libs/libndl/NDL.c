@@ -48,20 +48,31 @@ void NDL_OpenCanvas(int *w, int *h) {
 }
 
 void NDL_DrawRect(uint32_t *pixels, int x, int y, int w, int h) {
+  /*
   int offset =  w * y + x;
     lseek(fbdev, offset, SEEK_SET);
     write(fbdev, pixels, sizeof(pixels));
-  /*
-  assert(w > 0);
-  assert(h > 0);
-  for (size_t row = 0; row < h; ++row) {
-    lseek(fbdev, x + (y + row) * w, SEEK_SET);
-    printf("NDL: Writing to offset %ld\n", x + (y + row) * w);
-    write(fbdev, pixels + row * w, w);
-    printf("NDL: Writing\n");
+    */
+
+   if (w == 0 && h == 0)
+  {
+    w = www;
+    h = hhh;
   }
-  //write(fbdev, 0, 0);
-  */
+  assert(w > 0 && w <= www);
+  assert(h > 0 && h <= hhh);
+
+  // write(1, "here\n", 10);
+  // printf("draw [%d, %d] to [%d, %d]\n", w, h, x, y);
+  for (size_t row = 0; row < h; ++row)
+  {
+    // printf("draw row %d with len %d\n", row, w);
+    lseek(fbdev, x + (y + row) * www, SEEK_SET);
+    // printf("pixels pos %p with len %d\n",pixels + row * w, w);
+    write(fbdev, pixels + row * w, w);
+    // printf("draw row %d with len %d\n", row, w);
+  }
+  write(fbdev, 0, 0);
 }
 
 void NDL_OpenAudio(int freq, int channels, int samples) {
