@@ -59,7 +59,7 @@ void NDL_DrawRect(uint32_t *pixels, int x, int y, int w, int h) {
     w = www;
     h = hhh;
   }
-  printf("NDL: Now w is %d \n", w);
+  printf("NDL: Now w is %d and www is %d\n", w, www);
   assert(w > 0 && w <= www);
   printf("NDL: Now h is %d \n", h);
   assert(h > 0 && h <= hhh);
