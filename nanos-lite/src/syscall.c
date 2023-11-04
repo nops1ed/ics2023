@@ -131,8 +131,7 @@ static void sys_times(Context *c) {
 }
 
 static void sys_gettimeofday(Context *c) {
-  uintptr_t a = c->GPR2;
-  timeval *hello = (timeval *)a;
+  timeval *hello = (timeval *)c->GPR2;
   static AM_TIMER_UPTIME_T timestamp;
   int ret_val = 0;
   ioe_read(AM_TIMER_UPTIME, &timestamp);
