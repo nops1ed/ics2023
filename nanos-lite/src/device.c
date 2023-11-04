@@ -1,4 +1,5 @@
 #include <common.h>
+#include <string.h>
 
 #if defined(MULTIPROGRAM) && !defined(TIME_SHARING)
 # define MULTIPROGRAM_YIELD() yield()
@@ -28,19 +29,16 @@ size_t serial_write(const void *buf, size_t offset, size_t len) {
 }
 
 size_t events_read(void *buf, size_t offset, size_t len) {
-  static AM_INPUT_KEYBRD_T keybrd;
-  ioe_read(AM_INPUT_KEYBRD, &keybrd);
-  size_t ret_val = 0;
-  if(keybrd.keydown) {
-    unsigned long int stream = (long int)buf;
-    while(keyname[keybrd.keycode][ret_val] != '\0' && ret_val < len) {
-      ((unsigned char *) stream)[0] = keyname[keybrd.keycode][ret_val];
-      stream++;
-      ret_val++;
-    }
-    ((unsigned char *) stream)[0] = '\n';
-  } 
-  return ret_val;
+  static AM_INPUT_KEYBRD_T kbd;
+  ioe_read(AM_INPUT_KEYBRD, &kbd);
+  if (kbd.keycode == AM_KEY_NONE) return 0;
+  if (kbd.keydown) strncat(buf, "kd ", len);
+  else
+    strncat(buf, "ku ", len);
+  // printf("key name is %s\n",keyname[kbd.keycode]);
+  strncat(buf, keyname[kbd.keycode], len - 3);
+  strncat(buf, "\n", len - 3 - strlen(keyname[kbd.keycode]));
+  return strlen(buf);
 }
 
 size_t dispinfo_read(void *buf, size_t offset, size_t len) {
