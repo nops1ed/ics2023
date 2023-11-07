@@ -3,6 +3,7 @@
 #include <assert.h>
 #include <string.h>
 #include <stdlib.h>
+#include <stdio.h>
 
 void SDL_BlitSurface(SDL_Surface *src, SDL_Rect *srcrect, SDL_Surface *dst, SDL_Rect *dstrect) {
   assert(dst && src);
@@ -13,6 +14,27 @@ void SDL_FillRect(SDL_Surface *dst, SDL_Rect *dstrect, uint32_t color) {
 }
 
 void SDL_UpdateRect(SDL_Surface *s, int x, int y, int w, int h) {
+  if(x == 0 && y == 0 && w == 0 && h == 0) {
+    // Update the whole screen
+    w = s -> w;
+    h = s -> h;
+  }
+  uint8_t unit = s -> format -> BytesPerPixel;
+  /* Treat it as byte stream. */
+  uint8_t *_buf = (uint8_t *)malloc(unit * w * h);
+  for(uint32_t row = 0; row < w; row++)
+    /* Color depth is 8. */
+    if(unit == 1)
+      /* Copy pixel stream. */ 
+      for(uint32_t col = 0; col < h; col++)
+        _buf[row * w + col] = s -> pixels[(row + x) * (s -> w) * unit + y + col];
+    /* Color depth is 32. */
+    else
+      for(uint32_t col = 0; col < h; col++)
+        for(int i = 0; i < 4; i++)
+          _buf[row * w + col + i] = s -> pixels[(row + x) * (s -> w) + y + col + i];
+    printf("SDL: BUF initialized successfullly\n");
+    NDL_DrawRect((uint32_t *)_buf, x, y, w, h);
 }
 
 // APIs below are already implemented.
