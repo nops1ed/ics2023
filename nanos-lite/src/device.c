@@ -36,6 +36,8 @@ static char* itoa(int num, char* str, int base) {
   return str;  
 }  
 
+static AM_GPU_CONFIG_T gpuinfo = {};
+
 size_t serial_write(const void *buf, size_t offset, size_t len) {
   unsigned long int stream = (long int)buf;
   int ret_val = -1;
@@ -64,7 +66,7 @@ size_t events_read(void *buf, size_t offset, size_t len) {
 size_t dispinfo_read(void *buf, size_t offset, size_t len) {
   /* buf does not support lseek. */
   char _tmp[32];
-  AM_GPU_CONFIG_T gpuinfo;
+
   ioe_read(AM_GPU_CONFIG, &gpuinfo);
   strncpy(buf, "WIDTH:", len);
   strncpy(buf, itoa(gpuinfo.width, _tmp, 10), len - 6);
@@ -78,14 +80,13 @@ size_t dispinfo_read(void *buf, size_t offset, size_t len) {
 }
 
 size_t fb_write(const void *buf, size_t offset, size_t len) {
-  AM_GPU_CONFIG_T gpuinfo;
-  ioe_read(AM_GPU_CONFIG, &gpuinfo);
+  //ioe_read(AM_GPU_CONFIG, &gpuinfo);
   int w = gpuinfo.width;
   //printf("DEV: Writing to x: %d y: %d\n", offset / w, offset % w);
   //printf("DEV: len :%d\n", len);
   //printf("DEV: w is %d h is %d\n", w, h);
   /* Call IOE to draw pixels. */
-  AM_GPU_FBDRAW_T fbdraw = {100 + offset % w, 100 + offset / w, (void *)buf, len, 1, 0};
+  AM_GPU_FBDRAW_T fbdraw = {offset % w, offset / w, (void *)buf, len, 1, 0};
   ioe_write(AM_GPU_FBDRAW, &fbdraw);
   return len;
 }
