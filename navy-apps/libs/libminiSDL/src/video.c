@@ -14,6 +14,7 @@ void SDL_FillRect(SDL_Surface *dst, SDL_Rect *dstrect, uint32_t color) {
 }
 
 void SDL_UpdateRect(SDL_Surface *s, int x, int y, int w, int h) {
+  printf("SDL: x is %d y is %d w is %d h is %d\n",x ,y , w ,h);
   if(x == 0 && y == 0 && w == 0 && h == 0) {
     // Update the whole screen
     w = s -> w;
