@@ -66,8 +66,7 @@ size_t events_read(void *buf, size_t offset, size_t len) {
 size_t dispinfo_read(void *buf, size_t offset, size_t len) {
   /* buf does not support lseek. */
   char _tmp[32];
-
-  ioe_read(AM_GPU_CONFIG, &gpuinfo);
+  //ioe_read(AM_GPU_CONFIG, &gpuinfo);
   strncpy(buf, "WIDTH:", len);
   strncpy(buf, itoa(gpuinfo.width, _tmp, 10), len - 6);
   printf("nano: the width is %s\n", _tmp);
@@ -80,7 +79,6 @@ size_t dispinfo_read(void *buf, size_t offset, size_t len) {
 }
 
 size_t fb_write(const void *buf, size_t offset, size_t len) {
-  ioe_read(AM_GPU_CONFIG, &gpuinfo);
   int w = gpuinfo.width;
   //printf("DEV: Writing to x: %d y: %d\n", offset / w, offset % w);
   //printf("DEV: len :%d\n", len);
@@ -94,4 +92,5 @@ size_t fb_write(const void *buf, size_t offset, size_t len) {
 void init_device() {
   Log("Initializing devices...");
   ioe_init();
+  ioe_read(AM_GPU_CONFIG, &gpuinfo);
 }
