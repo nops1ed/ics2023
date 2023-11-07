@@ -19,6 +19,7 @@ void SDL_UpdateRect(SDL_Surface *s, int x, int y, int w, int h) {
     // Update the whole screen
     w = s -> w;
     h = s -> h;
+    printf("SDL: Now w is %d h is %d\n",w ,h);
   }
   uint8_t unit = s -> format -> BytesPerPixel;
   /* Treat it as byte stream. */
