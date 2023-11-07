@@ -15,7 +15,7 @@ static const char *keyname[256] __attribute__((used)) = {
   AM_KEYS(NAME)
 };
 
-char* itoa(int num, char* str, int base) {  
+static char* itoa(int num, char* str, int base) {  
   int i = 0;  
   int sign = num < 0 ? -1 : 1;  
   if (sign == -1) num = -num;  
@@ -62,7 +62,7 @@ size_t events_read(void *buf, size_t offset, size_t len) {
 }
 
 size_t dispinfo_read(void *buf, size_t offset, size_t len) {
-  /* buf do not support lseek. */
+  /* buf does not support lseek. */
   char _tmp[32];
   AM_GPU_CONFIG_T gpuinfo;
   ioe_read(AM_GPU_CONFIG, &gpuinfo);

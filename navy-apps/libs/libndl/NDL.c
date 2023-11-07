@@ -65,19 +65,6 @@ void NDL_DrawRect(uint32_t *pixels, int x, int y, int w, int h) {
   //printf("NDL: Now h is %d \n", h);
   assert(h > 0 && h <= hhh);
 
-  // write(1, "here\n", 10);
-  // printf("draw [%d, %d] to [%d, %d]\n", w, h, x, y);
-  /*
-  for (size_t row = 0; row < h; ++row)
-  {
-     printf("draw row %ld with len %d\n", row, w);
-    lseek(fbdev, x + (y + row) * www, SEEK_SET);
-    printf("pixels pos %p with len %d\n",pixels + row * w, w);
-    write(fbdev, pixels + row * w, w);
-    printf("draw row %ld with len %d\n", row, w);
-  }
-  write(fbdev, 0, 0);
-  */
   for(size_t row = 0; row < h; row++) {
     lseek(fbdev, x + (y + row) * www, SEEK_SET);
     printf("NDL: writing to %ld\n", x + (y + row) * www);
