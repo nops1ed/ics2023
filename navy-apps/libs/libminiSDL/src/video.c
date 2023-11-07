@@ -22,15 +22,15 @@ void SDL_UpdateRect(SDL_Surface *s, int x, int y, int w, int h) {
   uint8_t unit = s -> format -> BytesPerPixel;
   /* Treat it as byte stream. */
   uint8_t *_buf = (uint8_t *)malloc(unit * w * h);
-  for(uint32_t row = 0; row < w; row++)
+  for(uint32_t row = 0; row < h; row++)
     /* Color depth is 8. */
     if(unit == 1)
       /* Copy pixel stream. */ 
-      for(uint32_t col = 0; col < h; col++)
+      for(uint32_t col = 0; col < w; col++)
         _buf[row * w + col] = s -> pixels[(row + x) * (s -> w) * unit + y + col];
     /* Color depth is 32. */
     else
-      for(uint32_t col = 0; col < h; col++)
+      for(uint32_t col = 0; col < w; col++)
         for(int i = 0; i < 4; i++)
           _buf[row * w + col * 4 + i] = s -> pixels[(row + x) * (s -> w) + y + col * 4+ i];
     printf("SDL: BUF initialized successfullly\n");
