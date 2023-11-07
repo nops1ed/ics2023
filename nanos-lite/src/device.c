@@ -80,7 +80,7 @@ size_t dispinfo_read(void *buf, size_t offset, size_t len) {
 }
 
 size_t fb_write(const void *buf, size_t offset, size_t len) {
-  //ioe_read(AM_GPU_CONFIG, &gpuinfo);
+  ioe_read(AM_GPU_CONFIG, &gpuinfo);
   int w = gpuinfo.width;
   //printf("DEV: Writing to x: %d y: %d\n", offset / w, offset % w);
   //printf("DEV: len :%d\n", len);
