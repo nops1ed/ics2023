@@ -12,8 +12,8 @@ static int evtdev = -1;
 static int fbdev = -1;
 static int screen_w = 0, screen_h = 0;
 static int dispinfodev = -1;
-static int www = 0;
-static int hhh = 0;
+static int disp_w = 0;
+static int disp_h = 0;
 
 uint32_t NDL_GetTicks() {
   static struct timeval time;
@@ -57,17 +57,17 @@ void NDL_DrawRect(uint32_t *pixels, int x, int y, int w, int h) {
     */
 
   if (w == 0 && h == 0) {
-    w = www;
-    h = hhh;
+    w = disp_w;
+    h = disp_h;
   }
   //printf("NDL: Now w is %d and www is %d\n", w, www);
-  assert(w > 0 && w <= www);
+  assert(w > 0 && w <= disp_w);
   //printf("NDL: Now h is %d \n", h);
-  assert(h > 0 && h <= hhh);
+  assert(h > 0 && h <= disp_h);
 
   for(size_t row = 0; row < h; row++) {
-    lseek(fbdev, x + (y + row) * www, SEEK_SET);
-    printf("NDL: writing to %ld\n", x + (y + row) * www);
+    lseek(fbdev, x + (y + row) * disp_w, SEEK_SET);
+    //printf("NDL: writing to %ld\n", x + (y + row) * disp_w);
     write(fbdev, pixels + row * w, w);  
   }
 }
@@ -95,8 +95,8 @@ int NDL_Init(uint32_t flags) {
   dispinfodev = open("/proc/dispinfo", 0, 0);
 
   FILE *fp = fopen("/proc/dispinfo", "r");
-  fscanf(fp, "WIDTH:%d\nHEIGHT:%d", &www, &hhh);
-  printf("NDL: Now www is %d, hhh is %d\n", www, hhh);
+  fscanf(fp, "WIDTH:%d\nHEIGHT:%d", &disp_w, &disp_h);
+  printf("NDL: Now www is %d, hhh is %d\n", disp_w, disp_h);
   return 0;
 }
 
