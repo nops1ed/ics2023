@@ -35,7 +35,7 @@ void SDL_UpdateRect(SDL_Surface *s, int x, int y, int w, int h) {
     else
       for(uint32_t col = 0; col < w; col++)
         for(int i = 0; i < 4; i++)
-          _buf[row * w + col * 4 + i] = s -> pixels[(row + y) * (s -> w) + x + col * 4 + i];
+          _buf[row * w + col * 4 + i] = s -> pixels[(row + y) * (s -> w) + x + col + i];
     printf("SDL: BUF initialized successfullly\n");
     NDL_DrawRect((uint32_t *)_buf, x, y, w, h);
 
