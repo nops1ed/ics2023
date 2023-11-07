@@ -21,22 +21,25 @@ void SDL_UpdateRect(SDL_Surface *s, int x, int y, int w, int h) {
     h = s -> h;
     printf("SDL: Now w is %d h is %d\n",w ,h);
   }
-  /*
   uint8_t unit = s -> format -> BytesPerPixel;
   printf("SDL: uint is %d\n", unit);
+  /* Treat it as byte stream. */
   uint8_t *_buf = (uint8_t *)malloc(sizeof(uint8_t) * unit * w * h);
   for(uint32_t row = 0; row < h; row++)
+    /* Color depth is 8. */
     if(unit == 1)
+      /* Copy pixel stream. */ 
       for(uint32_t col = 0; col < w; col++)
         _buf[row * w + col] = s -> pixels[(row + x) * (s -> w) * unit + y + col];
+    /* Color depth is 32. */
     else
       for(uint32_t col = 0; col < w; col++)
-        for(int i = 0; i < 4; i++)
+        for(int i = 3; i > 0; i--)
           _buf[row * w + col * 4 + i] = s -> pixels[(row + x) * (s -> w) + y + col * 4 + i];
     printf("SDL: BUF initialized successfullly\n");
     NDL_DrawRect((uint32_t *)_buf, x, y, w, h);
-    */
 
+/*
      uint32_t len = w * h;
   uint32_t *buf = malloc(sizeof(uint32_t) * len);
   uint32_t start_pos = x + y * s->w;
@@ -59,13 +62,14 @@ void SDL_UpdateRect(SDL_Surface *s, int x, int y, int w, int h) {
         buf[i++] = rgba_color.a << 24 | rgba_color.r << 16 | rgba_color.g << 8 | rgba_color.b;
       }
       else
-        printf("unsupported pixel bites %d!\n", s->format->BitsPerPixel);
+        panic("unsupported pixel bites %d!\n", s->format->BitsPerPixel);
     }
   }
 
   NDL_DrawRect(buf, x, y, w, h);
 
   free(buf);
+  */
 }
 
 // APIs below are already implemented.
