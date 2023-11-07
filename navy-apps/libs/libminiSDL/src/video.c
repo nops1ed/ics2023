@@ -30,12 +30,12 @@ void SDL_UpdateRect(SDL_Surface *s, int x, int y, int w, int h) {
     if(unit == 1)
       /* Copy pixel stream. */ 
       for(uint32_t col = 0; col < w; col++)
-        _buf[row * w + col] = s -> pixels[(row + x) * (s -> w) * unit + y + col];
+        _buf[row * w + col] = s -> pixels[(row + y) * (s -> w) * unit + x + col];
     /* Color depth is 32. */
     else
       for(uint32_t col = 0; col < w; col++)
         for(int i = 0; i < 4; i++)
-          _buf[row * w + col * 4 + i] = s -> pixels[(row + x) * (s -> w) + y + col * 4 + i];
+          _buf[row * w + col * 4 + i] = s -> pixels[(row + y) * (s -> w) + x + col * 4 + i];
     printf("SDL: BUF initialized successfullly\n");
     NDL_DrawRect((uint32_t *)_buf, x, y, w, h);
 
