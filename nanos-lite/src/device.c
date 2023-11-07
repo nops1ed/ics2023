@@ -80,10 +80,10 @@ size_t dispinfo_read(void *buf, size_t offset, size_t len) {
 size_t fb_write(const void *buf, size_t offset, size_t len) {
   AM_GPU_CONFIG_T gpuinfo;
   ioe_read(AM_GPU_CONFIG, &gpuinfo);
-  int w = gpuinfo.width, h = gpuinfo.height;
-  printf("DEV: Writing to x: %d y: %d\n", offset / w, offset % w);
-  printf("DEV: len :%d\n", len);
-  printf("DEV: w is %d h is %d\n", w, h);
+  int w = gpuinfo.width;
+  //printf("DEV: Writing to x: %d y: %d\n", offset / w, offset % w);
+  //printf("DEV: len :%d\n", len);
+  //printf("DEV: w is %d h is %d\n", w, h);
   /* Call IOE to draw pixels. */
   AM_GPU_FBDRAW_T fbdraw = {offset % w, offset / w, (void *)buf, len, 1, 0};
   ioe_write(AM_GPU_FBDRAW, &fbdraw);
