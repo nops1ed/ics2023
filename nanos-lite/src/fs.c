@@ -65,7 +65,6 @@ void init_fs() {
 }
 
 static int i;
-
 int fs_open(const char *pathname, int flags, int mode) {
   /* flags and mode are disabled in nano-lite. 
   * And in sFS we just return the index as the fd
@@ -102,7 +101,7 @@ size_t fs_write(int fd, const void *buf, size_t len) {
     file_table[fd].open_offset += ret_val;
   }
   else
-    printf("sys_write: Error\n");
+    panic("sys_write: Error\n");
   return ret_val;
 }
 
