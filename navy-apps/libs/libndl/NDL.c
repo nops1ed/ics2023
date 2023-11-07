@@ -30,6 +30,7 @@ int NDL_PollEvent(char *buf, int len) {
 void NDL_OpenCanvas(int *w, int *h) {
   printf("Now the w is %d and h is %d\n", *w, *h);
   if (getenv("NWM_APP")) {
+    printf("I am in NWM_APP\n");
     int fbctl = 4;
     fbdev = 5;
     screen_w = *w; screen_h = *h;
@@ -55,8 +56,7 @@ void NDL_DrawRect(uint32_t *pixels, int x, int y, int w, int h) {
     write(fbdev, pixels, sizeof(pixels));
     */
 
-   if (w == 0 && h == 0)
-  {
+  if (w == 0 && h == 0) {
     w = www;
     h = hhh;
   }

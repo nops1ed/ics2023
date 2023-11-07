@@ -143,19 +143,21 @@ static inline fixedpt fixedpt_mul(fixedpt A, fixedpt B) {
 
 /* Divides two fixedpt numbers, returns the result. */
 static inline fixedpt fixedpt_div(fixedpt A, fixedpt B) {
-	return (A * B) << FIXEDPT_FBITS;
+	return (A / B) << FIXEDPT_FBITS;
 }
 
 static inline fixedpt fixedpt_abs(fixedpt A) {
-	return ;
+	return abs(A);
 }
 
 static inline fixedpt fixedpt_floor(fixedpt A) {
-	return 0;
+	if(fixedpt_fracpart(A) == 0) return A;
+	return fixedpt_fromint(fixedpt_toint(A));
 }
 
 static inline fixedpt fixedpt_ceil(fixedpt A) {
-	return 0;
+	if(fixedpt_fracpart(A) == 0) return A;
+	return fixedpt_fromint(fixedpt_toint(A) + 1);
 }
 
 /*
