@@ -24,7 +24,7 @@ void SDL_UpdateRect(SDL_Surface *s, int x, int y, int w, int h) {
   uint8_t unit = s -> format -> BytesPerPixel;
   printf("SDL: uint is %d\n", unit);
   /* Treat it as byte stream. */
-  uint8_t *_buf = (uint8_t *)malloc(unit * w * h);
+  uint8_t *_buf = (uint8_t *)malloc(sizeof(uint8_t) * unit * w * h);
   for(uint32_t row = 0; row < h; row++)
     /* Color depth is 8. */
     if(unit == 1)
@@ -35,7 +35,7 @@ void SDL_UpdateRect(SDL_Surface *s, int x, int y, int w, int h) {
     else
       for(uint32_t col = 0; col < w; col++)
         for(int i = 0; i < 4; i++)
-          _buf[row * w + col * 4 + i] = s -> pixels[(row + x) * (s -> w) + y + col * 4+ i];
+          _buf[row * w + col * 4 + i] = s -> pixels[(row + x) * (s -> w) * 4  + y + col * 4+ i];
     printf("SDL: BUF initialized successfullly\n");
     NDL_DrawRect((uint32_t *)_buf, x, y, w, h);
 }
