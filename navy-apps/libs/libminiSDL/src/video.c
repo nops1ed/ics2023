@@ -22,6 +22,7 @@ void SDL_UpdateRect(SDL_Surface *s, int x, int y, int w, int h) {
     printf("SDL: Now w is %d h is %d\n",w ,h);
   }
   uint8_t unit = s -> format -> BytesPerPixel;
+  printf("SDL: uint is %d\n", unit);
   /* Treat it as byte stream. */
   uint8_t *_buf = (uint8_t *)malloc(unit * w * h);
   for(uint32_t row = 0; row < h; row++)
