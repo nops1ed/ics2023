@@ -18,6 +18,8 @@ typedef struct {
   WriteFn write;
 } Finfo;
 
+#define NR_FILE sizeof(file_table) / sizeof(Finfo)
+
 enum {FD_STDIN, FD_STDOUT, FD_STDERR, FD_FB};
 
 static size_t invalid_read(void *buf, size_t offset, size_t len) {
@@ -48,8 +50,6 @@ static size_t do_read(void *buf, size_t offset, size_t len) {
 static size_t do_write(const void *buf, size_t offset, size_t len) {
   return ramdisk_write(buf, offset, len);
 }
-
-#define NR_FILE sizeof(file_table) / sizeof(Finfo)
 
 void init_fs() {
   for (size_t fd = 0; fd < NR_FILE; ++fd) {
