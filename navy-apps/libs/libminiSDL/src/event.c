@@ -24,10 +24,10 @@ int SDL_WaitEvent(SDL_Event *event) {
   /* Listening for events. */
   while(NDL_PollEvent(buf, BUFLEN)) ;
   if(!strncmp(buf, "ku", 2)) {
-    event -> type = SDL_KEYDOWN;
+    event -> type = SDL_KEYUP;
   }
   else if(!strncmp(buf, "kd", 2)) {
-    event -> type = SDL_KEYUP;
+    event -> type = SDL_KEYDOWN;
   }
   else 
     event -> type = SDL_USEREVENT;
