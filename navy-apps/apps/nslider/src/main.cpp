@@ -20,15 +20,15 @@ static SDL_Surface *slide = NULL;
 static int cur = 0;
 
 void render() {
-  printf("Freeing...\n");
+  //printf("Freeing...\n");
   if (slide) {
     SDL_FreeSurface(slide);
   }
-  printf("Free success !\n");
-  printf("Loading...\n");
+  //printf("Free success !\n");
+  //printf("Loading...\n");
   char fname[256];
   sprintf(fname, path, cur);
-  printf("Load success ~\n");
+  //printf("Load success ~\n");
   slide = SDL_LoadBMP(fname);
   assert(slide);
   SDL_UpdateRect(slide, 0, 0, 0, 0);
@@ -36,23 +36,23 @@ void render() {
 
 void prev(int rep) {
   if (rep == 0) rep = 1;
-printf("rep get ~\n");
-printf("Now cur is %d rep is %d\n", cur, rep);
+//printf("rep get ~\n");
+//printf("Now cur is %d rep is %d\n", cur, rep);
   cur -= rep;
- printf("cur get ~\n"); 
+ //printf("cur get ~\n"); 
   if (cur < 0) cur = 0;
   render();
 }
 
 void next(int rep) {
-  printf("In next now...\n");
+  //printf("In next now...\n");
   if (rep == 0) rep = 1;
-  printf("rep get ~\n");
-  printf("Now cur is %d rep is %d\n", cur, rep);
+  //printf("rep get ~\n");
+  //printf("Now cur is %d rep is %d\n", cur, rep);
   cur += rep;
-  printf("Cur get ~\n");
+  //printf("Cur get ~\n");
   if (cur >= N) cur = N - 1;
-  printf("Calling render...\n");
+  //printf("Calling render...\n");
   render();
 }
 
