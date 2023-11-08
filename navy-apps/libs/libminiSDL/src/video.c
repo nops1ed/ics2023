@@ -36,16 +36,16 @@ void SDL_UpdateRect(SDL_Surface *s, int x, int y, int w, int h) {
     else {
       /* Each pixel is described as a color using a 32-bit integer in the form of 00RRGGBB. */
       for(uint32_t col = 0; col < w; col++) {
-          uint32_t offset = (row + y) * (s -> w) + x + col * 4;
+          uint32_t offset = (row + y) * (s -> w) * 4 + x + col * 4;
           //_buf[oo++] = s -> pixels[(row + y) * (s -> w) + x + col * 4 + i];
           _buf[oo++] = s -> pixels[offset + 3] << 24 | s -> pixels[offset + 2] << 16 |
                         s -> pixels[offset + 1] << 8 | s -> pixels[offset];
-        }
+      }
     }
     _buf[oo] = '\0';
     printf("Now the oo is %d\n",oo);
     printf("SDL: BUF initialized successfullly\n");
-    NDL_DrawRect((uint32_t *)_buf, x, y, w, h);
+    NDL_DrawRect(_buf, x, y, w, h);
 
 /*
      uint32_t len = w * h;
