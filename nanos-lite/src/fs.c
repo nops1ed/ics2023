@@ -69,7 +69,7 @@ int fs_open(const char *pathname, int flags, int mode) {
   /* flags and mode are disabled in nano-lite. 
   * And in sFS we just return the index as the fd
   */
-  
+  printf("sFS: Opening file...\n"); 
   /* just compare the filename here. */
   for(i = 0; i < NR_FILE; i++) {
     //printf("pathname: %s\n", pathname);
