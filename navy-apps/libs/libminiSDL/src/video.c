@@ -38,8 +38,8 @@ void SDL_UpdateRect(SDL_Surface *s, int x, int y, int w, int h) {
       for(uint32_t col = 0; col < w; col++) {
           uint32_t offset = ((row + y) * (s -> w) + x + col) * 4;
           //_buf[oo++] = s -> pixels[(row + y) * (s -> w) + x + col * 4 + i];
-          _buf[oo++] = s -> pixels[offset + 0] << 24 | s -> pixels[offset + 1] << 16 |
-                        s -> pixels[offset + 2] << 8 | s -> pixels[offset + 3];
+          _buf[oo++] = s -> pixels[offset + 3] << 24 | s -> pixels[offset + 2] << 16 |
+                        s -> pixels[offset + 1] << 8 | s -> pixels[offset + 0];
       }
     }
     _buf[oo] = '\0';
