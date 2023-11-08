@@ -41,6 +41,7 @@ int SDL_WaitEvent(SDL_Event *event) {
       break;
     }
   }
+  printf("And now the key is %d\n", event -> key.keysym.sym);
   return 1;
 }
 
