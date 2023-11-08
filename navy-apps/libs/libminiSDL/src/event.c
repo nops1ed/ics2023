@@ -26,11 +26,13 @@ int SDL_WaitEvent(SDL_Event *event) {
   if(!strncmp(buf, "ku", 2)) {
     event -> type = SDL_KEYUP;
   }
-  else if(!strncmp(buf, "kd", 2)) {
+  else(!strncmp(buf, "kd", 2)) {
     event -> type = SDL_KEYDOWN;
   }
+  /*
   else 
     event -> type = SDL_USEREVENT;
+  */
   for(int i = 0; i < sizeof(keyname) / sizeof(keyname[0]); i++) {
     //printf("SDL: Comparing event %s\n", keyname[i]);
     //printf("SDL: receiving event %s\n", buf + 3);
