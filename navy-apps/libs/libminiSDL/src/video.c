@@ -87,7 +87,7 @@ void SDL_UpdateRect(SDL_Surface *s, int x, int y, int w, int h)
         buf[i++] = rgba_color.a << 24 | rgba_color.r << 16 | rgba_color.g << 8 | rgba_color.b;
       }
       else
-        panic("unsupported pixel bites %d!\n", s->format->BitsPerPixel);
+        printf("unsupported pixel bites %d!\n", s->format->BitsPerPixel);
     }
   }
 
