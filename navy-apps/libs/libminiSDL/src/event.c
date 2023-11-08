@@ -2,6 +2,7 @@
 #include <SDL.h>
 
 #define keyname(k) #k,
+#define BUFLEN 32;
 
 static const char *keyname[] = {
   "NONE",
@@ -17,7 +18,14 @@ int SDL_PollEvent(SDL_Event *ev) {
 }
 
 int SDL_WaitEvent(SDL_Event *event) {
-  return NDL_PollEvent((char *)event, sizeof(event));
+  /*
+  char *buf[BUFLEN];
+  *buf = '0';
+  */
+  /* Listening for events. */
+  //while(NDL_PollEvent(buf, BUFLEN)) ;
+
+  return 1;
 }
 
 int SDL_PeepEvents(SDL_Event *ev, int numevents, int action, uint32_t mask) {
