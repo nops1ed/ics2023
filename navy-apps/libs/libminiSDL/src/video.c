@@ -16,12 +16,12 @@ void SDL_BlitSurface(SDL_Surface *src, SDL_Rect *srcrect, SDL_Surface *dst, SDL_
   */
   uint32_t src_col = src -> w, src_row = src -> h;
   uint32_t src_pos = 0;
+  printf("assert dstrect is not NULL~\n");
   if(dstrect != NULL) {
     src_col = srcrect -> w;
     src_row = srcrect -> h;
     src_pos = srcrect -> y * src -> w + srcrect -> x;
   }
-  printf("trying to value dst_pos ~\n");
   uint32_t dst_pos = dstrect == NULL ? 0 : dstrect -> y * dst -> w + dstrect -> x;
   printf("Copying...\n");
   if(src -> format -> BytesPerPixel == 4)
