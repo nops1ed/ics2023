@@ -36,7 +36,9 @@ void render() {
 
 void prev(int rep) {
   if (rep == 0) rep = 1;
+printf("rep get ~\n");
   cur -= rep;
+ printf("cur get ~\n"); 
   if (cur < 0) cur = 0;
   render();
 }
