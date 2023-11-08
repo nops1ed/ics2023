@@ -121,6 +121,7 @@ size_t fs_lseek(int fd, size_t offset, int whence) {
 
 int fs_close(int fd) {
   printf("fs_close called\n");
+  file_table[fd].open_offset = 0;
   return 0;
 }
 
