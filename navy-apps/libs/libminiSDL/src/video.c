@@ -21,29 +21,26 @@ void SDL_UpdateRect(SDL_Surface *s, int x, int y, int w, int h) {
     h = s -> h;
     printf("SDL: Now w is %d h is %d\n",w ,h);
   }
-  uint8_t unit = s -> format -> BytesPerPixel;
-  printf("SDL: uint is %d\n", unit);
-  /* Treat it as byte stream. */
-  int oo = 0;
-  uint32_t *_buf = (uint32_t *)malloc(sizeof(uint8_t) * unit * w * h);
+  uint32_t pos = 0;
+  uint32_t *_buf = (uint32_t *)malloc(sizeof(uint32_t) * w * h);
   for(uint32_t row = 0; row < h; row++)
     /* Color depth is 8. */
-    if(unit == 1)
-      /* Copy pixel stream. */ 
-      for(uint32_t col = 0; col < w; col++)
-        _buf[oo++] = s -> pixels[(row + y) * (s -> w) * unit + x + col];
+    if(s -> format -> BytesPerPixel == 1)
+      for(uint32_t col = 0; col < w; col++) {
+      /* The concept of using a palette at 8-bit color depth. */
+        SDL_Color sdlcolor = s -> format -> palette -> colors[((row + y) * (s -> w) + x + col) * 4];
+        _buf[pos++] = sdlcolor.val;
+      }
     /* Color depth is 32. */
     else {
       /* Each pixel is described as a color using a 32-bit integer in the form of 00RRGGBB. */
       for(uint32_t col = 0; col < w; col++) {
           uint32_t offset = ((row + y) * (s -> w) + x + col) * 4;
-          //_buf[oo++] = s -> pixels[(row + y) * (s -> w) + x + col * 4 + i];
-          _buf[oo++] = s -> pixels[offset + 3] << 24 | s -> pixels[offset + 2] << 16 |
+          _buf[pos++] = s -> pixels[offset + 3] << 24 | s -> pixels[offset + 2] << 16 |
                         s -> pixels[offset + 1] << 8 | s -> pixels[offset + 0];
       }
     }
-    _buf[oo] = '\0';
-    printf("Now the oo is %d\n",oo);
+    _buf[pos] = '\0';
     printf("SDL: BUF initialized successfullly\n");
     NDL_DrawRect(_buf, x, y, w, h);
 
