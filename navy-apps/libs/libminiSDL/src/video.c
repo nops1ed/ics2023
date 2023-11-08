@@ -53,6 +53,7 @@ void SDL_FillRect(SDL_Surface *dst, SDL_Rect *dstrect, uint32_t color) {
      memset((uint8_t *)dst -> pixels + dst_pos + dst -> w * i,
               color, sizeof(uint8_t) * dst_row);
   else printf("Pixel format cannot found");
+  printf("Copy success ~\n");
 }
 
 void SDL_UpdateRect(SDL_Surface *s, int x, int y, int w, int h) {
