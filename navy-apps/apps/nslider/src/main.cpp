@@ -63,8 +63,7 @@ int main() {
   int rep = 0, g = 0;
 
   render();
-  next(rep);
-  /*
+
   while (1) {
     SDL_Event e;
     //printf("\n");
@@ -97,7 +96,6 @@ int main() {
       }
     }
   }
-  */
 
   return 0;
 }
