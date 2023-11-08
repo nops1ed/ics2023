@@ -20,11 +20,15 @@ static SDL_Surface *slide = NULL;
 static int cur = 0;
 
 void render() {
+  printf("Freeing...\n");
   if (slide) {
     SDL_FreeSurface(slide);
   }
+  printf("Free success !\n");
+  printf("Loading...\n");
   char fname[256];
   sprintf(fname, path, cur);
+  printf("Load success ~\n");
   slide = SDL_LoadBMP(fname);
   assert(slide);
   SDL_UpdateRect(slide, 0, 0, 0, 0);
