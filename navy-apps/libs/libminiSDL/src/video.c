@@ -6,11 +6,13 @@
 #include <stdio.h>
 
 void SDL_BlitSurface(SDL_Surface *src, SDL_Rect *srcrect, SDL_Surface *dst, SDL_Rect *dstrect) {
+  printf("Should not reach here\n");
   assert(dst && src);
   assert(dst->format->BitsPerPixel == src->format->BitsPerPixel);
 }
 
 void SDL_FillRect(SDL_Surface *dst, SDL_Rect *dstrect, uint32_t color) {
+  printf("Should not reach here\n");
 }
 
 void SDL_UpdateRect(SDL_Surface *s, int x, int y, int w, int h) {
@@ -44,7 +46,7 @@ void SDL_UpdateRect(SDL_Surface *s, int x, int y, int w, int h) {
     _buf[pos] = '\0';
     printf("SDL: BUF initialized successfullly\n");
     NDL_DrawRect(_buf, x, y, w, h);
-    //free(_buf);
+    free(_buf);
 }
 
 // APIs below are already implemented.
