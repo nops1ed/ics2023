@@ -44,7 +44,9 @@ void prev(int rep) {
 void next(int rep) {
   printf("In next now...\n");
   if (rep == 0) rep = 1;
+  printf("rep get ~\n");
   cur += rep;
+  printf("Cur get ~\n");
   if (cur >= N) cur = N - 1;
   printf("Calling render...\n");
   render();
