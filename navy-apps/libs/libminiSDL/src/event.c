@@ -36,6 +36,7 @@ int SDL_WaitEvent(SDL_Event *event) {
     printf("SDL: receiving event %s\n", buf + 3);
     if(!strncmp(buf + 3, keyname[i], strlen(keyname[i]))) {
       event -> key.keysym.sym = i;
+      printf("SDL: Event detected~ \n");
       break;
     }
   }
