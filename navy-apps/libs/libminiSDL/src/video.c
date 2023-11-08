@@ -62,7 +62,7 @@ void SDL_UpdateRect(SDL_Surface *s, int x, int y, int w, int h) {
     // Update the whole screen
     w = s -> w;
     h = s -> h;
-    printf("SDL: Now w is %d h is %d\n",w ,h);
+    //printf("SDL: Now w is %d h is %d\n",w ,h);
   }
   uint32_t pos = 0;
   uint32_t *_buf = (uint32_t *)malloc(sizeof(uint32_t) * w * h);

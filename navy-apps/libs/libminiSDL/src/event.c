@@ -15,7 +15,7 @@ int SDL_PushEvent(SDL_Event *ev) {
 }
 
 int SDL_PollEvent(SDL_Event *ev) {
-  printf("In SDL_Pollevent now\n");
+  //printf("In SDL_Pollevent now\n");
   char buf[BUFLEN];
   memset(buf, 0, BUFLEN);
   /* Listening for events. */
@@ -37,12 +37,12 @@ int SDL_PollEvent(SDL_Event *ev) {
       break;
     }
   }
-  printf("And now the key is %d\n", ev -> key.keysym.sym);
+  //printf("And now the key is %d\n", ev -> key.keysym.sym);
   return 0;
 }
 
 int SDL_WaitEvent(SDL_Event *event) {
-  printf("In SDL_Waitevent now\n");
+  //printf("In SDL_Waitevent now\n");
   char buf[BUFLEN];
   memset(buf, 0, BUFLEN);
   /* Listening for events. */
@@ -64,7 +64,7 @@ int SDL_WaitEvent(SDL_Event *event) {
       break;
     }
   }
-  printf("And now the key is %d\n", event -> key.keysym.sym);
+  //printf("And now the key is %d\n", event -> key.keysym.sym);
   return 1;
 }
 
