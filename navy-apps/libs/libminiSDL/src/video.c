@@ -43,7 +43,7 @@ void SDL_FillRect(SDL_Surface *dst, SDL_Rect *dstrect, uint32_t color) {
     dst_row = dstrect -> h;
     dst_pos = dstrect -> y * dst -> w + dstrect -> x;
   }
-  printf("Copying...\n");
+  //printf("Copying...\n");
   if(dst -> format -> BytesPerPixel == 4)
     for(int i = 0; i < dst_row; i++)
       memset((uint32_t *)dst -> pixels + dst_pos + dst -> w * i,
@@ -53,11 +53,11 @@ void SDL_FillRect(SDL_Surface *dst, SDL_Rect *dstrect, uint32_t color) {
      memset((uint8_t *)dst -> pixels + dst_pos + dst -> w * i,
               color, sizeof(uint8_t) * dst_row);
   else printf("Pixel format cannot found");
-  printf("Copy success ~\n");
+  //printf("Copy success ~\n");
 }
 
 void SDL_UpdateRect(SDL_Surface *s, int x, int y, int w, int h) {
-  printf("SDL: x is %d y is %d w is %d h is %d\n",x ,y , w ,h);
+  //printf("SDL: x is %d y is %d w is %d h is %d\n",x ,y , w ,h);
   if(x == 0 && y == 0 && w == 0 && h == 0) {
     // Update the whole screen
     w = s -> w;
@@ -85,9 +85,9 @@ void SDL_UpdateRect(SDL_Surface *s, int x, int y, int w, int h) {
                         s -> pixels[offset + 1] << 8 | s -> pixels[offset + 0];
       }
     }
-    printf("SDL: BUF initialized successfullly\n");
+    //printf("SDL: BUF initialized successfullly\n");
     NDL_DrawRect(_buf, x, y, w, h);
-    printf("Drawing success ~\n");
+    //printf("Drawing success ~\n");
     free(_buf);
 }
 
