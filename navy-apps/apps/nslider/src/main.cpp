@@ -69,9 +69,9 @@ int main() {
         case SDLK_8: rep = rep * 10 + 8; break;
         case SDLK_9: rep = rep * 10 + 9; break;
         case SDLK_J:
-        case SDLK_DOWN: next(rep); rep = 0; g = 0; break;
+        case SDLK_DOWN: printf("NSLIDER: received\n"); next(rep); rep = 0; g = 0; break;
         case SDLK_K:
-        case SDLK_UP: prev(rep); rep = 0; g = 0; break;
+        case SDLK_UP: printf("NSLIDER: received\n"); prev(rep); rep = 0; g = 0; break;
         case SDLK_G:
           g ++;
           if (g > 1) {
