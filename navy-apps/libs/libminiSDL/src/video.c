@@ -8,8 +8,10 @@
 void SDL_BlitSurface(SDL_Surface *src, SDL_Rect *srcrect, SDL_Surface *dst, SDL_Rect *dstrect) {
   assert(dst && src);
   assert(dst->format->BitsPerPixel == src->format->BitsPerPixel);
+  //uint32_t src_col = src -> w, src_row = src -> h;
+  //uint32_t dst_col = dst -> w, dst_row = dst -> h;
   uint32_t src_pos = srcrect -> y * src -> w;
-  uint32_t dst_pos = dstrect -> y * dst -> w;
+  uint32_t dst_pos = dstrect == NULL ? 0 : dstrect -> y * dst -> w;
   if(src -> format -> BytesPerPixel == 4)
     for(int i = 0; i < dstrect -> h; i++)
       memcpy((uint32_t*)dst -> pixels + dst_pos + i * dst -> w, 
@@ -22,16 +24,22 @@ void SDL_BlitSurface(SDL_Surface *src, SDL_Rect *srcrect, SDL_Surface *dst, SDL_
 }
 
 void SDL_FillRect(SDL_Surface *dst, SDL_Rect *dstrect, uint32_t color) {
-  assert(dst && dstrect);
+  assert(dst);
   /* Assume Little endian. */
+  uint32_t dst_col = dst -> w, dst_row = dst -> h, dst_pos = 0;
+  if(dstrect != NULL) {
+    dst_col = dstrect -> w;
+    dst_row = dstrect -> h;
+    dst_pos = dstrect -> x * dst -> w + dstrect -> y;
+  }
   if(dst -> format -> BytesPerPixel == 4)
-    for(int i = 0; i < dst -> h; i++)
-      memset((uint32_t *)dst -> pixels + dstrect -> y * dst -> w + dst -> w * i,
-              color, sizeof(uint32_t) * dst -> w);
+    for(int i = 0; i < dst_row; i++)
+      memset((uint32_t *)dst -> pixels + dst_pos + dst -> w * i,
+              color, sizeof(uint32_t) * dst_row);
   else if(dst -> format -> BytesPerPixel == 1)
-    for(int i = 0; i < dst -> h; i++)
-     memset((uint8_t *)dst -> pixels + dstrect -> y * dst -> w + dst -> w * i,
-              color, sizeof(uint8_t) * dst -> w);
+    for(int i = 0; i < dst_row; i++)
+     memset((uint8_t *)dst -> pixels + dst_pos + dst -> w * i,
+              color, sizeof(uint8_t) * dst_row);
   else printf("Pixel format cannot found");
 }
 
