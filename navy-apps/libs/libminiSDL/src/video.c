@@ -16,8 +16,7 @@ void SDL_BlitSurface(SDL_Surface *src, SDL_Rect *srcrect, SDL_Surface *dst, SDL_
   */
   uint32_t src_col = src -> w, src_row = src -> h;
   uint32_t src_pos = 0;
-  if(dstrect != NULL) {
-    printf("col and row has value already ~\n");
+  if(srcrect != NULL) {
     src_col = srcrect -> w;
     src_row = srcrect -> h;
     src_pos = srcrect -> y * src -> w + srcrect -> x;
