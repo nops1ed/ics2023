@@ -22,7 +22,7 @@ int SDL_WaitEvent(SDL_Event *event) {
   char buf[BUFLEN];
   *buf = '\0';
   /* Listening for events. */
-  while(NDL_PollEvent(buf, BUFLEN)) ;
+  while(!NDL_PollEvent(buf, BUFLEN)) ;
   if(!strncmp(buf, "ku", 2)) {
     event -> type = SDL_KEYUP;
   }
