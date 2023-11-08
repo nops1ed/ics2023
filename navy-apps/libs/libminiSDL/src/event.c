@@ -26,7 +26,7 @@ int SDL_WaitEvent(SDL_Event *event) {
   if(!strncmp(buf, "ku", 2)) {
     event -> type = SDL_KEYUP;
   }
-  else(!strncmp(buf, "kd", 2)) {
+  if(!strncmp(buf, "kd", 2)) {
     event -> type = SDL_KEYDOWN;
   }
   /*
