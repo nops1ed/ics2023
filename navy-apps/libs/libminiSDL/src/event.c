@@ -16,8 +16,7 @@ int SDL_PushEvent(SDL_Event *ev) {
 }
 
 int SDL_PollEvent(SDL_Event *ev) {
-  //printf("In SDL_Pollevent now\n");
-  char buf[BUFLEN];
+  char *buf = (char *)malloc(sizeof(char) * BUFLEN);
   memset(buf, 0, BUFLEN);
   /* Listening for events. */
   if(!NDL_PollEvent(buf, BUFLEN)) return 0;
@@ -30,20 +29,15 @@ int SDL_PollEvent(SDL_Event *ev) {
   else 
     ev -> type = SDL_USEREVENT;
   for(int i = 0; i < sizeof(keyname) / sizeof(keyname[0]); i++) {
-    //printf("SDL: Comparing event %s\n", keyname[i]);
-    //printf("SDL: receiving event %s\n", buf + 3);
     if(!strncmp(buf + 3, keyname[i], strlen(keyname[i]))) {
       ev -> key.keysym.sym = i;
-      //printf("SDL: Event detected~ \n");
       break;
     }
   }
-  //printf("And now the key is %d\n", ev -> key.keysym.sym);
   return 0;
 }
 
 int SDL_WaitEvent(SDL_Event *event) {
-  //printf("In SDL_Waitevent now\n");
   char *buf = (char *)malloc(sizeof(char) * BUFLEN);
   memset(buf, 0, BUFLEN);
   /* Listening for events. */
@@ -57,16 +51,12 @@ int SDL_WaitEvent(SDL_Event *event) {
   else 
     event -> type = SDL_USEREVENT;
   for(int i = 0; i < sizeof(keyname) / sizeof(keyname[0]); i++) {
-    //printf("SDL: Comparing event %s\n", keyname[i]);
-    //printf("SDL: receiving event %s\n", buf + 3);
     if(!strncmp(buf + 3, keyname[i], strlen(keyname[i]))) {
       event -> key.keysym.sym = i;
-      //printf("SDL: Event detected~ \n");
       break;
     }
   }
   free(buf);
-  //printf("And now the key is %d\n", event -> key.keysym.sym);
   return 1;
 }
 
