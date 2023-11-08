@@ -80,7 +80,7 @@ void SDL_UpdateRect(SDL_Surface *s, int x, int y, int w, int h) {
       /* Each pixel is described as a color using a 32-bit integer in the form of 00RRGGBB. */
       for(uint32_t col = 0; col < w; col++) {
           //uint32_t offset = ((row + y) * (s -> w) + x + col) * 4;
-          uint32_t offset = x + y * s -> w + (col + row * s->w) * 4;
+          uint32_t offset = x + y * s -> w + col * 4 + row * s->w;
           _buf[pos++] = s -> pixels[offset + 3] << 24 | s -> pixels[offset + 2] << 16 |
                         s -> pixels[offset + 1] << 8 | s -> pixels[offset + 0];
       }
