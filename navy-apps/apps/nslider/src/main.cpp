@@ -32,7 +32,6 @@ void render() {
 
 void prev(int rep) {
   if (rep == 0) rep = 1;
-  //printf("Now cur is %d rep is %d\n", cur, rep);
   cur -= rep;
   if (cur < 0) cur = 0;
   render();
@@ -40,7 +39,6 @@ void prev(int rep) {
 
 void next(int rep) {
   if (rep == 0) rep = 1;
-  //printf("Now cur is %d rep is %d\n", cur, rep);
   cur += rep;
   if (cur >= N) cur = N - 1;
   render();
@@ -76,7 +74,6 @@ int main() {
         case SDLK_UP: prev(rep); rep = 0; g = 0; break;
         case SDLK_G:
           g ++;
-          printf("Now g is %d\n", g);
           if (g > 1) {
             prev(100000);
             rep = 0; g = 0;
