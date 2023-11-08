@@ -88,7 +88,7 @@ void SDL_UpdateRect(SDL_Surface *s, int x, int y, int w, int h) {
     printf("SDL: BUF initialized successfullly\n");
     NDL_DrawRect(_buf, x, y, w, h);
     printf("Drawing success ~\n");
-    //free(_buf);
+    free(_buf);
 }
 
 // APIs below are already implemented.
