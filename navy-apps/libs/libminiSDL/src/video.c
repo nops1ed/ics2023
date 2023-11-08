@@ -6,6 +6,7 @@
 #include <stdio.h>
 
 void SDL_BlitSurface(SDL_Surface *src, SDL_Rect *srcrect, SDL_Surface *dst, SDL_Rect *dstrect) {
+  printf("Now in SDL_BlitSurface now~\n");
   assert(dst && src);
   assert(dst->format->BitsPerPixel == src->format->BitsPerPixel);
   /* src is the source surface to be copied, srcrect is the rectangular area to be copied, 
