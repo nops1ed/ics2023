@@ -32,11 +32,11 @@ int SDL_WaitEvent(SDL_Event *event) {
   else 
     event -> type = SDL_USEREVENT;
   for(int i = 0; i < sizeof(keyname) / sizeof(keyname[0]); i++) {
-    printf("SDL: Comparing event %s\n", keyname[i]);
-    printf("SDL: receiving event %s\n", buf + 3);
+    //printf("SDL: Comparing event %s\n", keyname[i]);
+    //printf("SDL: receiving event %s\n", buf + 3);
     if(!strncmp(buf + 3, keyname[i], strlen(keyname[i]))) {
       event -> key.keysym.sym = i;
-      printf("SDL: Event detected~ \n");
+      //printf("SDL: Event detected~ \n");
       break;
     }
   }
