@@ -24,8 +24,7 @@ void SDL_UpdateRect(SDL_Surface *s, int x, int y, int w, int h) {
   uint8_t unit = s -> format -> BytesPerPixel;
   printf("SDL: uint is %d\n", unit);
   /* Treat it as byte stream. */
-  int oo = 0;
-  uint8_t *_buf = (uint8_t *)malloc(sizeof(uint8_t) * unit * w * h);
+  uint32_t *_buf = (uint32_t *)malloc(sizeof(uint8_t) * unit * w * h);
   for(uint32_t row = 0; row < h; row++)
     /* Color depth is 8. */
     if(unit == 1)
@@ -36,10 +35,11 @@ void SDL_UpdateRect(SDL_Surface *s, int x, int y, int w, int h) {
     else {
       /* Each pixel is described as a color using a 32-bit integer in the form of 00RRGGBB. */
       for(uint32_t col = 0; col < w; col++) {
-        for(int i = 0; i < 4; i++) {
-          _buf[oo++] = s -> pixels[(row + y) * (s -> w) + x + col * 4 + i];
+          uint32_t offset = (row + y) * (s -> w) + x + col * 4;
+          //_buf[oo++] = s -> pixels[(row + y) * (s -> w) + x + col * 4 + i];
+          _buf[oo++] = s -> pixels[offset + 3] << 24 | s -> pixels[offset + 2] << 16 |
+                        s -> pixels[ofset + 1] << 8 | s -> pixels[offset];
         }
-      }
     }
     _buf[oo] = '\0';
     printf("Now the oo is %d\n",oo);
