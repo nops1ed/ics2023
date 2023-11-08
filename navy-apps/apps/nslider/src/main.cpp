@@ -66,7 +66,7 @@ int main() {
 
   while (1) {
     SDL_Event e;
-    printf("\n");
+    //printf("\n");
     SDL_WaitEvent(&e);
     //printf("Get...\n");
 
