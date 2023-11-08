@@ -8,18 +8,28 @@
 void SDL_BlitSurface(SDL_Surface *src, SDL_Rect *srcrect, SDL_Surface *dst, SDL_Rect *dstrect) {
   assert(dst && src);
   assert(dst->format->BitsPerPixel == src->format->BitsPerPixel);
-  //uint32_t src_col = src -> w, src_row = src -> h;
-  //uint32_t dst_col = dst -> w, dst_row = dst -> h;
-  uint32_t src_pos = srcrect -> y * src -> w;
-  uint32_t dst_pos = dstrect == NULL ? 0 : dstrect -> y * dst -> w;
+  /* src is the source surface to be copied, srcrect is the rectangular area to be copied, 
+  * if NULL, the entire surface is copied. dst is the destination surface, 
+  * dstrect is the destination position, only its top-left coordinate is used, ignoring its width and height. 
+  * If NULL, the destination position is (0, 0). 
+  * The function will save the final copy area in dstrect after clipping, without modifying srcrect. 
+  */
+  uint32_t src_col = src -> w, src_row = src -> h;
+  uint32_t src_pos = 0;
+  if(dstrect != NULL) {
+    src_col = srcrect -> w;
+    src_row = srcrect -> h;
+    src_pos = srcrect -> y * src -> w + srcrect -> x;
+  }
+  uint32_t dst_pos = dstrect == NULL ? 0 : dstrect -> y * dst -> w + dstrect -> x;
   if(src -> format -> BytesPerPixel == 4)
     for(int i = 0; i < dstrect -> h; i++)
       memcpy((uint32_t*)dst -> pixels + dst_pos + i * dst -> w, 
-              (uint32_t *)src -> pixels + src_pos + i * src -> w, sizeof(uint32_t) * dst -> w);
+              (uint32_t *)src -> pixels + src_pos + i * src -> w, sizeof(uint32_t) * src_col);
   else if(src -> format -> BytesPerPixel == 1)
     for(int i = 0; i <dstrect -> h; i++)
       memcpy((uint8_t *)dst -> pixels + dst_pos + i * dst -> w, 
-              (uint8_t *)src -> pixels + src_pos + i * src -> w, sizeof(uint8_t) * dst -> w);
+              (uint8_t *)src -> pixels + src_pos + i * src -> w, sizeof(uint8_t) * src_col);
   else printf("Pixel format cannot found");
 }
 
