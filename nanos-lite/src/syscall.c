@@ -2,7 +2,7 @@
 #include "fs.h"
 #include "syscall.h"
 
-//#define CONFIG_STRACE
+#define CONFIG_STRACE
 
 typedef struct timeval {
   int64_t tv_sec;     // seconds
