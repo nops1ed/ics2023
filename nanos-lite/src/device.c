@@ -68,8 +68,7 @@ size_t dispinfo_read(void *buf, size_t offset, size_t len) {
   //printf("DEV: read is called and len is %d\n", len);
   printf("DEV: width is %d height is %d\n", gpuinfo.width, gpuinfo.height);
   char _tmp[32];
-  char _tmp2[32];
-  sprintf(buf, "WIDTH:%s\nHEIGHT:%s\n", itoa(gpuinfo.width, _tmp, 10), itoa(gpuinfo.width, _tmp2, 10));
+  sprintf(buf, "WIDTH:%s\nHEIGHT:%s\n", itoa(gpuinfo.width, _tmp, 10), itoa(gpuinfo.height, _tmp, 10));
   return len;
 }
 
