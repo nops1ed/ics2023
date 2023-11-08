@@ -65,7 +65,8 @@ size_t events_read(void *buf, size_t offset, size_t len) {
 
 size_t dispinfo_read(void *buf, size_t offset, size_t len) {
   /* buf does not support lseek. */
-  printf("DEV: read is called and len is %d\n", len);
+  //printf("DEV: read is called and len is %d\n", len);
+  printf("DEV: width is %d height is %d\n", gpuinfo.width, gpuinfo.height);
   char _tmp[32];
   sprintf(buf, "WIDTH:%s\nHEIGHT:%s\n", itoa(gpuinfo.width, _tmp, 10), itoa(gpuinfo.width, _tmp, 10));
   return len;
