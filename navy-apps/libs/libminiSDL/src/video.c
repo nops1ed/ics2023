@@ -71,15 +71,16 @@ void SDL_UpdateRect(SDL_Surface *s, int x, int y, int w, int h) {
     if(s -> format -> BytesPerPixel == 1)
       for(uint32_t col = 0; col < w; col++) {
       /* The concept of using a palette at 8-bit color depth. */
-        SDL_Color sdlcolor = s -> format -> palette -> colors[((row + y) * (s -> w) + x + col) * 4];
         printf("Should not reach here\n");
+        SDL_Color sdlcolor = s -> format -> palette -> colors[((row + y) * (s -> w) + x + col) * 4];
         _buf[pos++] = sdlcolor.val;
       }
     /* Color depth is 32. */
     else {
       /* Each pixel is described as a color using a 32-bit integer in the form of 00RRGGBB. */
       for(uint32_t col = 0; col < w; col++) {
-          uint32_t offset = ((row + y) * (s -> w) + x + col) * 4;
+          //uint32_t offset = ((row + y) * (s -> w) + x + col) * 4;
+          uint32_t offset = x + y * s -> w + (col + row * s->w) * 4;
           _buf[pos++] = s -> pixels[offset + 3] << 24 | s -> pixels[offset + 2] << 16 |
                         s -> pixels[offset + 1] << 8 | s -> pixels[offset + 0];
       }
