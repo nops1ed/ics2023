@@ -70,7 +70,7 @@ void NDL_DrawRect(uint32_t *pixels, int x, int y, int w, int h) {
     //printf("NDL: writing to %ld\n", x + (y + row) * disp_w);
     write(fbdev, pixels + row * w, w);  
   }
-  write(fbdev, 0, 0);
+  //write(fbdev, 0, 0);
 }
 
 void NDL_OpenAudio(int freq, int channels, int samples) {
