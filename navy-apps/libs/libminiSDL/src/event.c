@@ -20,7 +20,7 @@ int SDL_PollEvent(SDL_Event *ev) {
 
 int SDL_WaitEvent(SDL_Event *event) {
   char buf[BUFLEN];
-  *buf = '\0';
+  memset(buf, 0, BUFLEN);
   /* Listening for events. */
   while(!NDL_PollEvent(buf, BUFLEN)) ;
   if(!strncmp(buf, "ku", 2)) {
