@@ -47,6 +47,7 @@ void next(int rep) {
   printf("In next now...\n");
   if (rep == 0) rep = 1;
   printf("rep get ~\n");
+  printf("Now cur is %d rep is %d\n", cur, rep);
   cur += rep;
   printf("Cur get ~\n");
   if (cur >= N) cur = N - 1;
