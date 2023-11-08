@@ -76,6 +76,7 @@ int main() {
         case SDLK_UP: prev(rep); rep = 0; g = 0; break;
         case SDLK_G:
           g ++;
+          printf("Now g is %d\n", g);
           if (g > 1) {
             prev(100000);
             rep = 0; g = 0;
