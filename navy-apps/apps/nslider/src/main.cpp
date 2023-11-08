@@ -37,7 +37,7 @@ void render() {
 void prev(int rep) {
   if (rep == 0) rep = 1;
 //printf("rep get ~\n");
-  printf("Now cur is %d rep is %d\n", cur, rep);
+  //printf("Now cur is %d rep is %d\n", cur, rep);
   cur -= rep;
  //printf("cur get ~\n"); 
   if (cur < 0) cur = 0;
@@ -48,7 +48,7 @@ void next(int rep) {
   //printf("In next now...\n");
   if (rep == 0) rep = 1;
   //printf("rep get ~\n");
-  printf("Now cur is %d rep is %d\n", cur, rep);
+  //printf("Now cur is %d rep is %d\n", cur, rep);
   cur += rep;
   //printf("Cur get ~\n");
   if (cur >= N) cur = N - 1;
