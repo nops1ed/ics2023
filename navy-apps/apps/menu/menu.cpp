@@ -68,7 +68,9 @@ static void clear_display(void) {
 }
 
 int main(int argc, char *argv[], char *envp[]) {
+  printf("Initialize SDL\n");
   SDL_Init(0);
+  printf("Setting video mode\n");
   screen = SDL_SetVideoMode(0, 0, 32, SDL_HWSURFACE);
 
   font = new BDF_Font(font_fname);
