@@ -43,6 +43,7 @@ void SDL_FillRect(SDL_Surface *dst, SDL_Rect *dstrect, uint32_t color) {
     dst_row = dstrect -> h;
     dst_pos = dstrect -> x * dst -> w + dstrect -> y;
   }
+  printf("Copying...\n");
   if(dst -> format -> BytesPerPixel == 4)
     for(int i = 0; i < dst_row; i++)
       memset((uint32_t *)dst -> pixels + dst_pos + dst -> w * i,
