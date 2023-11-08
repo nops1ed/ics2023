@@ -43,7 +43,7 @@ int SDL_PollEvent(SDL_Event *ev) {
 
 int SDL_WaitEvent(SDL_Event *event) {
   //printf("In SDL_Waitevent now\n");
-  char buf[BUFLEN];
+  char *buf = (char *)malloc(sizeof(char) * BUFLEN);
   memset(buf, 0, BUFLEN);
   /* Listening for events. */
   while(!NDL_PollEvent(buf, BUFLEN)) ;
@@ -64,6 +64,7 @@ int SDL_WaitEvent(SDL_Event *event) {
       break;
     }
   }
+  free(buf);
   //printf("And now the key is %d\n", event -> key.keysym.sym);
   return 1;
 }
