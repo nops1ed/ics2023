@@ -5,52 +5,83 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-void SDL_BlitSurface(SDL_Surface *src, SDL_Rect *srcrect, SDL_Surface *dst, SDL_Rect *dstrect) {
+
+void SDL_BlitSurface(SDL_Surface *src, SDL_Rect *srcrect, SDL_Surface *dst, SDL_Rect *dstrect)
+{
+  // printf("dst->format->BitsPerPixe is %d\n",dst->format->BitsPerPixel);
+  // TODO();
+
   assert(dst && src);
   assert(dst->format->BitsPerPixel == src->format->BitsPerPixel);
-  /* src is the source surface to be copied, srcrect is the rectangular area to be copied, 
-  * if NULL, the entire surface is copied. dst is the destination surface, 
-  * dstrect is the destination position, only its top-left coordinate is used, ignoring its width and height. 
-  * If NULL, the destination position is (0, 0). 
-  * The function will save the final copy area in dstrect after clipping, without modifying srcrect. 
-  */
-  uint32_t src_col = src -> w, src_row = src -> h;
-  uint32_t src_pos = 0;
-  if(dstrect != NULL) {
-    src_col = srcrect -> w;
-    src_row = srcrect -> h;
-    src_pos = srcrect -> y * src -> w + srcrect -> x;
+  // important:!!!uint32_t not int16_t, otherwise overflow, not learn
+  // the definition from SDL_Rect!, width * height is pretty large!!
+  uint32_t s_start_pos = 0;
+  uint32_t s_sf_row_num = src->h, s_sf_col_num = src->w,
+           s_rec_row_num = src->h, s_rec_col_num = src->w;
+  if (srcrect != NULL)
+  {
+    s_start_pos = srcrect->x + srcrect->y * src->w;
+    s_rec_row_num = srcrect->h;
+    s_rec_col_num = srcrect->w;
   }
-  uint32_t dst_pos = dstrect == NULL ? 0 : dstrect -> y * dst -> w + dstrect -> x;
-  if(src -> format -> BytesPerPixel == 4)
-    for(int i = 0; i < dstrect -> h; i++)
-      memcpy((uint32_t*)dst -> pixels + dst_pos + i * dst -> w, 
-              (uint32_t *)src -> pixels + src_pos + i * src -> w, sizeof(uint32_t) * src_col);
-  else if(src -> format -> BytesPerPixel == 1)
-    for(int i = 0; i <dstrect -> h; i++)
-      memcpy((uint8_t *)dst -> pixels + dst_pos + i * dst -> w, 
-              (uint8_t *)src -> pixels + src_pos + i * src -> w, sizeof(uint8_t) * src_col);
-  else printf("Pixel format cannot found");
+
+  uint32_t d_start_pos = 0;
+  uint32_t d_sf_row_num = dst->h, d_sf_col_num = dst->w;
+  if (dstrect != NULL)
+  {
+    d_start_pos = dstrect->x + dstrect->y * dst->w;
+  }
+
+  if (dst->format->BitsPerPixel == 32)
+  {
+    for (int row = 0; row < s_rec_row_num; ++row)
+    {
+      memcpy((uint32_t *)dst->pixels + d_start_pos + row * d_sf_col_num, 
+        (uint32_t *)src->pixels + s_start_pos + row * s_sf_col_num, s_rec_col_num * sizeof(uint32_t));
+    }
+  }
+  else if (dst->format->BitsPerPixel == 8)
+  {
+    for (int row = 0; row < s_rec_row_num; ++row)
+    {
+      memcpy((uint8_t *)dst->pixels + d_start_pos + row * d_sf_col_num,
+       (uint8_t *)src->pixels + s_start_pos + row * s_sf_col_num, s_rec_col_num * sizeof(uint8_t));
+    }
+  }
+  else
+    printf("unsupported pixel bites %d!\n", dst->format->BitsPerPixel);
 }
 
-void SDL_FillRect(SDL_Surface *dst, SDL_Rect *dstrect, uint32_t color) {
-  assert(dst);
-  /* Assume Little endian. */
-  uint32_t dst_col = dst -> w, dst_row = dst -> h, dst_pos = 0;
-  if(dstrect != NULL) {
-    dst_col = dstrect -> w;
-    dst_row = dstrect -> h;
-    dst_pos = dstrect -> x * dst -> w + dstrect -> y;
+void SDL_FillRect(SDL_Surface *dst, SDL_Rect *dstrect, uint32_t color)
+{
+  // panic();
+  // TODO();
+
+  int32_t start_pos = 0;
+  uint32_t sf_row_num = dst->h;
+  uint32_t sf_col_num = dst->w;
+  uint32_t rec_row_num = dst->h;
+  uint32_t rec_col_num = dst->w;
+  if (dstrect != NULL)
+  {
+    start_pos = dstrect->x + dstrect->y * dst->w;
+    rec_row_num = dstrect->h;
+    rec_col_num = dstrect->w;
   }
-  if(dst -> format -> BytesPerPixel == 4)
-    for(int i = 0; i < dst_row; i++)
-      memset((uint32_t *)dst -> pixels + dst_pos + dst -> w * i,
-              color, sizeof(uint32_t) * dst_row);
-  else if(dst -> format -> BytesPerPixel == 1)
-    for(int i = 0; i < dst_row; i++)
-     memset((uint8_t *)dst -> pixels + dst_pos + dst -> w * i,
-              color, sizeof(uint8_t) * dst_row);
-  else printf("Pixel format cannot found");
+
+  if (dst->format->BitsPerPixel == 32)
+  {
+    for (int row = 0; row < rec_row_num; ++row)
+      memset((uint32_t *)dst->pixels + start_pos + row * sf_col_num, color, rec_col_num * sizeof(uint32_t));
+  }
+  else if (dst->format->BitsPerPixel == 8)
+  {
+    for (int row = 0; row < rec_row_num; ++row)
+      memset((uint8_t *)dst->pixels + start_pos + row * sf_col_num, color, rec_col_num * sizeof(uint8_t));
+  }
+  else
+    printf("unsupported pixel bites %d!\n", dst->format->BitsPerPixel);
+  return;
 }
 
 void SDL_UpdateRect(SDL_Surface *s, int x, int y, int w, int h) {
