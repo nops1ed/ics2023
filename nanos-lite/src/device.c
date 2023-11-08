@@ -82,7 +82,7 @@ size_t fb_write(const void *buf, size_t offset, size_t len) {
     ioe_write(AM_GPU_FBDRAW, &fbdraw);
     return 0;
   }
-  AM_GPU_FBDRAW_T fbdraw = {offset % gpuinfo.width, offset / gpuinfo.width, (void *)buf, len, 1, 0};
+  AM_GPU_FBDRAW_T fbdraw = {offset % gpuinfo.width, offset / gpuinfo.width, (void *)buf, len, 1, 1};
   ioe_write(AM_GPU_FBDRAW, &fbdraw);
   return len;
 }
