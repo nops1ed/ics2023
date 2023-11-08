@@ -1,8 +1,9 @@
 #include <NDL.h>
 #include <SDL.h>
 
+
 #define keyname(k) #k,
-#define BUFLEN 32;
+#define BUFLEN 32
 
 static const char *keyname[] = {
   "NONE",
@@ -18,13 +19,22 @@ int SDL_PollEvent(SDL_Event *ev) {
 }
 
 int SDL_WaitEvent(SDL_Event *event) {
-  /*
-  char *buf[BUFLEN];
-  *buf = '0';
-  */
+  char buf[BUFLEN];
+  *buf = '\0';
   /* Listening for events. */
-  //while(NDL_PollEvent(buf, BUFLEN)) ;
-
+  while(NDL_PollEvent(buf, BUFLEN)) ;
+  if(!strncmp(buf, "ku", 2)) {
+    event -> type = SDL_KEYDOWN;
+  }
+  else if(!strncmp(buf, "kd", 2)) {
+    event -> type = SDL_KEYUP;
+  }
+  else 
+    event -> type = SDL_USEREVENT;
+  for(int i = 0; i < sizeof(keyname) / sizeof(keyname[0]); i++) {
+    if(!strncmp(buf + 3, keyname[i], sizeof(keyname[i])))
+      event -> key.keysym.sym = i;
+  }
   return 1;
 }
 
