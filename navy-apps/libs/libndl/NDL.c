@@ -39,7 +39,7 @@ void NDL_OpenCanvas(int *w, int *h) {
   else if(*h > disp_h){
     assert(0);
   }
-  printf("Now the w is %d and h is %d\n", *w, *h);
+  //printf("Now the w is %d and h is %d\n", *w, *h);
   if (getenv("NWM_APP")) {
     printf("I am in NWM_APP\n");
     int fbctl = 4;

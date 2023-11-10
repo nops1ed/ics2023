@@ -30,7 +30,7 @@ void SDL_BlitSurface(SDL_Surface *src, SDL_Rect *srcrect, SDL_Surface *dst, SDL_
       memcpy((uint32_t*)(dst -> pixels) + dst_pos + i * dst -> w, 
               (uint32_t *)(src -> pixels) + src_pos + i * src -> w, sizeof(uint32_t) * src_col);
   else if(src -> format -> BytesPerPixel == 1)
-    for(int i = 0; i < dstrect -> h; i++)
+    for(int i = 0; i < src_row; i++)
       memcpy((uint8_t *)dst -> pixels + dst_pos + i * dst -> w, 
               (uint8_t *)src -> pixels + src_pos + i * src -> w, sizeof(uint8_t) * src_col);
   else printf("Pixel format cannot found");
