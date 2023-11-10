@@ -15,8 +15,8 @@ void SDL_BlitSurface(SDL_Surface *src, SDL_Rect *srcrect, SDL_Surface *dst, SDL_
   * If NULL, the destination position is (0, 0). 
   * The function will save the final copy area in dstrect after clipping, without modifying srcrect. 
   */
-  uint32_t *dst_pix = dst -> pixels;
-  uint32_t *src_pix = src -> pixels;
+  uint32_t *dst_pix = (uint32_t *)(dst -> pixels);
+  uint32_t *src_pix = (uint32_t *)(src -> pixels);
   uint32_t src_col = src -> w, src_row = src -> h;
   uint32_t src_pos = 0;
   if(srcrect != NULL) {
