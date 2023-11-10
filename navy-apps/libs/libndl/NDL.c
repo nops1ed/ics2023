@@ -28,15 +28,15 @@ int NDL_PollEvent(char *buf, int len) {
 
 void NDL_OpenCanvas(int *w, int *h) {
   if (*w == 0){
-    *w = screen_w;
+    *w = disp_w;
   }
-  else if(*w > screen_w){
+  else if(*w > disp_w){
     assert(0);
   }
   if(*h == 0){
-    *h = screen_h;
+    *h = disp_h;
   }
-  else if(*h > screen_h){
+  else if(*h > disp_h){
     assert(0);
   }
   printf("Now the w is %d and h is %d\n", *w, *h);
