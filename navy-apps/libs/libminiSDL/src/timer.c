@@ -13,7 +13,7 @@ int SDL_RemoveTimer(SDL_TimerID id) {
 uint32_t SDL_GetTicks() {
   uint32_t val = NDL_GetTicks();
   printf("ret val is %d\n",val);
-  return val;
+  return val / 1000000;
 }
 
 void SDL_Delay(uint32_t ms) {
