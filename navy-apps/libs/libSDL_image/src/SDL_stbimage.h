@@ -214,6 +214,7 @@ SDL_STBIMG_DEF SDL_Surface* STBIMG_LoadFromMemory(const unsigned char* buffer, i
 	bppToUse = STBI_rgb_alpha;
 
 	printf("trap here success\n");
+	printf("Now buffer is %s\n length is %d\n", buffer, length);
 	img.data = stbi_load_from_memory(buffer, length, &img.w, &img.h, &img.format, bppToUse);
 	if(img.data == NULL)
 	{
