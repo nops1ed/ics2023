@@ -32,6 +32,7 @@ SDL_Surface* IMG_Load(const char *filename) {
   }
   fclose(fp);
   free(buf); 
+  printf("Read success\n");
   return ret_surf;
 }
 
