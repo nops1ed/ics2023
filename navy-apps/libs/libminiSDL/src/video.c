@@ -79,7 +79,7 @@ void SDL_UpdateRect(SDL_Surface *s, int x, int y, int w, int h) {
       /* The concept of using a palette at 8-bit color depth. */
         printf("Should not reach here\n");
         SDL_Color sdlcolor = s -> format -> palette -> colors[((row + y) * (s -> w) + x + col) * 4];
-        _buf[pos++] = sdlcolor.val;
+        _buf[pos++] = sdlcolor.a << 24 | sdlcolor.r << 16 | sdlcolor.g << 8 | sdlcolor.b;
       }
     /* Color depth is 32. */
     else {

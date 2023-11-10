@@ -70,43 +70,17 @@ int _write(int fd, void *buf, size_t count) {
 }
 
 void *_sbrk(intptr_t increment) {
-  /*
   extern char end;
   static intptr_t _program_break = (intptr_t)&end;
 
   if(increment == 0)
     return (void *)_program_break; 
   void *old = (void *)_program_break;
-  */
   /* Call SYS_brk to modify program break. */ 
-  /*
   if(_syscall_((intptr_t)SYS_brk, (intptr_t)(_program_break + increment), 0, 0) == -1)
     return (void *)-1;
   _program_break += increment;
   return (void *)old;
-  */
-
-    extern char end;
-  static intptr_t p_brk = 0;
-  if (p_brk == 0)
-  {
-    p_brk = (intptr_t)&end;
-    _syscall_((intptr_t)SYS_brk, (intptr_t)p_brk, 0, 0);
-    // p_brk = (p_brk & 0xfff) ? ((p_brk & ~0xfff) + PG_SIZE) : p_brk;
-    // return (void *)-1;
-  }
-
-  void *old_brk = (void *)p_brk;
-  // char buf[32];
-  // sprintf(buf, "new brk is %p\n", (void *)(p_brk + increment));
-  // write(1, buf, 32);
-  if (_syscall_((intptr_t)SYS_brk, (intptr_t)(p_brk + increment), 0, 0) != 0)
-    return (void *)-1;
-  p_brk = p_brk + increment;
-  // char buf[32];
-  // sprintf(buf, "p_brk is %p\n", (void *)(p_brk));
-  // write(1, buf, 32);
-  return old_brk;
 }
 
 int _read(int fd, void *buf, size_t count) {
