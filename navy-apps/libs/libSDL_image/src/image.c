@@ -13,19 +13,15 @@ SDL_Surface* IMG_Load_RW(SDL_RWops *src, int freesrc) {
 }
 
 SDL_Surface* IMG_Load(const char *filename) {
-  printf("Loading file /share/pictures/projectn.bmp \n");
-  FILE *fp = fopen("/share/pictures/projectn.bmp", "r");
-  if(fp == NULL) printf("\n");
   printf("Loading file %s\n", filename);
-  fp = fopen(filename, "r");
+  FILE *fp = fopen(filename, "r");
   if(fp == NULL) {
     printf("ERROR: Couldn't open %s\n", filename);
     exit(1);
   }
   printf("read success\n");
-  //fseek(fp, 0, SEEK_END);
-  //size_t _size = ftell(fp);
-  size_t _size = 10;
+  fseek(fp, 0, SEEK_END);
+  size_t _size = ftell(fp);
   char *buf = (char *)malloc(sizeof(char) * _size);
   fread(buf, sizeof(char), _size, fp);
   SDL_Surface *ret_surf = STBIMG_LoadFromMemory(buf, _size);
