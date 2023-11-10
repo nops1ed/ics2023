@@ -22,10 +22,13 @@ SDL_Surface* IMG_Load(const char *filename) {
   //printf("read success\n");
   fseek(fp, 0, SEEK_END);
   size_t _size = ftell(fp);
+  printf("size could be %ld\n",_size);
   fseek(fp, 0 ,SEEK_SET);
   char *buf = (char *)malloc(sizeof(char) * _size);
   fread(buf, sizeof(char), _size, fp);
+  printf("Traping into STB...\n");
   SDL_Surface *ret_surf = STBIMG_LoadFromMemory(buf, _size);
+  printf("STB Back...\n");
   if(ret_surf == NULL) {
     printf("ERROR: Couldn't load %s\n",filename);
     exit(1);
