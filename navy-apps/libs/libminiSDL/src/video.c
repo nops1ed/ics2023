@@ -29,7 +29,9 @@ void SDL_BlitSurface(SDL_Surface *src, SDL_Rect *srcrect, SDL_Surface *dst, SDL_
     printf("dstrect->x is %d\n",dstrect->x);
     printf("dst->w is %d\n",dst->w);
     printf("dst->h is %d\n",dst->h);
-    dst_pos = dstrect -> y * dst -> w + dstrect -> x;
+    uint32_t dstt_x = dstrect->x < 0 ? 0 :dstrect->x;
+    uint32_t dstt_y = dstrect->y < 0 ? 0 :dstrect->y;
+    dst_pos = dstt_y * dst -> w + dstrect -> x;
     printf("dst_pos is %d\n",dst_pos);
   }
   printf("Copying...\n");
