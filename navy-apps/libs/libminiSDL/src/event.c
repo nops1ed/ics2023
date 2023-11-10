@@ -15,7 +15,7 @@ int SDL_PushEvent(SDL_Event *ev) {
   return 0;
 }
 
-static char buf[BUFLEN];
+static char buf[BUFLEN] = {};
 int SDL_PollEvent(SDL_Event *ev) {
   //char *buf = (char *)malloc(sizeof(char) * BUFLEN);
   memset(buf, 0, BUFLEN);
@@ -45,26 +45,27 @@ int SDL_PollEvent(SDL_Event *ev) {
   return 1;
 }
 
+static char buf2[BUFLEN] = {};
 int SDL_WaitEvent(SDL_Event *event) {
-  char *buf = (char *)malloc(sizeof(char) * BUFLEN);
-  memset(buf, 0, BUFLEN);
+  //char *buf = (char *)malloc(sizeof(char) * BUFLEN);
+  memset(buf2, 0, BUFLEN);
   /* Listening for events. */
-  while(!NDL_PollEvent(buf, BUFLEN)) ;
-  if(!strncmp(buf, "ku", 2)) {
+  while(!NDL_PollEvent(buf2, BUFLEN)) ;
+  if(!strncmp(buf2, "ku", 2)) {
     event -> type = SDL_KEYUP;
   }
-  else if(!strncmp(buf, "kd", 2)) {
+  else if(!strncmp(buf2, "kd", 2)) {
     event -> type = SDL_KEYDOWN;
   }
   else 
     event -> type = SDL_USEREVENT;
   for(int i = 0; i < sizeof(keyname) / sizeof(keyname[0]); i++) {
-    if(!strncmp(buf + 3, keyname[i], strlen(keyname[i]))) {
+    if(!strncmp(buf2 + 3, keyname[i], strlen(keyname[i]))) {
       event -> key.keysym.sym = i;
       break;
     }
   }
-  free(buf);
+  //free(buf);
   return 1;
 }
 
