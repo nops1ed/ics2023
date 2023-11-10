@@ -19,9 +19,10 @@ SDL_Surface* IMG_Load(const char *filename) {
     printf("ERROR: Couldn't open %s\n", filename);
     exit(1);
   }
-  printf("read success\n");
+  //printf("read success\n");
   fseek(fp, 0, SEEK_END);
   size_t _size = ftell(fp);
+  fseek(fp, 0 ,SEEK_SET);
   char *buf = (char *)malloc(sizeof(char) * _size);
   fread(buf, sizeof(char), _size, fp);
   SDL_Surface *ret_surf = STBIMG_LoadFromMemory(buf, _size);

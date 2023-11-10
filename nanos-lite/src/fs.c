@@ -50,7 +50,7 @@ void fs_curfilename(void) {
 }
 
 static size_t do_read(void *buf, size_t offset, size_t len) {
-  printf("Calling ramdisk_read offset = %d len = %d\n",offset, len);
+  //printf("Calling ramdisk_read offset = %d len = %d\n",offset, len);
   return ramdisk_read(buf, offset, len);
 }
 
@@ -62,8 +62,8 @@ void init_fs() {
   for (size_t fd = 0; fd < NR_FILE; ++fd) {
     if (file_table[fd].write == NULL) {
       file_table[fd].write = do_write;
-      printf("%s: ",file_table[fd].name);
-      printf("diskoffset = %d\n", file_table[fd].disk_offset);
+      //printf("%s: ",file_table[fd].name);
+      //printf("diskoffset = %d\n", file_table[fd].disk_offset);
     }
     if (file_table[fd].read == NULL)
       file_table[fd].read = do_read;
@@ -99,8 +99,8 @@ int fs_open(const char *pathname, int flags, int mode) {
 
 size_t fs_read(int fd, void *buf, size_t len) {
   //do_read(fd, buf, len);
-  printf("disk_offset is %d and open_offset is %d\n", file_table[fd].disk_offset, file_table[fd].open_offset);
-  printf("Now offset is %d and len is %d\n", file_table[fd].disk_offset + file_table[fd].open_offset, len);
+  //printf("disk_offset is %d and open_offset is %d\n", file_table[fd].disk_offset, file_table[fd].open_offset);
+  //printf("Now offset is %d and len is %d\n", file_table[fd].disk_offset + file_table[fd].open_offset, len);
   size_t ret_val = file_table[fd].read(buf, file_table[fd].disk_offset + file_table[fd].open_offset, len);
   file_table[fd].open_offset += ret_val;
   //printf("Now offset is %d\n\n", file_table[fd].disk_offset + file_table[fd].open_offset);
