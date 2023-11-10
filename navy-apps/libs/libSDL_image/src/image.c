@@ -35,9 +35,12 @@ SDL_Surface* IMG_Load(const char *filename) {
   free(buf); 
   return ret_surf;
   */
-
+    printf("in new pos\n");
     FILE* fp = fopen(filename, "r");
-  
+ if(fp == NULL) {
+    printf("ERROR: Couldn't open %s\n", filename);
+    exit(1);
+  } 
   fseek(fp, 0L, SEEK_END);
   size_t f_size = ftell(fp);
   fseek(fp, 0L, SEEK_SET);
