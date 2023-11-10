@@ -21,7 +21,7 @@ int SDL_PollEvent(SDL_Event *ev) {
   //memset(buf, 0, BUFLEN);
   /* Listening for events. */
   if(!NDL_PollEvent(buf, BUFLEN)) {
-    printf("Exiting...\n");
+    //printf("Exiting...\n");
     return 0;
   }
   printf("Detecing event\n");
