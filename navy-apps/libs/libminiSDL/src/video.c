@@ -15,8 +15,6 @@ void SDL_BlitSurface(SDL_Surface *src, SDL_Rect *srcrect, SDL_Surface *dst, SDL_
   * If NULL, the destination position is (0, 0). 
   * The function will save the final copy area in dstrect after clipping, without modifying srcrect. 
   */
-  uint32_t *dst_pix = (uint32_t *)(dst -> pixels);
-  uint32_t *src_pix = (uint32_t *)(src -> pixels);
   uint32_t src_col = src -> w, src_row = src -> h;
   uint32_t src_pos = 0;
   if(srcrect != NULL) {
@@ -27,11 +25,9 @@ void SDL_BlitSurface(SDL_Surface *src, SDL_Rect *srcrect, SDL_Surface *dst, SDL_
   uint32_t dst_pos = dstrect == NULL ? 0 : dstrect -> y * dst -> w + dstrect -> x;
   //printf("Copying...\n");
   if(src -> format -> BytesPerPixel == 4)
-    for(int row = 0; row < dst_row; row++)
-        //dst_pix[dst_pos + col + row * dst->w] = src_pix[src_pos + col + row * src->w]; 
-      //dst->pixels[dst_pos + i * dst -> w] = src->pixels[src_pos + i * src -> w];
-      memcpy((uint32_t*)dst -> pixels + dst_pos + row * dst -> w, 
-              (uint32_t *)src -> pixels + src_pos + row * src -> w, sizeof(uint32_t) * src_col);
+    for(int i = 0; i < src_row; i++)
+      memcpy((uint32_t*)dst -> pixels + dst_pos + i * dst -> w, 
+              (uint32_t *)src -> pixels + src_pos + i * src -> w, sizeof(uint32_t) * src_col);
   else if(src -> format -> BytesPerPixel == 1)
     for(int i = 0; i < dstrect -> h; i++)
       memcpy((uint8_t *)dst -> pixels + dst_pos + i * dst -> w, 
