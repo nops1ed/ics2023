@@ -1,46 +1,18 @@
+REPO_PATH = repo
+ifeq ($(wildcard repo/include/BirdGame.h),)
+  $(shell git clone --depth=1 git@github.com:NJU-ProjectN/sdlbird.git $(REPO_PATH))
+endif
+
 NAME = bird
-INC_DIR += ./include
-BUILD_DIR ?= ./build
+SRCS = $(shell find $(REPO_PATH)/src/ -name "*.cpp")
+INC_PATH = $(REPO_PATH)/include
+LIBS += libminiSDL libSDL_image libfixedptc
+include $(NAVY_HOME)/Makefile
 
-OBJ_DIR ?= $(BUILD_DIR)/
-BINARY ?= $(BUILD_DIR)/$(NAME)
+install: install-file
+init:;
 
-.DEFAULT_GOAL = app
+install-file:
+	ln -sf -T $(abspath $(REPO_PATH)/res) $(NAVY_HOME)/fsimg/share/games/bird
 
-# Compilation flags
-CC  = gcc
-CXX = g++
-LD  = g++
-INCLUDES  = $(addprefix -I, $(INC_DIR))
-CFLAGS   += -O2 -MMD -Wall $(INCLUDES) `sdl-config --cflags`
-CXXFLAGS += $(CFLAGS)
-LDFLAGS  += -O2 `sdl-config --libs` -lSDL_image
-
-# Files to be compiled
-CXX_SRCS = $(shell find src/ -name "*.cpp")
-OBJS = $(C_SRCS:src/%.c=$(OBJ_DIR)/%.o) $(CXX_SRCS:src/%.cpp=$(OBJ_DIR)/%.o) 
-
-# Compilation patterns
-$(OBJ_DIR)/%.o: src/%.cpp
-	@echo + CXX $<
-	@mkdir -p $(dir $@)
-	@$(CXX) $(CXXFLAGS) -c -o $@ $<
-
-
-# Depencies
--include $(OBJS:.o=.d)
-
-# Some convenient rules
-
-.PHONY: app clean
-app: $(BINARY)
-
-$(BINARY): $(OBJS)
-	@echo + LD $@
-	@$(LD) -o $@ $^ $(LDFLAGS)
-
-run: app
-	$(BINARY)
-
-clean:
-	-rm -rf $(BUILD_DIR)
+.PHONY: install-file init
