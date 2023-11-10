@@ -29,10 +29,12 @@ void SDL_BlitSurface(SDL_Surface *src, SDL_Rect *srcrect, SDL_Surface *dst, SDL_
     for(int i = 0; i < src_row; i++)
       memcpy((uint32_t*)(dst -> pixels) + dst_pos + i * dst -> w, 
               (uint32_t *)(src -> pixels) + src_pos + i * src -> w, sizeof(uint32_t) * src_col);
-  else if(src -> format -> BytesPerPixel == 1)
+  else if(src -> format -> BytesPerPixel == 1) {
+    printf("Should not reach here\n");
     for(int i = 0; i < src_row; i++)
       memcpy((uint8_t *)dst -> pixels + dst_pos + i * dst -> w, 
               (uint8_t *)src -> pixels + src_pos + i * src -> w, sizeof(uint8_t) * src_col);
+  }
   else printf("Pixel format cannot found");
 }
 
@@ -50,10 +52,12 @@ void SDL_FillRect(SDL_Surface *dst, SDL_Rect *dstrect, uint32_t color) {
     for(int i = 0; i < dst_row; i++)
       memset((uint32_t *)dst -> pixels + dst_pos + dst -> w * i,
               color, sizeof(uint32_t) * dst_row);
-  else if(dst -> format -> BytesPerPixel == 1)
+  else if(dst -> format -> BytesPerPixel == 1) {
+    printf("Should not reach here\n");
     for(int i = 0; i < dst_row; i++)
      memset((uint8_t *)dst -> pixels + dst_pos + dst -> w * i,
               color, sizeof(uint8_t) * dst_row);
+  }
   else printf("Pixel format cannot found");
   //printf("Copy success ~\n");
 }
