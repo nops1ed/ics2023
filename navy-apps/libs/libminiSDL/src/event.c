@@ -16,8 +16,7 @@ int SDL_PushEvent(SDL_Event *ev) {
 }
 
 int SDL_PollEvent(SDL_Event *ev) {
-  //char *buf = (char *)malloc(sizeof(char) * BUFLEN);
-  char buf[BUFLEN];
+  char *buf = (char *)malloc(sizeof(char) * BUFLEN);
   memset(buf, 0, BUFLEN);
   /* Listening for events. */
   if(!NDL_PollEvent(buf, BUFLEN)) return 0;
@@ -39,8 +38,7 @@ int SDL_PollEvent(SDL_Event *ev) {
 }
 
 int SDL_WaitEvent(SDL_Event *event) {
-  //char *buf = (char *)malloc(sizeof(char) * BUFLEN);
-  char buf[BUFLEN];
+  char *buf = (char *)malloc(sizeof(char) * BUFLEN);
   memset(buf, 0, BUFLEN);
   /* Listening for events. */
   while(!NDL_PollEvent(buf, BUFLEN)) ;
