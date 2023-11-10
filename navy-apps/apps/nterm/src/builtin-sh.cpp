@@ -30,10 +30,8 @@ void builtin_sh_run() {
   sh_prompt();
 
   while (1) {
-    printf("I am stil waiting...\n");
     SDL_Event ev;
     if (SDL_PollEvent(&ev)) {
-      printf("Good we detected evnet here \n");
       if (ev.type == SDL_KEYUP || ev.type == SDL_KEYDOWN) {
         const char *res = term->keypress(handle_key(&ev));
         if (res) {
