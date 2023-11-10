@@ -22,25 +22,9 @@ void SDL_BlitSurface(SDL_Surface *src, SDL_Rect *srcrect, SDL_Surface *dst, SDL_
     src_row = srcrect -> h;
     src_pos = srcrect -> y * src -> w + srcrect -> x;
   }
-  //uint32_t dst_pos = dstrect == NULL ? 0 : dstrect -> y * dst -> w + dstrect -> x;
-  int32_t dst_pos = 0;
-  if(dstrect != NULL) {
-    //printf("srcrect->y is %d\n",srcrect->y);
-    //printf("srcrect->y is %d\n",srcrect->y);
-    printf("src->w is %d\n",src->w);
-    printf("src->h is %d\n",src->h);
-    printf("dstrect->y is %hd\n",dstrect->y);
-    printf("dstrect->x is %hd\n",dstrect->x);
-    printf("dst->w is %d\n",dst->w);
-    printf("dst->h is %d\n",dst->h);
-    //uint32_t dstt_x = dstrect->x < 0 ? 0 :dstrect->x;
-    //uint32_t dstt_y = dstrect->y < 0 ? 0 :dstrect->y;
-    //dst_pos = dstt_y * dst -> w + dstt_x;
-    dst_pos = dstrect == NULL ? 0 : dstrect -> y * dst -> w + dstrect -> x;
-    printf("dst_pos is %d\n",dst_pos);
-  }
-  printf("Copying...\n");
-  printf("Debug info: src_col = %d src_row = %d src_pos = %d \ndst_pos = %d dst->w = %d dst->h = %d\n",src_col,src_row,src_pos,dst_pos,dst->w,dst->h);
+  uint32_t dst_pos = dstrect == NULL ? 0 : dstrect -> y * dst -> w + dstrect -> x;
+  //printf("Copying...\n");
+  //printf("Debug info: src_col = %d src_row = %d src_pos = %d \ndst_pos = %d dst->w = %d dst->h = %d\n",src_col,src_row,src_pos,dst_pos,dst->w,dst->h);
   if(src -> format -> BytesPerPixel == 4)
     for(int i = 0; i < src_row; i++)
       memcpy((uint32_t*)(dst -> pixels) + dst_pos + i * dst -> w, 
