@@ -24,7 +24,7 @@ int SDL_PollEvent(SDL_Event *ev) {
     //printf("Exiting...\n");
     return 0;
   }
-  printf("Detecing event\n");
+  //printf("Detecing event\n");
   if(!strncmp(buf, "ku", 2)) {
     ev -> type = SDL_KEYUP;
   }
@@ -38,7 +38,7 @@ int SDL_PollEvent(SDL_Event *ev) {
   for(int i = 0; i < sizeof(keyname) / sizeof(keyname[0]); i++) {
     if(!strncmp(buf + 3, keyname[i], strlen(keyname[i]))) {
       ev -> key.keysym.sym = i;
-      printf("Get key %d here\n",i);
+      //printf("Get key %d here\n",i);
       break;
     }
   }
