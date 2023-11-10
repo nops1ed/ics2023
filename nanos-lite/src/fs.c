@@ -62,7 +62,7 @@ void init_fs() {
   for (size_t fd = 0; fd < NR_FILE; ++fd) {
     if (file_table[fd].write == NULL) {
       file_table[fd].write = do_write;
-      fs_curfilename();
+      printf("%s: ",file_table[fd].name);
       printf("diskoffset = %d\n", file_table[fd].disk_offset);
     }
     if (file_table[fd].read == NULL)
