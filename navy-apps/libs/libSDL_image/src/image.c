@@ -11,9 +11,9 @@ SDL_Surface* IMG_Load_RW(SDL_RWops *src, int freesrc) {
   assert(freesrc == 0);
   return NULL;
 }
-FILE *fp;
+
 SDL_Surface* IMG_Load(const char *filename) {
-  fp = fopen(filename, "r");
+  FILE *fp = fopen(filename, "r");
   if(fp == NULL) {
     printf("ERROR: Couldn't open %s\n", filename);
     exit(1);
