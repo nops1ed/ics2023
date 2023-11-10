@@ -30,8 +30,10 @@ int SDL_PollEvent(SDL_Event *ev) {
   else if(!strncmp(buf, "kd", 2)) {
     ev -> type = SDL_KEYDOWN;
   }
-  else 
+  else {
+    printf("User evnet here\n");
     ev -> type = SDL_USEREVENT;
+  }
   for(int i = 0; i < sizeof(keyname) / sizeof(keyname[0]); i++) {
     if(!strncmp(buf + 3, keyname[i], strlen(keyname[i]))) {
       ev -> key.keysym.sym = i;
