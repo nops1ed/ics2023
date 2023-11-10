@@ -552,7 +552,7 @@ typedef unsigned char validate_uint32[sizeof(stbi__uint32)==4 ? 1 : -1];
 #define STBI_SIMD_ALIGN(type, name) type name
 
 #ifndef STBI_MAX_DIMENSIONS
-#define STBI_MAX_DIMENSIONS (1 << 24)
+// #define STBI_MAX_DIMENSIONS (1 << 24)
 #endif
 
 ///////////////////////////////////////////////
