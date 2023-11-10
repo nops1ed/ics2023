@@ -29,8 +29,8 @@ void SDL_BlitSurface(SDL_Surface *src, SDL_Rect *srcrect, SDL_Surface *dst, SDL_
     //printf("srcrect->y is %d\n",srcrect->y);
     printf("src->w is %d\n",src->w);
     printf("src->h is %d\n",src->h);
-    printf("dstrect->y is %d\n",dstrect->y);
-    printf("dstrect->x is %d\n",dstrect->x);
+    printf("dstrect->y is 0x%x\n",dstrect->y);
+    printf("dstrect->x is 0x%x\n",dstrect->x);
     printf("dst->w is %d\n",dst->w);
     printf("dst->h is %d\n",dst->h);
     uint32_t dstt_x = dstrect->x < 0 ? 0 :dstrect->x;
