@@ -201,7 +201,7 @@ SDL_STBIMG_DEF SDL_Surface* STBIMG_LoadFromMemory(const unsigned char* buffer, i
 		SDL_SetError("STBIMG_LoadFromMemory(): passed invalid length: %d!", length);
 		return NULL;
 	}
-
+	printf("trap here success\n");
 	inforet = stbi_info_from_memory(buffer, length, &img.w, &img.h, &img.format);
 	if(!inforet)
 	{
