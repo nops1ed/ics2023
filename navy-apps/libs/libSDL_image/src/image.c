@@ -17,6 +17,7 @@ SDL_Surface* IMG_Load(const char *filename) {
   FILE *fp = fopen("/share/pictures/projectn.bmp", "r");
   if(fp == NULL)
     printf("Unable to open /share/pictures/projectn.bmp\n");
+  else printf("Open /share/pictures/projectn.bmp success\n");
   fp = fopen(filename, "r");
   if(fp == NULL) {
     printf("ERROR: Couldn't open %s\n", filename);
