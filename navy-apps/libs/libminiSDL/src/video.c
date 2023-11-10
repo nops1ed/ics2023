@@ -23,7 +23,7 @@ void SDL_BlitSurface(SDL_Surface *src, SDL_Rect *srcrect, SDL_Surface *dst, SDL_
     src_pos = srcrect -> y * src -> w + srcrect -> x;
   }
   uint32_t dst_pos = dstrect == NULL ? 0 : dstrect -> y * dst -> w + dstrect -> x;
-  //printf("Copying...\n");
+  printf("Copying...\n");
   if(src -> format -> BytesPerPixel == 4)
     for(int i = 0; i < src_row; i++)
       memcpy((uint32_t*)(dst -> pixels) + dst_pos + i * dst -> w, 
