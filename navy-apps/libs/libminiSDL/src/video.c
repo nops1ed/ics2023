@@ -25,6 +25,10 @@ void SDL_BlitSurface(SDL_Surface *src, SDL_Rect *srcrect, SDL_Surface *dst, SDL_
   //uint32_t dst_pos = dstrect == NULL ? 0 : dstrect -> y * dst -> w + dstrect -> x;
   uint32_t dst_pos = 0;
   if(dstrect != NULL) {
+    printf("srcrect->y is %d\n",srcrect->y);
+    printf("srcrect->y is %d\n",srcrect->y);
+    printf("src->w is %d\n",src->w);
+    printf("src->w is %d\n",src->w);
     printf("dstrect->y is %d\n",dstrect->y);
     printf("dstrect->x is %d\n",dstrect->x);
     printf("dst->w is %d\n",dst->w);
