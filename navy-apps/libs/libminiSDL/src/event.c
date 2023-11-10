@@ -18,7 +18,7 @@ int SDL_PushEvent(SDL_Event *ev) {
 static char buf[BUFLEN];
 int SDL_PollEvent(SDL_Event *ev) {
   //char *buf = (char *)malloc(sizeof(char) * BUFLEN);
-  //memset(buf, 0, BUFLEN);
+  memset(buf, 0, BUFLEN);
   /* Listening for events. */
   if(!NDL_PollEvent(buf, BUFLEN)) {
     //printf("Exiting...\n");
@@ -42,7 +42,7 @@ int SDL_PollEvent(SDL_Event *ev) {
       break;
     }
   }
-  return 0;
+  return 1;
 }
 
 int SDL_WaitEvent(SDL_Event *event) {
