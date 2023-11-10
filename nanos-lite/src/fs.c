@@ -22,6 +22,7 @@ typedef struct {
 
 enum {FD_STDIN, FD_STDOUT, FD_STDERR, FD_FB};
 
+
 static size_t invalid_read(void *buf, size_t offset, size_t len) {
   panic("should not reach here");
   return 0;
@@ -43,6 +44,11 @@ static Finfo file_table[] __attribute__((used)) = {
 #include "files.h"
 };
 
+static int i;
+void fs_curfilename(void) {
+  printf("%s ", file_table[i].name);
+}
+
 static size_t do_read(void *buf, size_t offset, size_t len) {
   printf("Calling ramdisk_read offset = %d len = %d\n",offset, len);
   return ramdisk_read(buf, offset, len);
@@ -54,8 +60,11 @@ static size_t do_write(const void *buf, size_t offset, size_t len) {
 
 void init_fs() {
   for (size_t fd = 0; fd < NR_FILE; ++fd) {
-    if (file_table[fd].write == NULL)
+    if (file_table[fd].write == NULL) {
       file_table[fd].write = do_write;
+      fs_curfilename();
+      printf("diskoffset = %d\n", file_table[fd].disk_offset);
+    }
     if (file_table[fd].read == NULL)
       file_table[fd].read = do_read;
   }
@@ -65,7 +74,7 @@ void init_fs() {
   printf("sFS: FD_FB was initialized as %d\n", file_table[FD_FB].size);
 }
 
-static int i;
+
 int fs_open(const char *pathname, int flags, int mode) {
   /* flags and mode are disabled in nano-lite. 
   * And in sFS we just return the index as the fd
@@ -87,16 +96,13 @@ int fs_open(const char *pathname, int flags, int mode) {
   return -1;
 }
 
-void fs_curfilename(void) {
-  printf("%s ", file_table[i].name);
-}
 
 size_t fs_read(int fd, void *buf, size_t len) {
   //do_read(fd, buf, len);
-  printf("Now offset is %d and len is %d\n", file_table[fd].disk_offset + file_table[fd].open_offset, len);
+  //printf("Now offset is %d and len is %d\n", file_table[fd].disk_offset + file_table[fd].open_offset, len);
   size_t ret_val = file_table[fd].read(buf, file_table[fd].disk_offset + file_table[fd].open_offset, len);
   file_table[fd].open_offset += ret_val;
-  printf("Now offset is %d\n\n", file_table[fd].disk_offset + file_table[fd].open_offset);
+  //printf("Now offset is %d\n\n", file_table[fd].disk_offset + file_table[fd].open_offset);
   return ret_val;
 }
 
