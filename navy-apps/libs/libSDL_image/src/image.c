@@ -24,6 +24,7 @@ SDL_Surface* IMG_Load(const char *filename) {
   char *buf = (char *)malloc(sizeof(char) * size);
   lseek(fd, 0, SEEK_SET);
   read(fd, buf, size);
+  printf("traping...\n");
   SDL_Surface *ret_surf = STBIMG_LoadFromMemory(buf, size);
   printf("STB Back...\n");
   if(ret_surf == NULL) {
