@@ -23,7 +23,7 @@ void SDL_BlitSurface(SDL_Surface *src, SDL_Rect *srcrect, SDL_Surface *dst, SDL_
     src_pos = srcrect -> y * src -> w + srcrect -> x;
   }
   //uint32_t dst_pos = dstrect == NULL ? 0 : dstrect -> y * dst -> w + dstrect -> x;
-  int16_t dst_pos = 0;
+  int32_t dst_pos = 0;
   if(dstrect != NULL) {
     //printf("srcrect->y is %d\n",srcrect->y);
     //printf("srcrect->y is %d\n",srcrect->y);
