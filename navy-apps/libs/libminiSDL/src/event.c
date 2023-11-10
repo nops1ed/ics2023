@@ -20,7 +20,11 @@ int SDL_PollEvent(SDL_Event *ev) {
   char buf[BUFLEN];
   memset(buf, 0, BUFLEN);
   /* Listening for events. */
-  if(!NDL_PollEvent(buf, BUFLEN)) return 0;
+  if(!NDL_PollEvent(buf, BUFLEN)) {
+    printf("Exiting...\n");
+    return 0;
+  }
+  printf("Detecing event\n");
   if(!strncmp(buf, "ku", 2)) {
     ev -> type = SDL_KEYUP;
   }
