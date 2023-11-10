@@ -247,7 +247,8 @@ static void ecall_ctrl(Decode *s) {
   if(NO == -1) {
     s->dnpc = isa_raise_intr(NO, s->snpc) + 4;
   }
-  s->dnpc = isa_raise_intr(NO, s->snpc);
+  else 
+    s->dnpc = isa_raise_intr(NO, s->snpc);
 }
 
 /*
