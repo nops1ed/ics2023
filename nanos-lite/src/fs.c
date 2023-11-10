@@ -44,6 +44,7 @@ static Finfo file_table[] __attribute__((used)) = {
 };
 
 static size_t do_read(void *buf, size_t offset, size_t len) {
+  printf("Calling ramdisk_read offset = %d len = %d\n",offset, len);
   return ramdisk_read(buf, offset, len);
 }
 
