@@ -17,6 +17,7 @@ SDL_Surface* IMG_Load_RW(SDL_RWops *src, int freesrc) {
 }
 
 SDL_Surface* IMG_Load(const char *filename) {
+  /*
   printf("Loading file %s\n", filename);
   int fd = open(filename, 0, 0);
   lseek(fd, 0, SEEK_END);
@@ -35,21 +36,20 @@ SDL_Surface* IMG_Load(const char *filename) {
   free(buf); 
   printf("Read success\n");
   return ret_surf;
-  /*
+  */
   FILE *fp = fopen(filename, "r");
   if(fp == NULL) {
     printf("ERROR: Couldn't open %s\n", filename);
     exit(1);
   }
-  //printf("read success\n");
+  printf("read success\n");
   fseek(fp, 0, SEEK_END);
   size_t _size = ftell(fp);
   printf("size could be %ld\n",_size);
   fseek(fp, 0 ,SEEK_SET);
   char *buf = (char *)malloc(sizeof(char) * _size);
-  //fread(buf, sizeof(char), _size, fp);
-  write(buf, )
-  printf("%s\n",buf);
+  fread(buf, sizeof(char), _size, fp);
+  //printf("%s\n",buf);
   printf("Traping into STB...\n");
   SDL_Surface *ret_surf = STBIMG_LoadFromMemory(buf, _size);
   printf("STB Back...\n");
@@ -61,7 +61,6 @@ SDL_Surface* IMG_Load(const char *filename) {
   free(buf); 
   printf("Read success\n");
   return ret_surf;
-  */
 }
 
 int IMG_isPNG(SDL_RWops *src) {
