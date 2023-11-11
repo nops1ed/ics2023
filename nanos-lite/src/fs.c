@@ -85,7 +85,7 @@ int fs_open(const char *pathname, int flags, int mode) {
     //printf("pathname: %s\n", pathname);
     //printf("filetablename: %s\n", file_table[i].name);
     if(!strcmp(pathname, file_table[i].name)) {
-      printf("Opening file %s\n",file_table[i].name);
+      //printf("Opening file %s\n",file_table[i].name);
       file_table[i].open_offset = 0;
       return i;
     }
@@ -102,11 +102,11 @@ size_t fs_read(int fd, void *buf, size_t len) {
   //do_read(fd, buf, len);
   size_t len_read = len;
   if(fd > 5) len_read = len > file_table[fd].size - file_table[fd].open_offset ? file_table[fd].size - file_table[fd].open_offset : len;
-  printf("disk_offset is %d and open_offset is %d\n", file_table[fd].disk_offset, file_table[fd].open_offset);
-  printf("Now offset is %d and len is %d\n", file_table[fd].disk_offset + file_table[fd].open_offset, len_read);
+  //printf("disk_offset is %d and open_offset is %d\n", file_table[fd].disk_offset, file_table[fd].open_offset);
+  //printf("Now offset is %d and len is %d\n", file_table[fd].disk_offset + file_table[fd].open_offset, len_read);
   size_t ret_val = file_table[fd].read(buf, file_table[fd].disk_offset + file_table[fd].open_offset, len_read);
   file_table[fd].open_offset += ret_val;
-  printf("Now offset is %d\n\n", file_table[fd].disk_offset + file_table[fd].open_offset);
+  //printf("Now offset is %d\n\n", file_table[fd].disk_offset + file_table[fd].open_offset);
   return ret_val;
 }
 
