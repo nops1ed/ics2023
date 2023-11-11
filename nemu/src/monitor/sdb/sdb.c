@@ -68,9 +68,8 @@ static int cmd_si(char *args) {
 }
 
 static int cmd_info(char *args) {
-  //parse args
+  /* parse args */
   char *arg = strtok(NULL , " ");
-  //Note: feature of fall through
   if (!strcmp(arg , "r")) {
 		isa_reg_display();
     //isa_csr_display();
