@@ -23,7 +23,7 @@ const char *regs[] = {
   "s8", "s9", "s10", "s11", "t3", "t4", "t5", "t6"
 };
 
-/* We just use 3 CSRs in PA. */
+/* We just use *3* CSRs in PA. */
 const char *csrs[] = {
 	"mtvec", "mepc", "mstatus", "mcause", "mie",
 	"mip", "mtval", "mscratch"
@@ -33,20 +33,21 @@ static uint32_t size = sizeof(regs) / sizeof(regs[0]);
 static uint32_t csr_size = sizeof(csrs) / sizeof(csrs[0]);
 
 void isa_csr_display() {
-	//Do not put any overlap calculations in ur iteration statement , which causes additional load
+	/* Do not put any repeatedly calculations in ur iteration statement , which causes additional load */
   for (int i = 1 ; i < csr_size; i++)
     printf("%-10s 0x%-20lx %-20lu\n" , csrs[i] , cpu.csr[i] , cpu.csr[i]);
 }
 
 void isa_reg_display() {
-	//Do not put any overlap calculations in ur iteration statement , which causes additional load
+	/* Do not put any repeatedly calculations in ur iteration statement , which causes additional load */
   for (int i = 1 ; i < size; i++)
     printf("%-10s 0x%-20lx %-20lu\n" , regs[i] , cpu.gpr[i] , cpu.gpr[i]);
 }
 
 word_t isa_reg_str2val(const char *s, bool *success) {
-	//Formal parameter could be like "$reg"
-	//What should first be done is to locate the reg we should return
+	/* Formal parameter should be like "$reg"
+	* What should first be done is to locate the reg we should return
+	*/
 	for (int i = 0 ; i < size; i++)
 		if (!strcmp(s + 1 , regs[i])) {
 			*success = true;

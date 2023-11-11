@@ -74,8 +74,8 @@ WP* new_wp() {
 	return _tmp -> next;
 }
 
-/* We should not expose any detail to external users
-*  So it is better to locate any node we need to delete in our delete function 
+/* We'd better not to expose any detail to external caller 
+*  So it is better to locate the node we need to delete in our delete function 
 */
 void free_wp(int NO) {
 	if (!head) {
