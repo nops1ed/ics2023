@@ -91,6 +91,7 @@ int fs_open(const char *pathname, int flags, int mode) {
     }
   }
 
+  printf("Opening file %s failed\n", pathname);
   /* In sFS, operation 'open' must be successful otherwise interrupt it. */
   assert(0);
   /* Should not reach here. */
