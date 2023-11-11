@@ -82,16 +82,16 @@ int fs_open(const char *pathname, int flags, int mode) {
   
   /* just compare the filename here. */
   for(i = 0; i < NR_FILE; i++) {
-    printf("pathname: %s\n", pathname);
-    printf("filetablename: %s\n", file_table[i].name);
+    //printf("pathname: %s\n", pathname);
+    //printf("filetablename: %s\n", file_table[i].name);
     if(!strcmp(pathname, file_table[i].name)) {
-      printf("Opening file %s\n",file_table[i].name);
+      //printf("Opening file %s\n",file_table[i].name);
       file_table[i].open_offset = 0;
       return i;
     }
   }
 
-  printf("Opening file %s failed\n", pathname);
+  //printf("Opening file %s failed\n", pathname);
   /* In sFS, operation 'open' must be successful otherwise interrupt it. */
   assert(0);
   /* Should not reach here. */
