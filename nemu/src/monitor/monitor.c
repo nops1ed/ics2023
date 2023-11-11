@@ -53,7 +53,6 @@ static long load_img() {
     return 4096; // built-in image size
   }
 
-  printf("Opening image file %s...\n", img_file);
   FILE *fp = fopen(img_file, "rb");
   Assert(fp, "Can not open '%s'", img_file);
 
