@@ -42,17 +42,12 @@ SDL_Surface* IMG_Load(const char *filename) {
     printf("ERROR: Couldn't open %s\n", filename);
     exit(1);
   }
-  printf("read success\n");
   fseek(fp, 0, SEEK_END);
-  size_t _size = ftell(fp);
-  printf("size could be %ld\n",_size);
+  long _size = ftell(fp);
   fseek(fp, 0 ,SEEK_SET);
   char *buf = (char *)malloc(sizeof(char) * _size);
-  fread(buf, sizeof(char), _size, fp);
-  //printf("%s\n",buf);
-  printf("Traping into STB...\n");
+  fread(buf, _size, 1, fp);
   SDL_Surface *ret_surf = STBIMG_LoadFromMemory(buf, _size);
-  printf("STB Back...\n");
   if(ret_surf == NULL) {
     printf("ERROR: Couldn't load %s\n",filename);
     exit(1);
