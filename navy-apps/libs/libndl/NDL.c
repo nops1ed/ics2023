@@ -77,7 +77,6 @@ void NDL_DrawRect(uint32_t *pixels, int x, int y, int w, int h) {
     //printf("NDL: writing to %ld\n", x + (y + row) * disp_w);
     write(fbdev, pixels + row * w, w);  
   }
-  write(fbdev, 0, 0);
 }
 
 void NDL_OpenAudio(int freq, int channels, int samples) {
@@ -110,6 +109,4 @@ int NDL_Init(uint32_t flags) {
 }
 
 void NDL_Quit() {
-    close(evtdev);
-  close(dispinfodev);
 }
