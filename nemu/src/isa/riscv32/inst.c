@@ -245,7 +245,7 @@ static void ecall_ctrl(Decode *s) {
   Log("An exception occured at pc:" FMT_WORD " Event number: " FMT_WORD, s->pc, NO);
 #endif
   if(NO == -1) {
-    s->dnpc = isa_raise_intr(NO, s->snpc) + 4;
+    s->dnpc = isa_raise_intr(NO, s->snpc);
   }
   else 
     s->dnpc = isa_raise_intr(NO, s->snpc);
