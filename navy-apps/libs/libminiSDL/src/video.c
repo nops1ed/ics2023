@@ -9,7 +9,8 @@
 void SDL_BlitSurface(SDL_Surface *src, SDL_Rect *srcrect, SDL_Surface *dst, SDL_Rect *dstrect) {
   assert(dst && src);
   assert(dst->format->BitsPerPixel == src->format->BitsPerPixel);
-  /* src is the source surface to be copied, srcrect is the rectangular area to be copied, 
+  /* Extract from manual
+  * Src is the source surface to be copied, srcrect is the rectangular area to be copied, 
   * if NULL, the entire surface is copied. dst is the destination surface, 
   * dstrect is the destination position, only its top-left coordinate is used, ignoring its width and height. 
   * If NULL, the destination position is (0, 0). 
@@ -83,7 +84,7 @@ void SDL_UpdateRect(SDL_Surface *s, int x, int y, int w, int h) {
       }
     /* Color depth is 32. */
     else {
-      /* Each pixel is described as a color using a 32-bit integer in the form of 00RRGGBB. */
+      /* Each pixel is described as a color using a 32-bit integer in the form of AARRGGBB. */
       for(uint32_t col = 0; col < w; col++) {
           //uint32_t offset = ((row + y) * (s -> w) + x + col) * 4;
           uint32_t offset = x + y * s -> w + (col + row * s->w) * 4;
