@@ -28,10 +28,10 @@ int SDL_PollEvent(SDL_Event *ev) {
     return 0;
   }
   //printf("Detecing event\n");
-  if(!strncmp(buf, "ku", 2)) {
+  if(!strncmp(buf, "kd", 2)) {
     ev -> type = SDL_KEYUP;
   }
-  else if(!strncmp(buf, "kd", 2)) {
+  else if(!strncmp(buf, "ku", 2)) {
     ev -> type = SDL_KEYDOWN;
   }
   else {
@@ -56,10 +56,10 @@ int SDL_WaitEvent(SDL_Event *event) {
   memset(buf2, 0, BUFLEN);
   /* Listening for events. */
   while(!NDL_PollEvent(buf2, BUFLEN)) ;
-  if(!strncmp(buf2, "ku", 2)) {
+  if(!strncmp(buf2, "kd", 2)) {
     event -> type = SDL_KEYUP;
   }
-  else if(!strncmp(buf2, "kd", 2)) {
+  else if(!strncmp(buf2, "ku", 2)) {
     event -> type = SDL_KEYDOWN;
   }
   else 
