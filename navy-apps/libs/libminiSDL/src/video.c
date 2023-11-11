@@ -33,8 +33,8 @@ void SDL_BlitSurface(SDL_Surface *src, SDL_Rect *srcrect, SDL_Surface *dst, SDL_
   else if(src -> format -> BytesPerPixel == 1) {
     //printf("8 pixels: Should not reach here\n");
     for(int i = 0; i < src_row; i++)
-      memcpy((uint8_t *)dst -> pixels + dst_pos + i * dst -> w, 
-              (uint8_t *)src -> pixels + src_pos + i * src -> w, sizeof(uint8_t) * src_col);
+      memcpy((uint8_t *)(dst -> pixels) + dst_pos + i * dst -> w, 
+              (uint8_t *)(src -> pixels) + src_pos + i * src -> w, sizeof(uint8_t) * src_col);
   }
   else printf("Pixel format cannot found");
 }
