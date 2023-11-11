@@ -4,12 +4,15 @@
 
 
 #define keyname(k) #k,
+#define NR_KEYS ( sizeof(keyname)/sizeof(keyname[0]) )
 #define BUFLEN 32
 
 static const char *keyname[] = {
   "NONE",
   _KEYS(keyname)
 };
+
+static uint8_t keysnap[NR_KEYS] = {0};
 
 int SDL_PushEvent(SDL_Event *ev) {
   return 0;
@@ -39,6 +42,7 @@ int SDL_PollEvent(SDL_Event *ev) {
     if(((strlen(buf + 3) - 1) == strlen(keyname[i])) && 
             !strncmp(buf + 3, keyname[i], strlen(keyname[i]))) {
       ev -> key.keysym.sym = i;
+      keysnap[i] = (ev->type == SDL_KEYDOWN)? 1: 0;
       //printf("Get key %d here\n",i);
       break;
     }
@@ -64,6 +68,7 @@ int SDL_WaitEvent(SDL_Event *event) {
     if(((strlen(buf2 + 3) - 1) == strlen(keyname[i])) && 
           !strncmp(buf2 + 3, keyname[i], strlen(keyname[i]))) {
       event -> key.keysym.sym = i;
+      keysnap[i] = (event->type == SDL_KEYDOWN)? 1: 0;
       break;
     }
   }
@@ -76,6 +81,5 @@ int SDL_PeepEvents(SDL_Event *ev, int numevents, int action, uint32_t mask) {
 }
 
 uint8_t* SDL_GetKeyState(int *numkeys) {
-  printf("This function is called\n");
-  return NULL;
+  return keysnap;
 }
