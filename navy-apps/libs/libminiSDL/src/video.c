@@ -53,7 +53,7 @@ void SDL_FillRect(SDL_Surface *dst, SDL_Rect *dstrect, uint32_t color) {
       memset((uint32_t *)dst -> pixels + dst_pos + dst -> w * i,
               color, sizeof(uint32_t) * dst_row);
   else if(dst -> format -> BytesPerPixel == 1) {
-    printf("8 pixels: Should not reach here\n");
+    //printf("8 pixels: Should not reach here\n");
     for(int i = 0; i < dst_row; i++)
      memset((uint8_t *)dst -> pixels + dst_pos + dst -> w * i,
               color, sizeof(uint8_t) * dst_col);
@@ -77,7 +77,7 @@ void SDL_UpdateRect(SDL_Surface *s, int x, int y, int w, int h) {
     if(s -> format -> BytesPerPixel == 1)
       for(uint32_t col = 0; col < w; col++) {
       /* The concept of using a palette at 8-bit color depth. */
-        printf("8 pixels: Should not reach here\n");
+        //printf("8 pixels: Should not reach here\n");
         SDL_Color sdlcolor = s -> format -> palette -> colors[((row + y) * (s -> w) + x + col)];
         _buf[pos++] = sdlcolor.a << 24 | sdlcolor.r << 16 | sdlcolor.g << 8 | sdlcolor.b;
       }
