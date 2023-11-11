@@ -37,7 +37,6 @@ SDL_Surface* IMG_Load(const char *filename) {
   printf("Read success\n");
   return ret_surf;
   */
-  /*
   FILE *fp = fopen(filename, "r");
   if(fp == NULL) {
     printf("ERROR: Couldn't open %s\n", filename);
@@ -57,7 +56,7 @@ SDL_Surface* IMG_Load(const char *filename) {
   free(buf); 
   printf("Read success\n");
   return ret_surf;
-  */
+  /*
   FILE* fp = fopen(filename, "r");
   
   fseek(fp, 0L, SEEK_END);
@@ -72,6 +71,7 @@ SDL_Surface* IMG_Load(const char *filename) {
   free(buf);
   fclose(fp);
   return img;
+  */
 }
 
 int IMG_isPNG(SDL_RWops *src) {
