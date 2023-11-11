@@ -3,9 +3,12 @@
 Area heap;
 
 void putch(char ch) {
-    putch(ch);
+    write(1, ch, 1);
 }
 
 void halt(int code) {
-    halt(code);
+    exit(code);
+
+    /* Should not reach here. */
+    while(1)
 }
