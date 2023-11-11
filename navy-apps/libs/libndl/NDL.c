@@ -104,7 +104,7 @@ int NDL_Init(uint32_t flags) {
   FILE *fp = fopen("/proc/dispinfo", "r");
   fscanf(fp, "WIDTH:%d\nHEIGHT:%d\n", &disp_w, &disp_h);
   fclose(fp);
-  printf("NDL: Now www is %d, hhh is %d\n", disp_w, disp_h);
+  //printf("NDL: Now www is %d, hhh is %d\n", disp_w, disp_h);
   return 0;
 }
 
