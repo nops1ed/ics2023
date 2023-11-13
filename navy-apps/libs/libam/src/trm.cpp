@@ -1,5 +1,6 @@
 #include <am.h>
 
+
 Area heap;
 
 void putch(char ch) {
@@ -9,6 +10,5 @@ void putch(char ch) {
 void halt(int code) {
     exit(code);
 
-    /* Should not reach here. */
-    while(1)
+    while(1) ;
 }
