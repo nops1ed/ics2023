@@ -323,7 +323,7 @@ static int cmd_help(char *args) {
     /* no argument given */
     puts("List of classes of commands:\n");
     for (i = 0; i < NR_CMD; i ++) {
-      printf("%-5s - %-20s\n", cmd_table[i].name, cmd_table[i].description);
+      printf("%-10s - %-20s\n", cmd_table[i].name, cmd_table[i].description);
     }
     puts("\nType \"help\" followed by command name for full documentation.");
   }
