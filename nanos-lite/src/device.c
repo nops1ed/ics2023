@@ -73,7 +73,7 @@ size_t dispinfo_read(void *buf, size_t offset, size_t len) {
   printf("Display info: %d * %d\n", gpuinfo.width, gpuinfo.height);
   char _tmp[32], _tmp2[32];
   sprintf(buf, "WIDTH:%s\nHEIGHT:%s\n", __itoa(gpuinfo.width, _tmp, 10), __itoa(gpuinfo.height, _tmp2, 10));
-  printf("buf is %s\n", buf);
+  //printf("buf is %s\n", buf);
   return len;
 }
 
