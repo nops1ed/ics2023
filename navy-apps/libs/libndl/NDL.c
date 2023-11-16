@@ -114,7 +114,7 @@ int NDL_Init(uint32_t flags) {
   audiodev = open("/dev/sb", 0, 0);
   */
 
-  FILE *fp = fopen("/proc/dispinfo", "r");
+  FILE *fip = fopen("/proc/dispinfo", "r");
   /*
   char ch;
   fseek(fp, 0, SEEK_SET);
@@ -124,8 +124,8 @@ int NDL_Init(uint32_t flags) {
     }
   fseek(fp, 0, SEEK_SET);
   */
-  fscanf(fp, "WIDTH:%d\nHEIGHT:%d\n", &disp_w, &disp_h);
-  fclose(fp);
+  fscanf(fip, "WIDTH:%d\nHEIGHT:%d\n", &disp_w, &disp_h);
+  fclose(fip);
   printf("NDL: Now disp_w is %d, disp_h is %d\n", disp_w, disp_h);
   dispinfodev = open("/proc/dispinfo", 0, 0);
   return 0;

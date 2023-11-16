@@ -122,3 +122,6 @@ bool ioe_init() {
 void ioe_read (int reg, void *buf) { ((handler_t)lut[reg])(buf); }
 void ioe_write(int reg, void *buf) { ((handler_t)lut[reg])(buf); }
 */
+bool ioe_init() { return true;}
+void ioe_read (int reg, void *buf) { }
+void ioe_write(int reg, void *buf) { }

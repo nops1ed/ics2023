@@ -9,8 +9,6 @@ void putch(char ch) {
 
 void halt(int code) {
     //exit(code);
-
-    while(1) ;
 }
 /*
 #include <am.h>
