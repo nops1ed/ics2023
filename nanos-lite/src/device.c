@@ -10,12 +10,16 @@
 #define NAME(key) \
   [AM_KEY_##key] = #key,
 
+typedef struct _AudioData {
+  int freq, channels, samples, sbuf_size;
+}_AudioData;
+
 static const char *keyname[256] __attribute__((used)) = {
   [AM_KEY_NONE] = "NONE",
   AM_KEYS(NAME)
 };
 
-static char* itoa(int num, char* str, int base) {  
+static char* __itoa(int num, char* str, int base) {  
   int i = 0;  
   int sign = num < 0 ? -1 : 1;  
   if (sign == -1) num = -num;  
@@ -68,7 +72,7 @@ size_t dispinfo_read(void *buf, size_t offset, size_t len) {
   //printf("DEV: read is called and len is %d\n", len);
   printf("Display info: %d * %d\n", gpuinfo.width, gpuinfo.height);
   char _tmp[32], _tmp2[32];
-  sprintf(buf, "WIDTH:%s\nHEIGHT:%s\n", itoa(gpuinfo.width, _tmp, 10), itoa(gpuinfo.height, _tmp2, 10));
+  sprintf(buf, "WIDTH:%s\nHEIGHT:%s\n", __itoa(gpuinfo.width, _tmp, 10), __itoa(gpuinfo.height, _tmp2, 10));
   return len;
 }
 
@@ -86,6 +90,25 @@ size_t fb_write(const void *buf, size_t offset, size_t len) {
   AM_GPU_FBDRAW_T fbdraw = {offset % gpuinfo.width, offset / gpuinfo.width, (void *)buf, len, 1, 0};
   ioe_write(AM_GPU_FBDRAW, &fbdraw);
   return len;
+}
+
+void audioinfo_write(void *audio) {
+  ioe_write(AM_AUDIO_CTRL, (_AudioData *)audio);
+}
+
+//size_t audioinfo_read(char *buf, );
+
+void audio_write(void *buf, int len) {
+  /*
+    uint8_t *audio = ctl->buf.start;
+    uint32_t buf_size = inl(AUDIO_SBUF_SIZE_ADDR);
+    uint32_t cnt = inl(AUDIO_COUNT_ADDR);
+    uint32_t len = ctl->buf.end - ctl->buf.start; 
+  */
+  /*
+  ioe_write(AUDIO_SBUF_SIZE_ADDR, len);  
+  ioe_write(AUDIO_COUNT_ADDR, );
+  */
 }
 
 void init_device() {

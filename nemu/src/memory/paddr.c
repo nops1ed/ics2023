@@ -62,3 +62,11 @@ void paddr_write(paddr_t addr, int len, word_t data) {
   IFDEF(CONFIG_DEVICE, mmio_write(addr, len, data); return);
   out_of_bound(addr);
 }
+
+void pmem_snapshot_save(FILE *fp) {
+  if(fwrite(pmem, sizeof(pmem), 1, fp) == 0) panic("Fatal error: Memory status unknown");
+}
+
+void pmem_snapshot_load(FILE *fp) {
+  if(fread(pmem, sizeof(pmem), 1, fp) == 0) panic("Fatal error: Memory status unknown");
+}

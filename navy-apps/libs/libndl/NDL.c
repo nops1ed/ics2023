@@ -10,10 +10,23 @@
 
 static int evtdev = -1;
 static int fbdev = -1;
+static int audiodev = -1;
+static int audioinfo = -1;
 static int screen_w = 0, screen_h = 0;
 static int dispinfodev = -1;
 static int disp_w = 0;
 static int disp_h = 0;
+
+typedef struct _AudioData {
+  int freq, channels, samples, sbuf_size;
+}_AudioData;
+
+//AM_DEVREG(17, AUDIO_PLAY,   WR, Area buf);
+typedef struct {
+  void *start, *end;
+} Area;
+
+//static _AudioData *audio = {};
 
 uint32_t NDL_GetTicks() {
   static struct timeval time;
@@ -70,12 +83,18 @@ void NDL_DrawRect(uint32_t *pixels, int x, int y, int w, int h) {
 }
 
 void NDL_OpenAudio(int freq, int channels, int samples) {
+  /*
+  audio = {freq, channels, samples};
+  write(sbctl, audio, 1); 
+  */
 }
 
 void NDL_CloseAudio() {
+  
 }
 
 int NDL_PlayAudio(void *buf, int len) {
+  //ioe_write()
   return 0;
 }
 
@@ -90,6 +109,8 @@ int NDL_Init(uint32_t flags) {
   evtdev = open("/dev/events", 0, 0);
   fbdev = open("/dev/fb", 0, 0);
   dispinfodev = open("/proc/dispinfo", 0, 0);
+  audioinfo = open("/dev/sbctl", 0, 0);
+  audiodev = open("/dev/sb", 0, 0);
 
   FILE *fp = fopen("/proc/dispinfo", "r");
   fscanf(fp, "WIDTH:%d\nHEIGHT:%d\n", &disp_w, &disp_h);

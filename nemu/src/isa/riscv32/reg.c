@@ -56,3 +56,11 @@ word_t isa_reg_str2val(const char *s, bool *success) {
 	*success = false;
 	return 0;
 }
+
+void isa_snapshot_save(FILE *fp) {
+	if(fwrite(&cpu, sizeof(cpu), 1, fp) == 0) panic("Fatal error: CPU status unknown");
+}
+
+void isa_snapshot_load(FILE *fp) {
+	if(fread(&cpu, sizeof(cpu), 1, fp) == 0) panic("Fatal error: CPU status unknown");
+}

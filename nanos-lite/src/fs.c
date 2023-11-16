@@ -39,6 +39,8 @@ static Finfo file_table[] __attribute__((used)) = {
   [FD_STDOUT] = {"stdout", 0, 0, invalid_read, serial_write},
   [FD_STDERR] = {"stderr", 0, 0, invalid_read, serial_write},
   [FD_FB]     = {"/dev/fb", 0, 0, invalid_read, fb_write},
+                {"/dev/sb", 0, 0, NULL, NULL},
+                {"/dev/sbctl", 0, 0, NULL, NULL},
                 {"/dev/events", 0, 0, events_read, invalid_write},
                 {"/proc/dispinfo", 0, 0, dispinfo_read, invalid_write},
 #include "files.h"
@@ -91,7 +93,6 @@ int fs_open(const char *pathname, int flags, int mode) {
     }
   }
 
-  //printf("Opening file %s failed\n", pathname);
   /* In sFS, operation 'open' must be successful otherwise interrupt it. */
   assert(0);
   /* Should not reach here. */

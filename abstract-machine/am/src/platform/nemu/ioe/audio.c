@@ -57,6 +57,7 @@ void __am_audio_play(AM_AUDIO_PLAY_T *ctl) {
   uint32_t cnt = inl(AUDIO_COUNT_ADDR);
   uint32_t len = ctl->buf.end - ctl->buf.start;
   
+  /* Blocked. */
   while(len > buf_size - cnt){;}
 
   uint8_t *AB = (uint8_t *)(uintptr_t)AUDIO_SBUF_ADDR;
