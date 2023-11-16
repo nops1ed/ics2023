@@ -124,6 +124,7 @@ int NDL_Init(uint32_t flags) {
     }
   fseek(fp, 0, SEEK_SET);
   */
+  if(fip == NULL) printf("dispinfo failed\n");
   fscanf(fip, "WIDTH:%d\nHEIGHT:%d\n", &disp_w, &disp_h);
   fclose(fip);
   printf("NDL: Now disp_w is %d, disp_h is %d\n", disp_w, disp_h);
