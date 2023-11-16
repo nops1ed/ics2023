@@ -41,6 +41,7 @@ int NDL_PollEvent(char *buf, int len) {
 }
 
 void NDL_OpenCanvas(int *w, int *h) {
+  printf("Now w is %d h is %d \ndisp_w is %d disp_h is %d\n",*w, *h, disp_w, disp_h);
   if(*w > disp_w || *h > disp_h) assert(0);
   *w == 0 ? disp_w : *w;
   *h == 0 ? disp_h : *h;
