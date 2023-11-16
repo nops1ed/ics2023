@@ -87,7 +87,7 @@ int fs_open(const char *pathname, int flags, int mode) {
     //printf("pathname: %s\n", pathname);
     //printf("filetablename: %s\n", file_table[i].name);
     if(!strcmp(pathname, file_table[i].name)) {
-      //printf("Opening file %s\n",file_table[i].name);
+      printf("Opening file %s\n",file_table[i].name);
       file_table[i].open_offset = 0;
       return i;
     }
