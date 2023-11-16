@@ -125,9 +125,12 @@ int NDL_Init(uint32_t flags) {
     }
   fseek(fp, 0, SEEK_SET);
   */
-  fscanf(fp, "WIDTH:%d\nHEIGHT:%d\n", &disp_w, &disp_h);
+  //fscanf(fp, "WIDTH:%d\nHEIGHT:%d\n", &disp_w, &disp_h);
+  char tmp[32];
+  fscanf(fp, "WIDTH:%s\n", tmp);
   fclose(fp);
-  printf("NDL: Now disp_w is %d, disp_h is %d\n", disp_w, disp_h);
+  printf("Now tmp is %s\n",tmp);
+  //printf("NDL: Now disp_w is %d, disp_h is %d\n", disp_w, disp_h);
   return 0;
 }
 
