@@ -113,9 +113,9 @@ int NDL_Init(uint32_t flags) {
   audioinfo = open("/dev/sbctl", 0, 0);
   audiodev = open("/dev/sb", 0, 0);
 
-  FILE *fp = fopen("/proc/dispinfo", "r");
-  fscanf(fp, "WIDTH:%d\nHEIGHT:%d\n", &disp_w, &disp_h);
-  fclose(fp);
+  FILE *fip = fopen("/proc/dispinfo", "r");
+  fscanf(fip, "WIDTH:%d\nHEIGHT:%d\n", &disp_w, &disp_h);
+  fclose(fip);
   printf("NDL: Now www is %d, hhh is %d\n", disp_w, disp_h);
   return 0;
 }
