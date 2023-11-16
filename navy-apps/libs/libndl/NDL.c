@@ -117,7 +117,7 @@ int NDL_Init(uint32_t flags) {
   char tmp[32];
   read(fd, tmp, 32);
   printf("tmp is %s\n", tmp);
-
+  sscanf(tmp, "WIDTH:%d\nHEIGHT:%d\n", &disp_w, &disp_h);
 
 /*
   FILE *fip = fopen("/proc/dispinfo", "r");
