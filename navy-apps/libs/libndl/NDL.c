@@ -109,7 +109,6 @@ int NDL_Init(uint32_t flags) {
   }
   evtdev = open("/dev/events", 0, 0);
   fbdev = open("/dev/fb", 0, 0);
-  dispinfodev = open("/proc/dispinfo", 0, 0);
   /*
   audioinfo = open("/dev/sbctl", 0, 0);
   audiodev = open("/dev/sb", 0, 0);
@@ -131,6 +130,7 @@ int NDL_Init(uint32_t flags) {
   fclose(fp);
   printf("Now tmp is %s\n",tmp);
   //printf("NDL: Now disp_w is %d, disp_h is %d\n", disp_w, disp_h);
+  dispinfodev = open("/proc/dispinfo", 0, 0);
   return 0;
 }
 
