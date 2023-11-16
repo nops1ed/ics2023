@@ -110,8 +110,10 @@ int NDL_Init(uint32_t flags) {
   evtdev = open("/dev/events", 0, 0);
   fbdev = open("/dev/fb", 0, 0);
   dispinfodev = open("/proc/dispinfo", 0, 0);
+  /*
   audioinfo = open("/dev/sbctl", 0, 0);
   audiodev = open("/dev/sb", 0, 0);
+  */
 
   FILE *fip = fopen("/proc/dispinfo", "r");
   fscanf(fip, "WIDTH:%d\nHEIGHT:%d\n", &disp_w, &disp_h);
