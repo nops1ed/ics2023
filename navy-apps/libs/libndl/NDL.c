@@ -14,8 +14,8 @@ static int audiodev = -1;
 static int audioinfo = -1;
 static int screen_w = 0, screen_h = 0;
 static int dispinfodev = -1;
-static int disp_w = 0;
-static int disp_h = 0;
+static int disp_w;
+static int disp_h;
 
 typedef struct _AudioData {
   int freq, channels, samples, sbuf_size;

@@ -392,5 +392,5 @@ void init_sdb() {
   init_wp_pool();
 
   /* Initialize the snaplist file. */
-  //init_snaplist();
+  init_snaplist();
 }
