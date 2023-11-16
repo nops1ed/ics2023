@@ -116,6 +116,7 @@ int NDL_Init(uint32_t flags) {
   */
 
   FILE *fp = fopen("/proc/dispinfo", "r");
+  /*
   char ch;
   fseek(fp, 0, SEEK_SET);
   while ((ch = fgetc(fp)) != EOF) //循环读取每个字符，直到遇到文件末尾
@@ -123,6 +124,7 @@ int NDL_Init(uint32_t flags) {
         printf("%c", ch); //将字符输出到屏幕上
     }
   fseek(fp, 0, SEEK_SET);
+  */
   fscanf(fp, "WIDTH:%d\nHEIGHT:%d\n", &disp_w, &disp_h);
   fclose(fp);
   printf("NDL: Now disp_w is %d, disp_h is %d\n", disp_w, disp_h);
