@@ -119,10 +119,12 @@ int NDL_Init(uint32_t flags) {
   printf("tmp is %s\n", tmp);
 
 
+/*
   FILE *fip = fopen("/proc/dispinfo", "r");
   if(fip == NULL) printf("dispinfo failed\n");
   fscanf(fip, "WIDTH:%d\nHEIGHT:%d\n", &disp_w, &disp_h);
   fclose(fip);
+  */
   printf("NDL: Now disp_w is %d, disp_h is %d\n", disp_w, disp_h);
   //dispinfodev = open("/proc/dispinfo", 0, 0);
   return 0;
