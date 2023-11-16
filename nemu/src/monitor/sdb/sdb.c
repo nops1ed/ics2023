@@ -265,7 +265,7 @@ store:
   printf("Creating system snapshot, please wait...\n");
   isa_snapshot_save(fp);
   pmem_snapshot_save(fp);
-  printf("System snapshot created successfully.\n The snapshot file is located at %s\n", pathname);
+  printf("System snapshot created successfully.\nThe snapshot file is located at %s\n", pathname);
   fclose(fp);
   free(pathname);
   return 0;
@@ -330,7 +330,7 @@ static int cmd_help(char *args) {
   else {
     for (i = 0; i < NR_CMD; i ++) {
       if (strcmp(arg, cmd_table[i].name) == 0) {
-        printf("%-5s - %-20s\n", cmd_table[i].name, cmd_table[i].description);
+        printf("%-10s - %-20s\n", cmd_table[i].name, cmd_table[i].description);
         //TODO
         puts("Full descriptions todo ...");
         return 0;
