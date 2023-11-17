@@ -119,9 +119,12 @@ int NDL_Init(uint32_t flags) {
   audiodev = open("/dev/sb", 0, 0);
   */
   dispinfodev = open("/proc/dispinfo", 0, 0);
-  char tmp[32];
-  read(dispinfodev, tmp, 21);
-  sscanf(tmp, "WIDTH:%d\nHEIGHT:%d\n", &disp_w, &disp_h);
+  //char tmp[32];
+  //read(dispinfodev, tmp, 21);
+  //sscanf(tmp, "WIDTH:%d\nHEIGHT:%d\n", &disp_w, &disp_h);
+  FILE *fp = fopen("/proc/dispinfo",  "r");
+  fscanf(fp, "WIDTH:%d\nHEIGHT:%d\n", &disp_w, &disp_h);
+  fclose(fp);
 
   printf("NDL: Now disp_w is %d, disp_h is %d\n", disp_w, disp_h);
   return 0;
