@@ -103,6 +103,7 @@ static void sys_execve(Context *c) {
 #endif
 */
 
+  panic("Not implement");
 }
 
 static void sys_exit(Context *c) {
