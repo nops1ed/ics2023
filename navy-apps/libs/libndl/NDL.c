@@ -3,159 +3,134 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
-#include <sys/time.h>
 #include <assert.h>
+#include <time.h>
+#include <sys/time.h>
 #include <fcntl.h>
-
-#define IS_NUM(ch) (ch >= '0' && ch <= '9')
 
 static int evtdev = -1;
 static int fbdev = -1;
-static int dispinfo_dev = -1;
+static int audiodev = -1;
+static int audioinfo = -1;
 static int screen_w = 0, screen_h = 0;
+static int dispinfodev = -1;
+static int disp_w = 0;
+static int disp_h = 0;
 
-typedef struct size
-{
-  int w;
-  int h;
-} Size;
-Size disp_size;
+/*
+typedef struct _AudioData {
+  int freq, channels, samples, sbuf_size;
+}_AudioData;
 
-// static void get_disp_size()
-// {
-// #define DISPINFO_LEN 64
-//   char buf[DISPINFO_LEN];
-//   assert(read(dispinfo_dev, buf, DISPINFO_LEN) != 0);
-//   size_t i = 0;
-//   // printf("buf is %s\n", buf);
-//   for (; buf[i] != '\n'; ++i)
-//   {
-//     if (IS_NUM(buf[i]))
-//       disp_size.w = disp_size.w * 10 + (buf[i] - '0');
-//   }
-//   ++i;
-//   for (; buf[i] != '\n'; ++i)
-//   {
-//     if (IS_NUM(buf[i]))
-//       disp_size.h = disp_size.h * 10 + (buf[i] - '0');
-//   }
-//   assert(disp_size.w > 0 && disp_size.h <= 800);
-//   assert(disp_size.h > 0 && disp_size.h <= 640);
-// }
+//AM_DEVREG(17, AUDIO_PLAY,   WR, Area buf);
+typedef struct {
+  void *start, *end;
+} Area;
 
-// return ms
-uint32_t NDL_GetTicks()
-{
-  static struct timeval timeval;
-  static struct timezone timezone;
-  int ret = gettimeofday(&timeval, &timezone);
-  return timeval.tv_usec / 1000;
+//static _AudioData *audio = {};
+*/
+
+uint32_t NDL_GetTicks() {
+  static struct timeval time;
+  gettimeofday(&time, NULL);
+  return (uint32_t)time.tv_usec / 1000;
 }
 
-int NDL_PollEvent(char *buf, int len)
-{
+int NDL_PollEvent(char *buf, int len) {
+  /* Buffer should be empty. */
   buf[0] = '\0';
-  assert(evtdev != -1);
-  int ret = read(evtdev, buf, len);
-  return ret;
+  printf("Traping into pollevent...\n");
+  return read(evtdev, buf, len);
 }
 
-void NDL_OpenCanvas(int *w, int *h)
-{
-  if (*w == 0 && *h == 0)
-  {
-    *w = disp_size.w;
-    *h = disp_size.h;
-  }
-
-  if (getenv("NWM_APP"))
-  {
+void NDL_OpenCanvas(int *w, int *h) {
+  //printf("OPENCANVAS: Now w is %d h is %d \ndisp_w is %d disp_h is %d\n",*w, *h, disp_w, disp_h);
+  if(*w > disp_w || *h > disp_h) assert(0);
+  /*
+  *w == 0 ? disp_w : *w;
+  *h == 0 ? disp_h : *h;
+  */
+  if(*w == 0) *w = disp_w;
+  if(*h == 0) *h = disp_h;
+  printf("Now the w is %d and h is %d\n", *w, *h);
+  if (getenv("NWM_APP")) {
+    printf("I am in NWM_APP\n");
     int fbctl = 4;
     fbdev = 5;
-    screen_w = *w;
-    screen_h = *h;
+    screen_w = *w; screen_h = *h;
     char buf[64];
     int len = sprintf(buf, "%d %d", screen_w, screen_h);
     // let NWM resize the window and create the frame buffer
     write(fbctl, buf, len);
-    while (1)
-    {
+    while (1) {
       // 3 = evtdev
       int nread = read(3, buf, sizeof(buf) - 1);
-      if (nread <= 0)
-        continue;
+      if (nread <= 0) continue;
       buf[nread] = '\0';
-      if (strcmp(buf, "mmap ok") == 0)
-        break;
+      if (strcmp(buf, "mmap ok") == 0) break;
     }
-
     close(fbctl);
   }
 }
 
-void NDL_DrawRect(uint32_t *pixels, int x, int y, int w, int h)
-{
-  if (w == 0 && h == 0)
-  {
-    w = disp_size.w;
-    h = disp_size.h;
+void NDL_DrawRect(uint32_t *pixels, int x, int y, int w, int h) {
+  if (w == 0 && h == 0) {
+    w = disp_w;
+    h = disp_h;
   }
-  assert(w > 0 && w <= disp_size.w);
-  assert(h > 0 && h <= disp_size.h);
+  //printf("NDL: Now w is %d and www is %d\n", w, www);
+  assert(w > 0 && w <= disp_w);
+  //printf("NDL: Now h is %d \n", h);
+  assert(h > 0 && h <= disp_h);
 
-  // write(1, "here\n", 10);
-  // printf("draw [%d, %d] to [%d, %d]\n", w, h, x, y);
-  for (size_t row = 0; row < h; ++row)
-  {
-    // printf("draw row %d with len %d\n", row, w);
-    lseek(fbdev, x + (y + row) * disp_size.w, SEEK_SET);
-    // printf("pixels pos %p with len %d\n",pixels + row * w, w);
-    write(fbdev, pixels + row * w, w);
-    // printf("draw row %d with len %d\n", row, w);
+  for(size_t row = 0; row < h; row++) {
+    lseek(fbdev, x + (y + row) * disp_w, SEEK_SET);
+    //printf("NDL: writing to %ld\n", x + (y + row) * disp_w);
+    write(fbdev, pixels + row * w, w);  
   }
-  write(fbdev, 0, 0);
 }
 
-void NDL_OpenAudio(int freq, int channels, int samples)
-{
+void NDL_OpenAudio(int freq, int channels, int samples) {
+  /*
+  audio = {freq, channels, samples};
+  write(sbctl, audio, 1); 
+  */
 }
 
-void NDL_CloseAudio()
-{
+void NDL_CloseAudio() {
+  
 }
 
-int NDL_PlayAudio(void *buf, int len)
-{
+int NDL_PlayAudio(void *buf, int len) {
+  //ioe_write()
   return 0;
 }
 
-int NDL_QueryAudio()
-{
+int NDL_QueryAudio() {
   return 0;
 }
 
-int NDL_Init(uint32_t flags)
-{
-  if (getenv("NWM_APP"))
-  {
+int NDL_Init(uint32_t flags) {
+  if (getenv("NWM_APP")) {
     evtdev = 3;
   }
   evtdev = open("/dev/events", 0, 0);
   fbdev = open("/dev/fb", 0, 0);
-  dispinfo_dev = open("/proc/dispinfo", 0, 0);
-
-  // get_disp_size();
-  FILE *fp = fopen("/proc/dispinfo", "r");
-  fscanf(fp, "WIDTH:%d\nHEIGHT:%d\n", &disp_size.w, &disp_size.h);
-   printf("disp size is %d,%d\n", disp_size.w, disp_size.h);
-  assert(disp_size.w >= 400 && disp_size.w <= 800);
-  assert(disp_size.h >= 300 && disp_size.h <= 640);
+  /*
+  audioinfo = open("/dev/sbctl", 0, 0);
+  audiodev = open("/dev/sb", 0, 0);
+  */
+  dispinfodev = open("/proc/dispinfo", 0, 0);
+  //char tmp[32];
+  //read(dispinfodev, tmp, 21);
+  //sscanf(tmp, "WIDTH:%d\nHEIGHT:%d\n", &disp_w, &disp_h);
+  FILE *fp = fopen("/proc/dispinfo",  "r");
+  fscanf(fp, "WIDTH:%d\nHEIGHT:%d\n", &disp_w, &disp_h);
   fclose(fp);
+
+  printf("NDL: Now disp_w is %d, disp_h is %d\n", disp_w, disp_h);
   return 0;
 }
 
-void NDL_Quit()
-{
-  close(evtdev);
-  close(dispinfo_dev);
+void NDL_Quit() {
 }
