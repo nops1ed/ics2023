@@ -23,11 +23,12 @@ static void sh_prompt() {
 }
 
 static void sh_handle_cmd(const char *cmd) {
+  setenv("PATH", "/bin/", 0);
   int pos = strcspn(cmd, "\n");
   char *new_str = (char *)malloc(pos + 1); 
   strncpy(new_str, cmd, pos); 
   new_str[pos] = '\0'; 
-  execve(new_str, NULL, NULL);
+  execvp(new_str, NULL);
   free(new_str);
 }
 
