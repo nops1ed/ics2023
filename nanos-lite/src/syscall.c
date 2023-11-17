@@ -95,6 +95,7 @@ static void sys_signal(Context *c) {
 }
 
 static void sys_execve(Context *c) { 
+  printf("GPR2 is %s \n",(const char *)c->GPR2);
   naive_uload(NULL, (const char *)c->GPR2);
 #ifdef CONFIG_STRACE
   fs_curfilename();
