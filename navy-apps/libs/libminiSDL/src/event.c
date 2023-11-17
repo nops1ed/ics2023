@@ -24,7 +24,7 @@ int SDL_PollEvent(SDL_Event *ev) {
   memset(buf, 0, BUFLEN);
   /* Listening for events. */
   if(!NDL_PollEvent(buf, BUFLEN)) {
-    //printf("Exiting...\n");
+    printf("Exiting...\n");
     return 0;
   }
   printf("Detecing event\n");
@@ -54,7 +54,7 @@ int SDL_WaitEvent(SDL_Event *event) {
   //char *buf = (char *)malloc(sizeof(char) * BUFLEN);
   memset(buf2, 0, BUFLEN);
   /* Listening for events. */
-  while(!NDL_PollEvent(buf2, BUFLEN)) ;
+  while(!NDL_PollEvent(buf2, BUFLEN)) printf("Deceting ...\n");
   printf("Detecing event\n");
   if(!strncmp(buf2, "ku", 2)) {
     event -> type = SDL_KEYUP;
