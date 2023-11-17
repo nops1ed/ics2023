@@ -17,12 +17,11 @@
 #include "../local-include/reg.h"
 
 word_t isa_raise_intr(word_t NO, vaddr_t epc) {
-  printf("Raising...\n");
   cpu.csr[CSR_MEPC].val = epc;
   cpu.csr[CSR_MCAUSE].val = NO;
 
-  //cpu.csr[CSR_MSTATUS].status.MPIE = cpu.csr[CSR_MSTATUS].status.MIE;
-  //cpu.csr[CSR_MSTATUS].status.MIE = 0;
+  cpu.csr[CSR_MSTATUS].status.MPIE = cpu.csr[CSR_MSTATUS].status.MIE;
+  cpu.csr[CSR_MSTATUS].status.MIE = 0;
   printf("So the mcause is %ld\n", cpu.csr[CSR_MCAUSE].val );
   return cpu.csr[CSR_MTVEC].val;
 }

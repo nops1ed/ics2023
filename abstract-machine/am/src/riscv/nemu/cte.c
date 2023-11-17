@@ -7,24 +7,26 @@ static Context* (*user_handler)(Event, Context*) = NULL;
 Context* __am_irq_handle(Context *c) {
   if (user_handler) {
     Event ev = {0};
-    switch (c->mcause) {
-      case -1:
-        //printf("AM: Event YIELD emit\n");
-        ev.event = EVENT_YIELD;
-        break;
-      case 0 ... 19:
-        //printf("AM: Event SYSCALL emit\n");
-        ev.event = EVENT_SYSCALL;
-        break;
-      default: 
-        printf("AM: No certain event");
-        assert(0);
+    if(c->mcause == MODE_M) {
+      switch(c->GPR1) {
+        case -1:
+          ev.event = EVENT_YIELD;
+          break;
+        case 0 ... 19:
+          ev.event = EVENT_SYSCALL;
+          break;
+        default:
+          ev.event = EVENT_ERROR;
+      }
+      c->mepc += 4;
     }
-
+    else {
+      printf("User/Super mode not support\n");
+      assert(0);
+    }
     c = user_handler(ev, c);
     assert(c != NULL);
   }
-
   return c;
 }
 
