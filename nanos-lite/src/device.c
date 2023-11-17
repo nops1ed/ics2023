@@ -93,7 +93,7 @@ size_t fb_write(const void *buf, size_t offset, size_t len) {
 }
 
 void audioinfo_write(void *audio) {
-  ioe_write(AM_AUDIO_CTRL, (_AudioData *)audio);
+  //ioe_write(AM_AUDIO_CTRL, (_AudioData *)audio);
 }
 
 //size_t audioinfo_read(char *buf, );
