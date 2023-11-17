@@ -23,6 +23,7 @@ static void sh_prompt() {
 }
 
 static void sh_handle_cmd(const char *cmd) {
+  sh_printf("I am in handle_cmd\n");
 }
 
 void builtin_sh_run() {
