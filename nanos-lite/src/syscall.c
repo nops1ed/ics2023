@@ -3,7 +3,7 @@
 #include <fs.h>
 #include "syscall.h"
 
-//#define CONFIG_STRACE
+#define CONFIG_STRACE
 void naive_uload(PCB *pcb, const char *filename);
 
 typedef struct timeval {

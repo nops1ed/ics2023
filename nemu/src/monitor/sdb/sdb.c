@@ -213,6 +213,12 @@ static void init_snaplist(void) {
   free(__filename);
 }
 
+/*
+static void delete_snaplist(void) {
+  panic("Not implemented\n");
+}
+*/
+
 static int cmd_snaplist(char *args) {
   if (snaplist_file == NULL) {
     /* Try to init snaplist again. */
@@ -392,5 +398,5 @@ void init_sdb() {
   init_wp_pool();
 
   /* Initialize the snaplist file. */
-  //init_snaplist();
+  init_snaplist();
 }
