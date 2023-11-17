@@ -95,12 +95,12 @@ static void sys_signal(Context *c) {
 }
 
 static void sys_execve(Context *c) { 
-  naive_uload(NULL, (const char *)c->GPR2);
+  naive_uload(NULL, (const char *)c->GPR3);
 #ifdef CONFIG_STRACE
   fs_curfilename();
-  printf("sys_execve(%s)  \n", c->GPR2);
+  printf("sys_execve(%s)  \n", c->GPR3);
 #endif
-  printf("sys_execve(%s)  \n", c->GPR2);
+  printf("sys_execve(%s)  \n", c->GPR3);
 }
 
 static void sys_exit(Context *c) {
