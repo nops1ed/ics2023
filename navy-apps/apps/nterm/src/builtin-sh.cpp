@@ -23,7 +23,6 @@ static void sh_prompt() {
 }
 
 static void sh_handle_cmd(const char *cmd) {
-  //sh_printf("cmd is %s", cmd);
   int pos = strcspn(cmd, "\n");
   char *new_str = (char *)malloc(pos + 1); 
   strncpy(new_str, cmd, pos); 
