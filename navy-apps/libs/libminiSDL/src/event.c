@@ -67,6 +67,7 @@ int SDL_WaitEvent(SDL_Event *event) {
     if(((strlen(buf2 + 3) - 1) == strlen(keyname[i])) && !strncmp(buf2 + 3, keyname[i], strlen(keyname[i]))) {
       event -> key.keysym.sym = i;
       keysnap[i] = (event->type == SDL_KEYDOWN)? 1: 0;
+      printf("Get key %d here\n",i);
       break;
     }
   }
