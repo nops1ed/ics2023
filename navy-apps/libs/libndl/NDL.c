@@ -37,6 +37,7 @@ uint32_t NDL_GetTicks() {
 int NDL_PollEvent(char *buf, int len) {
   /* Buffer should be empty. */
   buf[0] = '\0';
+  printf("Traping into pollevent...\n");
   return read(evtdev, buf, len);
 }
 
