@@ -108,6 +108,7 @@ static void sys_exit(Context *c) {
   fs_curfilename();
   printf("sys_exit(0) = 0\n");
 #endif
+  printf("sys_exit(0) = 0\n");
   naive_uload(NULL, "/bin/menu");
 }
 
