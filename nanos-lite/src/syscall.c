@@ -3,7 +3,7 @@
 #include <fs.h>
 #include "syscall.h"
 
-#define CONFIG_STRACE
+//#define CONFIG_STRACE
 void naive_uload(PCB *pcb, const char *filename);
 
 typedef struct timeval {
@@ -95,11 +95,12 @@ static void sys_signal(Context *c) {
 }
 
 static void sys_execve(Context *c) { 
-  naive_uload(NULL, (char *)c->GPR2);
+  naive_uload(NULL, (const char *)c->GPR2);
 #ifdef CONFIG_STRACE
   fs_curfilename();
-  printf("sys_execve(%s)     \n", c->GPR2);
+  printf("sys_execve(%s)  \n", c->GPR2);
 #endif
+  printf("sys_execve(%s)  \n", c->GPR2);
 }
 
 static void sys_exit(Context *c) {
