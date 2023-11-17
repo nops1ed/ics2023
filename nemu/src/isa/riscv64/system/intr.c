@@ -20,8 +20,8 @@ word_t isa_raise_intr(word_t NO, vaddr_t epc) {
   cpu.csr[CSR_MEPC].val = epc;
   cpu.csr[CSR_MCAUSE].val = NO;
 
-  cpu.csr[CSR_MSTATUS].status.MPIE = cpu.csr[CSR_MSTATUS].status.MIE;
-  cpu.csr[CSR_MSTATUS].status.MIE = 0;
+  //cpu.csr[CSR_MSTATUS].status.MPIE = cpu.csr[CSR_MSTATUS].status.MIE;
+  //cpu.csr[CSR_MSTATUS].status.MIE = 0;
   return cpu.csr[CSR_MTVEC].val;
 }
 
