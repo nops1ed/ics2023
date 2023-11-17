@@ -95,15 +95,11 @@ static void sys_signal(Context *c) {
 }
 
 static void sys_execve(Context *c) { 
-  /*
   naive_uload(NULL, (char *)c->GPR2);
 #ifdef CONFIG_STRACE
   fs_curfilename();
   printf("sys_execve(%s)     \n", c->GPR2);
 #endif
-*/
-
-  panic("Not implement");
 }
 
 static void sys_exit(Context *c) {
@@ -111,8 +107,7 @@ static void sys_exit(Context *c) {
   fs_curfilename();
   printf("sys_exit(0) = 0\n");
 #endif
-  //naive_uload(NULL, "/bin/menu");
-  halt(0);
+  naive_uload(NULL, "/bin/menu");
 }
 
 static void sys_fork(Context *c) {

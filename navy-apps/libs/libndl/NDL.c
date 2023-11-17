@@ -39,17 +39,13 @@ uint32_t NDL_GetTicks() {
 int NDL_PollEvent(char *buf, int len) {
   /* Buffer should be empty. */
   buf[0] = '\0';
-  printf("Traping into pollevent...\n");
+  //printf("Traping into pollevent...\n");
   return read(evtdev, buf, len);
 }
 
 void NDL_OpenCanvas(int *w, int *h) {
   //printf("OPENCANVAS: Now w is %d h is %d \ndisp_w is %d disp_h is %d\n",*w, *h, disp_w, disp_h);
   if(*w > disp_w || *h > disp_h) assert(0);
-  /*
-  *w == 0 ? disp_w : *w;
-  *h == 0 ? disp_h : *h;
-  */
   if(*w == 0) *w = disp_w;
   if(*h == 0) *h = disp_h;
   printf("Now the w is %d and h is %d\n", *w, *h);
@@ -121,14 +117,12 @@ int NDL_Init(uint32_t flags) {
   audiodev = open("/dev/sb", 0, 0);
   */
   dispinfodev = open("/proc/dispinfo", 0, 0);
-  //char tmp[32];
-  //read(dispinfodev, tmp, 21);
-  //sscanf(tmp, "WIDTH:%d\nHEIGHT:%d\n", &disp_w, &disp_h);
+  
   FILE *fp = fopen("/proc/dispinfo",  "r");
   fscanf(fp, "WIDTH:%d\nHEIGHT:%d\n", &disp_w, &disp_h);
   fclose(fp);
 
-  printf("NDL: Now disp_w is %d, disp_h is %d\n", disp_w, disp_h);
+  //printf("NDL: Now disp_w is %d, disp_h is %d\n", disp_w, disp_h);
   return 0;
 }
 

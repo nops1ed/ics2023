@@ -24,10 +24,10 @@ int SDL_PollEvent(SDL_Event *ev) {
   memset(buf, 0, BUFLEN);
   /* Listening for events. */
   if(!NDL_PollEvent(buf, BUFLEN)) {
-    printf("Exiting...\n");
+    //printf("Exiting...\n");
     return 0;
   }
-  printf("Detecing event\n");
+  //printf("Detecing event\n");
   if(!strncmp(buf, "ku", 2)) {
     ev -> type = SDL_KEYUP;
   }
@@ -42,7 +42,7 @@ int SDL_PollEvent(SDL_Event *ev) {
     if(((strlen(buf + 3) - 1) == strlen(keyname[i])) && !strncmp(buf + 3, keyname[i], strlen(keyname[i]))) {
       ev -> key.keysym.sym = i;
       keysnap[i] = (ev->type == SDL_KEYDOWN)? 1: 0;
-      printf("Get key %d here\n",i);
+      //printf("Get key %d here\n",i);
       break;
     }
   }
@@ -54,8 +54,8 @@ int SDL_WaitEvent(SDL_Event *event) {
   //char *buf = (char *)malloc(sizeof(char) * BUFLEN);
   memset(buf2, 0, BUFLEN);
   /* Listening for events. */
-  while(!NDL_PollEvent(buf2, BUFLEN)) printf("Deceting ...\n");
-  printf("Detecing event\n");
+  while(!NDL_PollEvent(buf2, BUFLEN)) ;
+  //printf("Detecing event\n");
   if(!strncmp(buf2, "ku", 2)) {
     event -> type = SDL_KEYUP;
   }
@@ -68,7 +68,7 @@ int SDL_WaitEvent(SDL_Event *event) {
     if(((strlen(buf2 + 3) - 1) == strlen(keyname[i])) && !strncmp(buf2 + 3, keyname[i], strlen(keyname[i]))) {
       event -> key.keysym.sym = i;
       keysnap[i] = (event->type == SDL_KEYDOWN)? 1: 0;
-      printf("Get key %d here\n",i);
+      //printf("Get key %d here\n",i);
       break;
     }
   }
