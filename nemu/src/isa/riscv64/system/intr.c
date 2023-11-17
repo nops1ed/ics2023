@@ -17,6 +17,7 @@
 #include "../local-include/reg.h"
 
 word_t isa_raise_intr(word_t NO, vaddr_t epc) {
+  printf("Raising...\n");
   cpu.csr[CSR_MEPC].val = epc;
   cpu.csr[CSR_MCAUSE].val = NO;
 
