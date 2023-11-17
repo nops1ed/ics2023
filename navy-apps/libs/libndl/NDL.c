@@ -43,8 +43,12 @@ int NDL_PollEvent(char *buf, int len) {
 void NDL_OpenCanvas(int *w, int *h) {
   //printf("OPENCANVAS: Now w is %d h is %d \ndisp_w is %d disp_h is %d\n",*w, *h, disp_w, disp_h);
   if(*w > disp_w || *h > disp_h) assert(0);
+  /*
   *w == 0 ? disp_w : *w;
   *h == 0 ? disp_h : *h;
+  */
+  if(*w == 0) *w = disp_w;
+  if(*h == 0) *w = disp_h;
   printf("Now the w is %d and h is %d\n", *w, *h);
   if (getenv("NWM_APP")) {
     printf("I am in NWM_APP\n");
