@@ -119,7 +119,7 @@ int NDL_Init(uint32_t flags) {
   */
   dispinfodev = open("/proc/dispinfo", 0, 0);
   char tmp[32];
-  read(dispinfodev, tmp, 32);
+  read(dispinfodev, tmp, 21);
   sscanf(tmp, "WIDTH:%d\nHEIGHT:%d\n", &disp_w, &disp_h);
 
   printf("NDL: Now disp_w is %d, disp_h is %d\n", disp_w, disp_h);
