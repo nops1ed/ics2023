@@ -22,7 +22,6 @@ word_t isa_raise_intr(word_t NO, vaddr_t epc) {
 
   cpu.csr[CSR_MSTATUS].status.MPIE = cpu.csr[CSR_MSTATUS].status.MIE;
   cpu.csr[CSR_MSTATUS].status.MIE = 0;
-  printf("So the mcause is %ld\n", cpu.csr[CSR_MCAUSE].val );
   return cpu.csr[CSR_MTVEC].val;
 }
 
