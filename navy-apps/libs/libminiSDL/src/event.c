@@ -18,7 +18,7 @@ int SDL_PushEvent(SDL_Event *ev) {
   return 0;
 }
 
-static char buf[BUFLEN] = {};
+static char buf[BUFLEN];
 int SDL_PollEvent(SDL_Event *ev) {
   //char *buf = (char *)malloc(sizeof(char) * BUFLEN);
   memset(buf, 0, BUFLEN);
@@ -42,14 +42,14 @@ int SDL_PollEvent(SDL_Event *ev) {
     if(((strlen(buf + 3) - 1) == strlen(keyname[i])) && !strncmp(buf + 3, keyname[i], strlen(keyname[i]))) {
       ev -> key.keysym.sym = i;
       keysnap[i] = (ev->type == SDL_KEYDOWN)? 1: 0;
-      //printf("Get key %d here\n",i);
+      printf("Get key %d here\n",i);
       break;
     }
   }
   return 1;
 }
 
-static char buf2[BUFLEN] = {};
+static char buf2[BUFLEN];
 int SDL_WaitEvent(SDL_Event *event) {
   //char *buf = (char *)malloc(sizeof(char) * BUFLEN);
   memset(buf2, 0, BUFLEN);
