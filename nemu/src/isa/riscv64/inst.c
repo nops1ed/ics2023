@@ -36,6 +36,10 @@ static void ecall_ctrl(Decode *s);
 #define XLEN 64 
 
 enum {
+  MODE_M = 11, MODE_S, MODE_U
+};
+
+enum {
   COND_BEQ, COND_BNE, COND_BLT, COND_BGE, COND_BLTU, COND_BGEU,
 };
 
@@ -207,33 +211,33 @@ static void Branch_Cond(Decode *s, word_t src1, word_t src2, word_t imm, uint32_
 /* Should be optimized. */
 // TODO
 static uint64_t _unsigned_multiply_high(uint64_t a, uint64_t b) {
-    uint32_t a_low = (uint32_t)a;
-    uint32_t a_high = (uint32_t)(a >> 32);
-    uint32_t b_low = (uint32_t)b;
-    uint32_t b_high = (uint32_t)(b >> 32);
+  uint32_t a_low = (uint32_t)a;
+  uint32_t a_high = (uint32_t)(a >> 32);
+  uint32_t b_low = (uint32_t)b;
+  uint32_t b_high = (uint32_t)(b >> 32);
 
-    uint64_t low_product = (uint64_t)a_low * b_low;
-    uint64_t high_product = (uint64_t)a_high * b_high;
+  uint64_t low_product = (uint64_t)a_low * b_low;
+  uint64_t high_product = (uint64_t)a_high * b_high;
 
-    uint64_t low_result = low_product + (((uint64_t)(uint32_t)(low_product >> 32) + (uint64_t)(uint32_t)(a_low * b_high) + (uint64_t)(uint32_t)(a_high * b_low)) >> 32);
-    uint64_t high_result = high_product + (uint64_t)(uint32_t)(low_result >> 32) + (uint64_t)(uint32_t)(a_high * b_high);
+  uint64_t low_result = low_product + (((uint64_t)(uint32_t)(low_product >> 32) + (uint64_t)(uint32_t)(a_low * b_high) + (uint64_t)(uint32_t)(a_high * b_low)) >> 32);
+  uint64_t high_result = high_product + (uint64_t)(uint32_t)(low_result >> 32) + (uint64_t)(uint32_t)(a_high * b_high);
 
-    return high_result;
+  return high_result;
 }
 
 static int64_t _multiply_high(int64_t a, int64_t b) {
-    int32_t a_low = (int32_t)a;
-    int32_t a_high = (int32_t)(a >> 32);
-    int32_t b_low = (int32_t)b;
-    int32_t b_high = (int32_t)(b >> 32);
+  int32_t a_low = (int32_t)a;
+  int32_t a_high = (int32_t)(a >> 32);
+  int32_t b_low = (int32_t)b;
+  int32_t b_high = (int32_t)(b >> 32);
 
-    int64_t low_product = (int64_t)a_low * b_low;
-    int64_t high_product = (int64_t)a_high * b_high;
+  int64_t low_product = (int64_t)a_low * b_low;
+  int64_t high_product = (int64_t)a_high * b_high;
 
-    int64_t low_result = low_product + (((int64_t)(int32_t)(low_product >> 32) + (int64_t)(int32_t)(a_low * b_high) + (int64_t)(int32_t)(a_high * b_low)) >> 32);
-    int64_t high_result = high_product + (int64_t)(int32_t)(low_result >> 32) + (int64_t)(int32_t)(a_high * b_high);
+  int64_t low_result = low_product + (((int64_t)(int32_t)(low_product >> 32) + (int64_t)(int32_t)(a_low * b_high) + (int64_t)(int32_t)(a_high * b_low)) >> 32);
+  int64_t high_result = high_product + (int64_t)(int32_t)(low_result >> 32) + (int64_t)(int32_t)(a_high * b_high);
 
-    return high_result;
+  return high_result;
 }
 
 /* What should be done in ecall ? 
@@ -246,10 +250,13 @@ static int64_t _multiply_high(int64_t a, int64_t b) {
 * 7. Jump to the corresponding interrupt response program according to the setting of the mtvec register 
 */
 static void ecall_ctrl(Decode *s) {
+  /* ics-project does not support multi-user mode, so we use MODE_M by default
+  * The following code may change in the future. 
+  */
 #ifdef CONFIG_ETRACE
-  Log("An exception occured at pc:" FMT_WORD " privilege mode: " FMT_WORD, s->pc, 11);
+  Log("An exception occured at pc:" FMT_WORD " privilege mode: " FMT_WORD, s->pc, MODE_M);
 #endif
-  s->dnpc = isa_raise_intr(11, s->pc);
+  s->dnpc = isa_raise_intr(MODE_M, s->pc);
 }
 
 /*
