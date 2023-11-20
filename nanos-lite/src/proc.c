@@ -31,7 +31,7 @@ void init_proc() {
   //context_kload(&pcb[0], hello_fun, "Message from proc #1");
   //context_uload(&pcb[0], "/bin/hello"); 
   char *args_pal[] = {"/bin/pal", "--skip", NULL};
-  context_uload(&pcb[1], "/bin/pal", args_pal, NULL); 
+  context_uload(&pcb[0], "/bin/pal", args_pal, NULL); 
   //context_kload(&pcb[1], hello_fun, "proc1");
   switch_boot_pcb();
 
@@ -41,7 +41,10 @@ void init_proc() {
 }
 
 Context* schedule(Context *prev) {
+  /*
   current->cp = prev;
   current = (current == &pcb[0] ? &pcb[1] : &pcb[0]);
   return current->cp;
+  */
+  return NULL;
 }
