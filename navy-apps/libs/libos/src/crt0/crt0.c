@@ -41,7 +41,10 @@ int main(int argc, char *argv[], char *envp[]);
 extern char **environ;
 void call_main(uintptr_t *args) {
   int argc = *((int *)args); 
+  printf("So the argc is %d\n",argc);
   char **argv = (char **)args + 1; 
+  printf("CTE0: Argv[0] is %s\n",argv[0]);
+  printf("CTE0: Argv[1] is %s\n",argv[1]);
   char **envp = argv + argc;
   while(*envp != NULL) envp++;
   environ = envp;
