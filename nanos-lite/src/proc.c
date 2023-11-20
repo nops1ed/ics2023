@@ -28,7 +28,7 @@ void hello_fun(void *arg) {
 }
 
 void init_proc() {
-  context_kload(&pcb[0], hello_fun, "proc0");
+  //context_kload(&pcb[0], hello_fun, "proc0");
   //context_uload(&pcb[1], "/bin/pal"); 
   //context_kload(&pcb[1], hello_fun, "proc1");
   switch_boot_pcb();
