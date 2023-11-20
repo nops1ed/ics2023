@@ -8,7 +8,7 @@ Context* __am_irq_handle(Context *c) {
   if (user_handler) {
     Event ev = {0};
     if(c->mcause == MODE_M) {
-      switch(c->GPRx) {
+      switch(c->GPR1) {
         case -1:
           ev.event = EVENT_YIELD;
           break;
