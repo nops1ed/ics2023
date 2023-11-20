@@ -43,7 +43,7 @@ void call_main(uintptr_t *args) {
   int argc = *(int *)args; 
   char **argv = (char **)args + 1; 
   char **envp = argv + argc;
-  while(envp != NULL) envp++;
+  while(*envp != NULL) envp++;
   environ = envp;
   exit(main(argc, argv, envp));
   assert(0);
