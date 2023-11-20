@@ -1,6 +1,7 @@
 #include <stdint.h>
 #include <stdlib.h>
 #include <assert.h>
+#include <stdio.h>
 /*
   |               |
   +---------------+ <---- ustack.end
@@ -53,8 +54,7 @@ void call_main(uintptr_t *args) {
   assert(0);
   */
 
- /printf("arg is %p\n", args);
-   write(1, "here\n", 10);
+ printf("arg is %p\n", args);
   int argc = *((int *)args);
 
   char **pargs = (char **)args + 1;
