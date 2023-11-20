@@ -107,5 +107,5 @@ void context_uload(PCB *pcb, const char *filename, char *const argv[], char *con
   Area stack = RANGE((char *)(uintptr_t)pcb, (char *)(uintptr_t)pcb + STACK_SIZE);
   Context *ucxt = ucontext(NULL, stack, (void *)entry);
   pcb->cp = ucxt;
-  //ucxt->GPRx = (uintptr_t)stack.end;
+  ucxt->GPRx = (uintptr_t)stack.end;
 }
