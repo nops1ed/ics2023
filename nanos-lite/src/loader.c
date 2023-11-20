@@ -102,11 +102,10 @@ Context *context_kload(PCB* pcb, void(*func)(void *), void *args) {
   return kcxt;
 } 
 
-Context *context_uload(PCB *pcb, const char *filename) {
+void context_uload(PCB *pcb, const char *filename) {
   uintptr_t entry = loader(pcb, filename);
   Area stack = RANGE((char *)(uintptr_t)pcb, (char *)(uintptr_t)pcb + STACK_SIZE);
   Context *ucxt = ucontext(NULL, stack, (void *)entry);
   pcb->cp = ucxt;
   ucxt->GPRx = (uintptr_t)stack.end;
-  return ucxt;
 }
