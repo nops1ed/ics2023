@@ -53,17 +53,17 @@ void call_main(uintptr_t *args) {
   assert(0);
   */
 
- // printf("arg is %p\n", args);
-  // write(1, "here\n", 10);
+ /printf("arg is %p\n", args);
+   write(1, "here\n", 10);
   int argc = *((int *)args);
 
   char **pargs = (char **)args + 1;
   char **argv = pargs;
-  // printf("\n\n\n\n");
-  // printf("argv0 is  %s\n", argv[0]);
+   printf("\n\n\n\n");
+   printf("argv0 is  %s\n", argv[0]);
   // if (strcmp(argv[0], "/bin/hello"))
   //   exit(1);
-  // printf("argv1 is at %s\n", argv[1]);
+   printf("argv1 is at %s\n", argv[1]);
 
   while (*pargs != NULL)
     pargs++;
