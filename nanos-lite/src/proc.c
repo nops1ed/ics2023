@@ -5,6 +5,8 @@
 #define MAX_NR_PROC 4
 
 void naive_uload(PCB *pcb, const char *filename);
+Context *context_kload(PCB* pcb, void(*func)(void *), void *args);
+void context_uload(PCB *pcb, const char *filename);
 
 static PCB pcb[MAX_NR_PROC] __attribute__((used)) = {};
 static PCB pcb_boot = {};
@@ -14,11 +16,6 @@ void switch_boot_pcb() {
   current = &pcb_boot;
 }
 
-Context *context_kload(PCB* pcb, void(*func)(void *), void *args) {
-  Area stack = RANGE((char *)(uintptr_t)pcb, (char *)(uintptr_t)pcb + STACK_SIZE);
-  Context *kcxt = kcontext(stack, func, args);
-  return kcxt;
-} 
 
 void hello_fun(void *arg) {
   int j = 1;
@@ -32,12 +29,13 @@ void hello_fun(void *arg) {
 
 void init_proc() {
   context_kload(&pcb[0], hello_fun, "proc0");
-  context_kload(&pcb[1], hello_fun, "proc1");
+  context_uload(&pcb[1], "/bin/pal"); 
+  //context_kload(&pcb[1], hello_fun, "proc1");
   switch_boot_pcb();
 
   Log("Initializing processes...");
   // load program here
-  //naive_uload(NULL, "/bin/nterm");
+  naive_uload(NULL, "/bin/nterm");
 }
 
 Context* schedule(Context *prev) {

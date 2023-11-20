@@ -95,3 +95,15 @@ void naive_uload(PCB *pcb, const char *filename) {
   ((void(*)())entry) ();
 }
 
+Context *context_kload(PCB* pcb, void(*func)(void *), void *args) {
+  Area stack = RANGE((char *)(uintptr_t)pcb, (char *)(uintptr_t)pcb + STACK_SIZE);
+  Context *kcxt = kcontext(stack, func, args);
+  return kcxt;
+} 
+
+void context_uload(PCB *pcb, const char *filename) {
+  uintptr_t entry = loader(pcb, filename);
+  Area stack = RANGE((char *)(uintptr_t)pcb, (char *)(uintptr_t)pcb + STACK_SIZE);
+  Context *ucxt = ucontext(NULL, stack, (void *)entry);
+  ucxt->GPRx = (uintptr_t)stack.end;
+}
