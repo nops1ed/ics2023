@@ -139,23 +139,11 @@ Context *context_kload(PCB* pcb, void(*func)(void *), void *args) {
 */
 
 /* Following function just count the number of argv/envp, which is end by "NULL". */
-/*
-static int _len_of_array(char *const argv[]) {
-  int count = 0;
-  for(; argv[count] != NULL; count++) ;
-  return count; 
-}
-*/
-
 void context_uload(PCB *pcb, const char *filename, char *const argv[], char *const envp[]) {
   uintptr_t entry = loader(pcb, filename);
   Area stack = RANGE((char *)(uintptr_t)pcb, (char *)(uintptr_t)pcb + STACK_SIZE);
   /* deploy user stack layout. */
   char *brk = stack.end;
-  /*
-  int argc = _len_of_array(argv);
-  int envc = _len_of_array(envp);
-  */
   int argc = 0, envc = 0;
   if (envp){
     for (; envp[envc]; ++envc){}
