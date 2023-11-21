@@ -164,6 +164,7 @@ void context_uload(PCB *pcb, const char *filename, char *const argv[], char *con
     brk -= strlen(argv[i]);
     args[i] = brk;
     strcpy(brk, argv[i]);
+    printf("Here we got brk is %p and args is %s\n", brk, argv[i]);
   }
   for (int i = 0; i < envc; ++i) {
     //brk -= ROUNDUP(strlen(envp[i]), sizeof(int));
