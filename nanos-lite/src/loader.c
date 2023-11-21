@@ -185,5 +185,5 @@ void context_uload(PCB *pcb, const char *filename, char *const argv[], char *con
   Context *ucxt = ucontext(NULL, stack, (void *)entry);
   pcb->cp = ucxt;
   ucxt->GPRx = (intptr_t)ptr_brk;
-  //printf("And now in uload stack.end is %p\n", stack.end);
+  printf("And now ptr_brk is %p\n", ptr_brk);
 }

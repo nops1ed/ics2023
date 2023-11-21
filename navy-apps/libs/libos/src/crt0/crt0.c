@@ -41,6 +41,7 @@
 int main(int argc, char *argv[], char *envp[]);
 extern char **environ;
 void call_main(uintptr_t *args) {
+  printf("In call_main, we got address %p\n", args);
   int argc = *((int *)args); 
   printf("So the argc is %d\n",argc);
   char **argv = (char **)args + 1; 
