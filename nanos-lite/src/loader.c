@@ -164,7 +164,7 @@ void context_uload(PCB *pcb, const char *filename, char *const argv[], char *con
     args[i] = brk;
     strcpy(brk, argv[i]);
     */
-    printf("The strlen(argv[i]) is %d\n", argv[i]);
+    printf("The strlen(argv[i]) is %ld\n", argv[i]);
     brk -= (strlen(argv[i]) + 1);
     strcpy(brk, argv[i]);
     args[i] = brk;
