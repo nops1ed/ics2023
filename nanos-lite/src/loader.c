@@ -102,11 +102,92 @@ Context *context_kload(PCB* pcb, void(*func)(void *), void *args) {
   return kcxt;
 } 
 
+/*
+  |               |
+  +---------------+ <---- ustack.end
+  |  Unspecified  |
+  +---------------+
+  |               | <----------+
+  |    string     | <--------+ |
+  |     area      | <------+ | |
+  |               | <----+ | | |
+  |               | <--+ | | | |
+  +---------------+    | | | | |
+  |  Unspecified  |    | | | | |
+  +---------------+    | | | | |
+  |     NULL      |    | | | | |
+  +---------------+    | | | | |
+  |    ......     |    | | | | |
+  +---------------+    | | | | |
+  |    envp[1]    | ---+ | | | |
+  +---------------+      | | | |
+  |    envp[0]    | -----+ | | |
+  +---------------+        | | |
+  |     NULL      |        | | |
+  +---------------+        | | |
+  | argv[argc-1]  | -------+ | |
+  +---------------+          | |
+  |    ......     |          | |
+  +---------------+          | |
+  |    argv[1]    | ---------+ |
+  +---------------+            |
+  |    argv[0]    | -----------+
+  +---------------+
+  |      argc     |
+  +---------------+ <---- cp->GPRx
+  |               |
+*/
+
+/* Following function just count the number of argv/envp, which is end by "NULL". */
+static int _len_of_array(char *const argv[]) {
+  int count = 0;
+  for(; argv[count] != NULL; count++) ;
+  return count; 
+}
+
 void context_uload(PCB *pcb, const char *filename, char *const argv[], char *const envp[]) {
   uintptr_t entry = loader(pcb, filename);
   Area stack = RANGE((char *)(uintptr_t)pcb, (char *)(uintptr_t)pcb + STACK_SIZE);
+  /* deploy user stack layout. */
+  char *sp = stack.end;
+  int argc = _len_of_array(argv);
+  char *(args[argc]);
+  for (int i = 0; i < argc; ++i) {
+    sp -= (strlen(argv[i]) + 1);
+    strcpy(sp, argv[i]);
+    args[i] = sp;
+  }
+  int envc = _len_of_array(envp);
+  char *(envs[envc]);
+  for (int i = 0; i < envc; ++i)
+  {
+    sp -= (strlen(envp[i]) + 1);
+    strcpy(sp, envp[i]);
+    envs[i] = sp;
+  }
+  char **sp_2 = (char **)sp;
+  --sp_2;
+  *sp_2 = NULL;
+  for (int i = envc - 1; i >= 0; --i)
+  {
+    // printf("loop %d\n", i);
+    --sp_2;
+    *sp_2 = envs[i];
+  }
+  --sp_2;
+  *sp_2 = NULL;
+  for (int i = argc - 1; i >= 0; --i)
+  {
+    --sp_2;
+    // printf("the pos of argv is at stack %p is %p\n", sp_2, args[i]);
+    *sp_2 = args[i];
+    // printf("args is %s\n", args[i]);
+  }
+  --sp_2;
+  *((int *)sp_2) = argc;
+
   Context *ucxt = ucontext(NULL, stack, (void *)entry);
   pcb->cp = ucxt;
-  ucxt->GPRx = (uintptr_t)stack.end;
-  printf("And now in uload stack.end is %p\n", stack.end);
+  ucxt->GPRx = (uintptr_t)sp_2;
+  //printf("And now in uload stack.end is %p\n", stack.end);
 }
