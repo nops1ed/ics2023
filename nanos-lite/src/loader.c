@@ -182,6 +182,8 @@ void context_uload(PCB *pcb, const char *filename, char *const argv[], char *con
     ptr_brk[i] = (intptr_t)(args[i]);
   }
   *(--ptr_brk) = argc;
+  free(args);
+  free(envs);
 
   Context *ucxt = ucontext(NULL, stack, (void *)entry);
   pcb->cp = ucxt;
