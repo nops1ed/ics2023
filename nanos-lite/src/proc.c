@@ -9,7 +9,7 @@ Context *context_kload(PCB* pcb, void(*func)(void *), void *args);
 void context_uload(PCB *pcb, const char *filename, char *const argv[], char *const envp[]);
 
 
-static char *args_pal[] = {"/bin/pallll", "--skip", NULL};
+static char *args_pal[] = {"/bin/pallll", "--skip"};
 static PCB pcb[MAX_NR_PROC] __attribute__((used)) = {};
 static PCB pcb_boot = {};
 PCB *current = NULL;
