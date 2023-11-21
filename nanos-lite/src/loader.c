@@ -151,8 +151,10 @@ void context_uload(PCB *pcb, const char *filename, char *const argv[], char *con
   if (argv){
     for (; argv[argc]; ++argc){}
   }
-  char **args = (char **)malloc(sizeof(char*) * argc);
-  char **envs = (char **)malloc(sizeof(char*) * envc);
+  //char **args = (char **)malloc(sizeof(char*) * argc);
+  //char **envs = (char **)malloc(sizeof(char*) * envc);
+  char *args[argc];
+  char *envs[envc];
   
   printf("it is safe now \n");
   /* Copy String Area. */
