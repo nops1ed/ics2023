@@ -150,6 +150,7 @@ void context_uload(PCB *pcb, const char *filename, char *const argv[], char *con
   Area stack = RANGE((char *)(uintptr_t)pcb, (char *)(uintptr_t)pcb + STACK_SIZE);
   /* deploy user stack layout. */
   char *brk = stack.end;
+  printf("So the brk now is %p\n", brk);
   int argc = _len_of_array(argv);
   int envc = _len_of_array(envp);
   char **args = (char **)malloc(sizeof(char*) * argc);
