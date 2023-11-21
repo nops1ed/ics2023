@@ -140,7 +140,7 @@ Context *context_kload(PCB* pcb, void(*func)(void *), void *args) {
 
 /* Following function just count the number of argv/envp, which is end by "NULL". */
 void context_uload(PCB *pcb, const char *filename, char *const argv[], char *const envp[]) {
-  uintptr_t entry = loader(pcb, filename);
+ 
   Area stack = RANGE((char *)(uintptr_t)pcb, (char *)(uintptr_t)pcb + STACK_SIZE);
   /* deploy user stack layout. */
   char *brk = stack.end;
@@ -196,6 +196,7 @@ void context_uload(PCB *pcb, const char *filename, char *const argv[], char *con
   free(args);
   free(envs);
 
+  uintptr_t entry = loader(pcb, filename);
   Context *ucxt = ucontext(NULL, stack, (void *)entry);
   pcb->cp = ucxt;
   ucxt->GPRx = (intptr_t)ptr_brk;
