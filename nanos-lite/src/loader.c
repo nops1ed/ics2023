@@ -183,10 +183,10 @@ void context_uload(PCB *pcb, const char *filename, char *const argv[], char *con
   }
 
   intptr_t *ptr_brk = (intptr_t *)brk;
-  //*(--ptr_brk) = 0;
+  *(--ptr_brk) = 0;
   ptr_brk -= envc;
   for (int i = 0; i < envc; ++i)  ptr_brk[i] = (intptr_t)(envs[i]);
-  //*(--ptr_brk) = 0;
+  *(--ptr_brk) = 0;
   ptr_brk = ptr_brk - argc;
   for (int i = 0; i < argc; ++i) {
     printf("So i write %p to %p\n", args[i], ptr_brk + i);
