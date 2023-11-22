@@ -166,7 +166,8 @@ void context_uload(PCB *pcb, const char *filename, char *const argv[], char *con
     */
     printf("The strlen(argv[i]) is %d\n", strlen(argv[i]));
     brk -= (strlen(argv[i]) + 1);
-    strcpy(brk, argv[i]);
+    //strcpy(brk, argv[i]);
+    memcpy(brk , argv[i], strlen(argv[i]) + 1);
     args[i] = brk;
     printf("Here we got brk is %p and args is %s\n", brk, argv[i]);
   }
@@ -178,7 +179,8 @@ void context_uload(PCB *pcb, const char *filename, char *const argv[], char *con
     strcpy(brk, envp[i]);
     */
     brk -= (strlen(envp[i]) + 1);
-    strcpy(brk , envp[i]);
+    //strcpy(brk , envp[i]);
+    memcpy(brk , envp[i], strlen(envp[i]) + 1);
     envs[i] = brk;
   }
 
