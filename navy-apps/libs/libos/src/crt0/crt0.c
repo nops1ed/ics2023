@@ -44,7 +44,7 @@ void call_main(uintptr_t *args) {
   printf("In call_main, we got address %p\n", args);
   int argc = *((int *)args); 
   printf("So the argc is %d\n",argc);
-  char **argv = (char **)(args + 4); 
+  char **argv = (char **)(args + 2); 
   printf("CTE0: We gonna track address %p and Argv[0] is %s\n",*argv, argv[0]);
   printf("CTE0: We gonna track address %p and Argv[1] is %s\n",*(argv + 1), argv[1]);
   /*
