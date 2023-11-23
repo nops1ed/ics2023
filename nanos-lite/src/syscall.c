@@ -93,7 +93,9 @@ static void sys_exit(Context *c) {
   printf("sys_exit(0) = 0\n");
 #endif
   printf("sys_exit(0) = 0\n");
-  sys_execve(c);
+  context_uload(current, "/bin/menu", (char **const)(uintptr_t)c->GPR3, (char **const)(uintptr_t)c->GPR4);
+  switch_boot_pcb();
+  yield();
 }
 
 static void sys_gettimeofday(Context *c) {
