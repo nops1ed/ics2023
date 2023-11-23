@@ -28,16 +28,17 @@ void hello_fun(void *arg) {
 }
 
 void init_proc() {
-  //context_kload(&pcb[0], hello_fun, "Message from proc #1");
+  context_kload(&pcb[0], hello_fun, "Message from proc #1");
   //context_uload(&pcb[0], "/bin/hello"); 
   //context_kload(&pcb[0], "/bin/nterm", NULL); 
   //context_uload(&pcb[1], "/bin/pal", args_pal, NULL); 
+  context_uload(&pcb[1], "/bin/menu", NULL, NULL); 
   //context_kload(&pcb[1], hello_fun, "proc1");
   switch_boot_pcb();
 
   Log("Initializing processes...");
   // load program here
-  naive_uload(NULL, "/bin/nterm");
+  //naive_uload(NULL, "/bin/nterm");
 }
 
 Context* schedule(Context *prev) {
