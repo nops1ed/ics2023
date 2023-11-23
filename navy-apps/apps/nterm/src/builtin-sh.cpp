@@ -36,7 +36,7 @@ static void sh_handle_cmd(const char *cmd) {
   while(strtok(NULL, " ")) argc++;
 
   /* Parse arguments list. */ 
-  char *argv[argc + 1] = {NULL};
+  char *argv[argc] = {NULL};
   strcpy(__tmp, new_str);
   argv[0] = strtok(__tmp, " ");
   for(int i = 1; i < argc; i++) {
@@ -45,12 +45,8 @@ static void sh_handle_cmd(const char *cmd) {
   }
 
   execvp(argv[0], argv);
-  /*
-  for(int i = 0; i < argc; i++) 
-    free(*(argv + i));
-  free(argv);
   free(new_str);
-  */
+  free(__tmp);
 }
 
 void builtin_sh_run() {
