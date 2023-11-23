@@ -52,12 +52,4 @@ void call_main(uintptr_t *args) {
   environ = envp;
   exit(main(argc, argv, envp));
   assert(0);
-
-/*
-  char *empty[] =  {NULL };
-  environ = empty;
-  exit(main(0, empty, empty));
-  assert(0);
-  */
-
 }
