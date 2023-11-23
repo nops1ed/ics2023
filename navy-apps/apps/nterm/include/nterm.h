@@ -10,6 +10,8 @@
 #define W 48
 #define H 16
 
+#define USERNAME "Nops1ed"
+
 class Terminal {
 private:
   struct Pattern {
