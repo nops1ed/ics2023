@@ -24,7 +24,6 @@ static void sh_prompt() {
 }
 
 static void sh_handle_cmd(const char *cmd) {
-  setenv("PATH", "/bin/", 0);
   int pos = strcspn(cmd, "\n");
   char *new_str = (char *)malloc(pos + 1); 
   strncpy(new_str, cmd, pos); 
@@ -46,6 +45,7 @@ static void sh_handle_cmd(const char *cmd) {
 }
 
 void builtin_sh_run() {
+  setenv("PATH", "/bin/", 0);
   sh_banner();
   sh_prompt();
 
