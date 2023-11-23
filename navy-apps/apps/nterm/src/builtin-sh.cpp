@@ -24,9 +24,9 @@ static void sh_prompt() {
 
 static void sh_handle_cmd(const char *cmd) {
   int pos = strcspn(cmd, "\n");
-  char *new_str = (char *)malloc(pos + 1); 
+  char *new_str = (char *)malloc(pos); 
   strncpy(new_str, cmd, pos); 
-  new_str[pos] = '\0'; 
+  //new_str[pos] = '\0'; 
   /* Parse arguments list. */ 
   int argc = 1;
   for(int i = 0; *(new_str + i); i++)
