@@ -76,10 +76,39 @@ static void sys_brk(Context *c) {
 #endif
 }
 
+static void sys_execve(Context *c) { 
+#ifdef CONFIG_STRACE
+  fs_curfilename();
+  printf("sys_execve(%s, %s, %s)  \n", c->GPR2, c->GPR3, c->GPR4);
+#endif
+  context_uload(current, (const char *)c->GPR2, (char **const)(uintptr_t)c->GPR3, (char **const)(uintptr_t)c->GPR4);
+  switch_boot_pcb();
+  yield();
+}
+
+static void sys_exit(Context *c) {
+#ifdef CONFIG_STRACE
+  fs_curfilename();
+  printf("sys_exit(0) = 0\n");
+#endif
+  printf("sys_exit(0) = 0\n");
+  naive_uload(NULL, "/bin/menu");
+}
+
+static void sys_gettimeofday(Context *c) {
+  int ret_val = 0;
+  ioe_read(AM_TIMER_UPTIME, &(((timeval *)c->GPR2)->tv_usec));
+  ((timeval *)c->GPR2)->tv_sec = (int32_t)(((timeval *)c->GPR2)->tv_usec / 1000000);
+  c->GPRx = ret_val;
+#ifdef CONFIG_STRACE
+  fs_curfilename();
+  printf("sys_gettimeofday() = %d\n", c->GPRx);
+#endif
+}
+
 /* Syscalls below are not used in Nanos-lite.
 * But to pass linking, they are defined as dummy functions.
 */
-
 static void sys_kill(Context *c) {
   panic("Not implement");
 }
@@ -98,25 +127,6 @@ static void sys_time(Context *c) {
 
 static void sys_signal(Context *c) {
   panic("Not implement");
-}
-
-static void sys_execve(Context *c) { 
-#ifdef CONFIG_STRACE
-  fs_curfilename();
-  printf("sys_execve(%s, %s, %s)  \n", c->GPR2, c->GPR3, c->GPR4);
-#endif
-  context_uload(current, (const char *)c->GPR2, (char **const)(uintptr_t)c->GPR3, (char **const)(uintptr_t)c->GPR4);
-  switch_boot_pcb();
-  yield();
-}
-
-static void sys_exit(Context *c) {
-#ifdef CONFIG_STRACE
-  fs_curfilename();
-  printf("sys_exit(0) = 0\n");
-#endif
-  printf("sys_exit(0) = 0\n");
-  naive_uload(NULL, "/bin/menu");
 }
 
 static void sys_fork(Context *c) {
@@ -139,30 +149,18 @@ static void sys_times(Context *c) {
   panic("Not implement");
 }
 
-static void sys_gettimeofday(Context *c) {
-  int ret_val = 0;
-  ioe_read(AM_TIMER_UPTIME, &(((timeval *)c->GPR2)->tv_usec));
-  ((timeval *)c->GPR2)->tv_sec = (int32_t)(((timeval *)c->GPR2)->tv_usec / 1000000);
-  c->GPRx = ret_val;
-#ifdef CONFIG_STRACE
-  fs_curfilename();
-  printf("sys_gettimeofday() = %d\n", c->GPRx);
-#endif
-}
-
 void (*syscall_table[])() = {
   &sys_exit, &sys_yield, &sys_open, &sys_read, &sys_write, &sys_kill,
   &sys_getpid, &sys_close, &sys_lseek, &sys_brk, &sys_fstat, &sys_time,
   &sys_signal, &sys_execve, &sys_fork, &sys_link, &sys_unlink, &sys_wait,
-  &sys_times, &sys_gettimeofday,
+  &sys_times, &sys_gettimeofday,  // Maybe more syscall...
 };
 
 #define NR_SYST (sizeof(syscall_table) / sizeof(syscall_table[0]))
 
 void do_syscall(Context *c) {
   uintptr_t a = c->GPR1;
-  if(a >= 0 && a < NR_SYST)
+  if(a >= 0 && a < NR_SYST) 
     syscall_table[a](c);
-  else 
-    panic("Unhandled syscall ID = %d", a);
+  else  panic("Unhandled syscall ID = %d", a);
 }
