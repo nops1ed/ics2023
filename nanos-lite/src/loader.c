@@ -1,6 +1,7 @@
 #include <proc.h>
 #include <elf.h>
 #include <fs.h>
+#include <memory.h>
 
 #if defined(__ISA_AM_NATIVE__)
 # define EXPECT_TYPE EM_X86_64
@@ -28,6 +29,7 @@
 # define Elf_Addr Elf32_Addr
 #endif
 
+#define NR_PAGE 8
 
 /*
  #define EI_NIDENT 16
@@ -141,9 +143,9 @@ Context *context_kload(PCB* pcb, void(*func)(void *), void *args) {
 /* Following function just count the number of argv/envp, which is end by "NULL". */
 void context_uload(PCB *pcb, const char *filename, char *const argv[], char *const envp[]) {
  
-  Area stack = RANGE((char *)(uintptr_t)pcb, (char *)(uintptr_t)pcb + STACK_SIZE);
+  void *page_alloc = new_page(NR_PAGE) + NR_PAGE * PGSIZE;
   /* deploy user stack layout. */
-  char *brk = stack.end;
+  char *brk = (char *)(page_alloc - 4);
   int argc = 0, envc = 0;
   if (envp){
     for (; envp[envc]; ++envc){}
@@ -158,30 +160,16 @@ void context_uload(PCB *pcb, const char *filename, char *const argv[], char *con
   /* Copy String Area. */
   for (int i = 0; i < argc; ++i) {
     /* Note that it is neccessary to make memory align. */
-    /*
-    brk -= ROUNDUP(strlen(argv[i]) ,sizeof(int));
-    //brk -= strlen(argv[i]);
+    brk -= ROUNDUP(strlen(argv[i]) + 1 ,sizeof(int));
     args[i] = brk;
     strcpy(brk, argv[i]);
-    */
     printf("The strlen(argv[i]) is %d\n", strlen(argv[i]));
-    brk -= (strlen(argv[i]) + 1);
-    //strcpy(brk, argv[i]);
-    memcpy(brk , argv[i], strlen(argv[i]) + 1);
-    args[i] = brk;
     printf("Here we got brk is %p and args is %s\n", brk, argv[i]);
   }
   for (int i = 0; i < envc; ++i) {
-    /*
-    brk -= ROUNDUP(strlen(envp[i]), sizeof(int));
-    //brk -= strlen(envp[i]);
+    brk -= ROUNDUP(strlen(envp[i]) + 1, sizeof(int));
     envs[i] = brk;
     strcpy(brk, envp[i]);
-    */
-    brk -= (strlen(envp[i]) + 1);
-    //strcpy(brk , envp[i]);
-    memcpy(brk , envp[i], strlen(envp[i]) + 1);
-    envs[i] = brk;
   }
 
   intptr_t *ptr_brk = (intptr_t *)brk;
@@ -200,6 +188,9 @@ void context_uload(PCB *pcb, const char *filename, char *const argv[], char *con
   free(envs);
 
   uintptr_t entry = loader(pcb, filename);
+  Area stack;
+  stack.start = &pcb->cp;
+  stack.end = &pcb->cp + STACK_SIZE;
   Context *ucxt = ucontext(NULL, stack, (void *)entry);
   pcb->cp = ucxt;
   ucxt->GPRx = (intptr_t)ptr_brk;
