@@ -97,11 +97,11 @@ static void sys_signal(Context *c) {
 }
 
 static void sys_execve(Context *c) { 
-  context_uload(current, (const char *)c->GPR2, (char **const)(uintptr_t)c->GPR3, (char **const)(uintptr_t)c->GPR4);
 #ifdef CONFIG_STRACE
   fs_curfilename();
   printf("sys_execve(%s, %s, %s)  \n", c->GPR2, c->GPR3, c->GPR4);
 #endif
+  context_uload(current, (const char *)c->GPR2, (char **const)(uintptr_t)c->GPR3, (char **const)(uintptr_t)c->GPR4);
   switch_boot_pcb();
   yield();
 }
