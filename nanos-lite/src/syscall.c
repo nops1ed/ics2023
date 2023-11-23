@@ -93,7 +93,7 @@ static void sys_exit(Context *c) {
   printf("sys_exit(0) = 0\n");
 #endif
   printf("sys_exit(0) = 0\n");
-  naive_uload(NULL, "/bin/menu");
+  context_uload(current, "/bin/menu", NULL, NULL); 
 }
 
 static void sys_gettimeofday(Context *c) {
