@@ -26,16 +26,23 @@ static void sh_handle_cmd(const char *cmd) {
   setenv("PATH", "/bin/", 0);
   int pos = strcspn(cmd, "\n");
   char *new_str = (char *)malloc(pos + 1); 
+  char __tmp[pos + 1];
   strncpy(new_str, cmd, pos); 
   new_str[pos] = '\0'; 
+  strncpy(__tmp, new_str, pos + 1);
   /* Parse arguments list. */ 
   int argc = 1;
   for(int i = 0; *(new_str + i); i++)
     if(*(new_str + i) == ' ') 
       argc += 1;
-  //char **argv = (char **)malloc(sizeof(char *) * argc);
+  char **argv = (char **)malloc(sizeof(char *) * argc);
+  strtok(__tmp, " ");
+  for(int i = 0; i < argc; i++)
+    *(argv + i) = strtok(NULL, " ");
   execvp(new_str, NULL);
-  printf("reach here\n");
+  for(int i = 0; i < argc; i++) 
+    free(*(argv + i));
+  free(argv);
   free(new_str);
 }
 
