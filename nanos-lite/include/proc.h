@@ -16,6 +16,8 @@ typedef union {
   };
 } PCB;
 
+void wrapper() ;
+
 extern PCB *current;
 
 #endif

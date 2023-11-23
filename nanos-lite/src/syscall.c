@@ -93,7 +93,8 @@ static void sys_exit(Context *c) {
   printf("sys_exit(0) = 0\n");
 #endif
   printf("sys_exit(0) = 0\n");
-  context_uload(current, "/bin/menu", NULL, NULL); 
+  //context_uload(current, "/bin/menu", NULL, NULL); 
+  wrapper();
 }
 
 static void sys_gettimeofday(Context *c) {
