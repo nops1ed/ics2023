@@ -37,7 +37,8 @@ static void sh_handle_cmd(const char *cmd) {
       argc += 1;
   char **argv = (char **)malloc(sizeof(char *) * argc);
   strtok(__tmp, " ");
-  for(int i = 0; i < argc; i++)
+  strtok(NULL, " ");
+  for(int i = 0; i < argc - 1; i++)
     *(argv + i) = strtok(NULL, " ");
   execvp(new_str, NULL);
   for(int i = 0; i < argc; i++) 
