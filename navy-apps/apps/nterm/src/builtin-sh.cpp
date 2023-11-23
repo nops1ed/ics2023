@@ -36,7 +36,7 @@ static void sh_handle_cmd(const char *cmd) {
   strtok(new_str, " ");
   char **argv = (char **)malloc(sizeof(char *) * argc);
   printf("So argc is %d\n", argc);
-  for(int i = 0; i < argc - 1; i++) {
+  for(int i = 0; i < argc; i++) {
     *(argv + i) = strtok(NULL, " ");
     printf("So argv[%d] is %s\n", i, *(argv + i));
   }
