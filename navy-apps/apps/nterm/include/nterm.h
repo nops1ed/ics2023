@@ -10,7 +10,7 @@
 #define W 48
 #define H 16
 
-#define USERNAME "Nops1ed"
+#define __USERNAME__ "Nops1ed"
 
 class Terminal {
 private:
