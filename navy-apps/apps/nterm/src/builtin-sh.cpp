@@ -28,7 +28,14 @@ static void sh_handle_cmd(const char *cmd) {
   char *new_str = (char *)malloc(pos + 1); 
   strncpy(new_str, cmd, pos); 
   new_str[pos] = '\0'; 
+  /* Parse arguments list. */ 
+  int argc = 1;
+  for(int i = 0; *(new_str + i); i++)
+    if(*(new_str + i) == ' ') 
+      argc += 1;
+  //char **argv = (char **)malloc(sizeof(char *) * argc);
   execvp(new_str, NULL);
+  printf("reach here\n");
   free(new_str);
 }
 
