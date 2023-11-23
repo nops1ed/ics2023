@@ -33,10 +33,10 @@ static void sh_handle_cmd(const char *cmd) {
     if(*(new_str + i) == ' ') 
       argc += 1;
     printf("New_str is %s\n", new_str);
-  strtok(new_str, " ");
   char **argv = (char **)malloc(sizeof(char *) * argc);
   printf("So argc is %d\n", argc);
-  for(int i = 0; i < argc; i++) {
+  *argv = strtok(new_str, " ");
+  for(int i = 1; i < argc; i++) {
     *(argv + i) = strtok(NULL, " ");
     printf("So argv[%d] is %s\n", i, *(argv + i));
   }
