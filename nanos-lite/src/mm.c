@@ -2,8 +2,13 @@
 
 static void *pf = NULL;
 
+/* The new_page() function manages the heap with a pf pointer to allocate a contiguous memory area of nr_page * 4KB in size, 
+* and returns the *first* address of the area.
+*/
 void* new_page(size_t nr_page) {
-  return NULL;
+  void *old = pf;
+  pf = (void *)((char *)old + nr_page * PGSIZE);
+  return old;
 }
 
 #ifdef HAS_VME

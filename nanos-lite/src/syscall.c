@@ -5,6 +5,8 @@
 
 //#define CONFIG_STRACE
 void naive_uload(PCB *pcb, const char *filename);
+void context_uload(PCB *pcb, const char *filename, char *const argv[], char *const envp[]);
+void switch_boot_pcb();
 
 typedef struct timeval {
   int64_t tv_sec;     // seconds
@@ -95,12 +97,13 @@ static void sys_signal(Context *c) {
 }
 
 static void sys_execve(Context *c) { 
-  naive_uload(NULL, (const char *)c->GPR2);
+  context_uload(current, (const char *)c->GPR2, (char **const)(uintptr_t)c->GPR3, (char **const)(uintptr_t)c->GPR4);
 #ifdef CONFIG_STRACE
   fs_curfilename();
-  printf("sys_execve(%s)  \n", c->GPR2);
+  printf("sys_execve(%s, %s, %s)  \n", c->GPR2, c->GPR3, c->GPR4);
 #endif
-  printf("sys_execve(%s)  \n", c->GPR2);
+  switch_boot_pcb();
+  yield();
 }
 
 static void sys_exit(Context *c) {
