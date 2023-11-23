@@ -81,6 +81,7 @@ static void sys_execve(Context *c) {
   fs_curfilename();
   printf("sys_execve(%s, %s, %s)  \n", c->GPR2, c->GPR3, c->GPR4);
 #endif
+printf("Traping sys_execve...\n");
   context_uload(current, (const char *)c->GPR2, (char **const)(uintptr_t)c->GPR3, (char **const)(uintptr_t)c->GPR4);
   switch_boot_pcb();
   yield();
