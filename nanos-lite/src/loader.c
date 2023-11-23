@@ -156,15 +156,15 @@ void context_uload(PCB *pcb, const char *filename, char *const argv[], char *con
   char **args = (char **)malloc(sizeof(char*) * argc);
   char **envs = (char **)malloc(sizeof(char*) * envc);
   
-  printf("it is safe now \n");
+  //printf("it is safe now \n");
   /* Copy String Area. */
   for (int i = 0; i < argc; ++i) {
     /* Note that it is neccessary to make memory align. */
     brk -= ROUNDUP(strlen(argv[i]) + 1 ,sizeof(int));
     args[i] = brk;
     strcpy(brk, argv[i]);
-    printf("The strlen(argv[i]) is %d\n", strlen(argv[i]));
-    printf("Here we got brk is %p and args is %s\n", brk, argv[i]);
+    //printf("The strlen(argv[i]) is %d\n", strlen(argv[i]));
+    //printf("Here we got brk is %p and args is %s\n", brk, argv[i]);
   }
   for (int i = 0; i < envc; ++i) {
     brk -= ROUNDUP(strlen(envp[i]) + 1, sizeof(int));
@@ -179,11 +179,11 @@ void context_uload(PCB *pcb, const char *filename, char *const argv[], char *con
   *(--ptr_brk) = 0;
   ptr_brk = ptr_brk - argc;
   for (int i = 0; i < argc; ++i) {
-    printf("So i write %p to %p\n", args[i], ptr_brk + i);
+    //printf("So i write %p to %p\n", args[i], ptr_brk + i);
     ptr_brk[i] = (intptr_t)(args[i]);
   }
   *(--ptr_brk) = argc;
-  printf("So i write %d to %p\n", argc, ptr_brk);
+  //printf("So i write %d to %p\n", argc, ptr_brk);
   free(args);
   free(envs);
 
@@ -194,5 +194,5 @@ void context_uload(PCB *pcb, const char *filename, char *const argv[], char *con
   Context *ucxt = ucontext(NULL, stack, (void *)entry);
   pcb->cp = ucxt;
   ucxt->GPRx = (intptr_t)ptr_brk;
-  printf("And now ptr_brk is %p\n", ptr_brk);
+  //printf("And now ptr_brk is %p\n", ptr_brk);
 }
