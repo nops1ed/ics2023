@@ -35,10 +35,12 @@ static void sh_handle_cmd(const char *cmd) {
       argc += 1;
   strtok(new_str, " ");
   char **argv = (char **)malloc(sizeof(char *) * argc);
+  printf("So argc is %d\n", argc);
   for(int i = 0; i < argc - 1; i++) {
     *(argv + i) = strtok(NULL, " ");
     printf("So argv[%d] is %s\n", i, *(argv + i));
   }
+  printf("Finished ...\n");
   execvp(argv[0], argv);
   for(int i = 0; i < argc; i++) 
     free(*(argv + i));
