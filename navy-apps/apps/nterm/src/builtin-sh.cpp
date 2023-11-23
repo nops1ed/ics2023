@@ -19,7 +19,8 @@ static void sh_banner() {
 }
 
 static void sh_prompt() {
-  sh_printf("%s:%s$", __USERNAME__, getenv("PATH"));
+  //sh_printf("%s:%s$", __USERNAME__, getenv("PATH"));
+  sh_printf("sh> ");
 }
 
 static void sh_handle_cmd(const char *cmd) {
