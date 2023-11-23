@@ -19,7 +19,6 @@ static void sh_banner() {
 }
 
 static void sh_prompt() {
-  //sh_printf("sh> ");
   sh_printf("%s:%s$", __USERNAME__, getenv("PATH"));
 }
 
@@ -33,6 +32,7 @@ static void sh_handle_cmd(const char *cmd) {
   for(int i = 0; *(new_str + i); i++)
     if(*(new_str + i) == ' ') 
       argc += 1;
+    printf("New_str is %s\n", new_str);
   strtok(new_str, " ");
   char **argv = (char **)malloc(sizeof(char *) * argc);
   printf("So argc is %d\n", argc);
