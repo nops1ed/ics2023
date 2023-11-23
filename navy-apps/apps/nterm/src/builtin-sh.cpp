@@ -32,17 +32,18 @@ static void sh_handle_cmd(const char *cmd) {
   for(int i = 0; *(new_str + i); i++)
     if(*(new_str + i) == ' ') 
       argc += 1;
-printf("New_str is %s\n", new_str);
+  printf("New_str is %s\n", new_str);
   char **argv = (char **)malloc(sizeof(char *) * argc);
-printf("So argc is %d\n", argc);
+  printf("So argc is %d\n", argc);
   *argv = strtok(new_str, " ");
   for(int i = 0; i < argc; i++) {
     *(argv + i) = strtok(NULL, " ");
-printf("So argv[%d] is %s\n", i, *(argv + i));
+    if(*(argv + i) == NULL) break;
+    printf("So argv[%d] is %s\n", i, *(argv + i));
   }
   for(int i = 0; i < argc; i++) 
-printf("argv[%d] is %s\n", i, argv[i]);
-printf("Finished ...\n");
+  printf("argv[%d] is %s\n", i, argv[i]);
+  printf("Finished ...\n");
   execvp(argv[0], argv);
   /*
   for(int i = 0; i < argc; i++) 
