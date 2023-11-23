@@ -58,6 +58,7 @@ void builtin_sh_run() {
   //setenv("PATH", "/bin/", 0);
   sh_banner();
   sh_prompt();
+  setenv("PATH", "/bin/:/usr/bin/", 0);
   printf("%s\n", getenv("PATH"));
   while (1) {
     SDL_Event ev;
