@@ -63,9 +63,9 @@
     uint64_t   p_align;
   } Elf64_Phdr;
 */
+
 static uintptr_t loader(PCB *pcb, const char *filename) {
   Elf_Ehdr ehdr;
-  //ramdisk_read(&ehdr, 0, sizeof(Elf_Ehdr));
   int fd = fs_open(filename, 0, 0);
   fs_read(fd, &ehdr, sizeof(ehdr));  
 
@@ -75,16 +75,12 @@ static uintptr_t loader(PCB *pcb, const char *filename) {
   assert(ehdr.e_machine == EXPECT_TYPE);
 
   Elf_Phdr phdr[ehdr.e_phnum];
-  //ramdisk_read(phdr, ehdr.e_phoff, sizeof(Elf_Phdr) * ehdr.e_phnum);
   fs_lseek(fd, ehdr.e_phoff, SEEK_SET);
   fs_read(fd, phdr, sizeof(Elf_Phdr) * ehdr.e_phnum);
   for (int i = 0; i < ehdr.e_phnum; i++) {
     if (phdr[i].p_type == PT_LOAD) {
-      //ramdisk_read((void *)phdr[i].p_vaddr, phdr[i].p_offset, phdr[i].p_memsz);
       fs_lseek(fd, phdr[i].p_offset, SEEK_SET);
       fs_read(fd, (void *)phdr[i].p_vaddr, phdr[i].p_memsz);
-      //printf("Read data from %p, size %d\n", phdr[i].p_offset, phdr[i].p_memsz);
-      //printf("Write it to %p\n", phdr[i].p_vaddr);
       memset((void *)(phdr[i].p_vaddr + phdr[i].p_filesz), 0, phdr[i].p_memsz - phdr[i].p_filesz);
     }
   }
@@ -103,6 +99,53 @@ Context *context_kload(PCB* pcb, void(*func)(void *), void *args) {
   pcb->cp = kcxt;
   return kcxt;
 } 
+
+void context_uload(PCB *pcb, const char *filename, char *const argv[], char *const envp[]) {
+  /* each process will obtain 32KB size as its stack size which we think enough for ics.  */
+  void *page_alloc = new_page(NR_PAGE) + NR_PAGE * PGSIZE;
+
+  /* deploy user stack layout. */
+  char *brk = (char *)(page_alloc - 4);
+  int argc = 0, envc = 0;
+  if (envp) for (; envp[envc]; ++envc) ;
+  if (argv) for (; argv[argc]; ++argc) ;
+  char **args = (char **)malloc(sizeof(char*) * argc);
+  char **envs = (char **)malloc(sizeof(char*) * envc);
+  
+  /* Copy String Area. */
+  for (int i = 0; i < argc; ++i) {
+    /* Note that it is neccessary to make memory *align*. */
+    brk -= ROUNDUP(strlen(argv[i]) + 1 ,sizeof(int));
+    args[i] = brk;
+    strcpy(brk, argv[i]);
+  }
+  for (int i = 0; i < envc; ++i) {
+    brk -= ROUNDUP(strlen(envp[i]) + 1, sizeof(int));
+    envs[i] = brk;
+    strcpy(brk, envp[i]);
+  }
+
+  /* Copy envp & argv area. */
+  intptr_t *ptr_brk = (intptr_t *)brk;
+  *(--ptr_brk) = 0;
+  ptr_brk -= envc;
+  for (int i = 0; i < envc; ++i)  ptr_brk[i] = (intptr_t)(envs[i]);
+  *(--ptr_brk) = 0;
+  ptr_brk = ptr_brk - argc;
+  for (int i = 0; i < argc; ++i)  ptr_brk[i] = (intptr_t)(args[i]);
+  *(--ptr_brk) = argc;
+
+  free(args);
+  free(envs);
+
+  uintptr_t entry = loader(pcb, filename);
+  Area stack;
+  stack.start = &pcb->cp;
+  stack.end = &pcb->cp + STACK_SIZE;
+  Context *ucxt = ucontext(NULL, stack, (void *)entry);
+  pcb->cp = ucxt;
+  ucxt->GPRx = (intptr_t)ptr_brk;
+}
 
 /*
   |               |
@@ -140,59 +183,7 @@ Context *context_kload(PCB* pcb, void(*func)(void *), void *args) {
   |               |
 */
 
-/* Following function just count the number of argv/envp, which is end by "NULL". */
-void context_uload(PCB *pcb, const char *filename, char *const argv[], char *const envp[]) {
- 
-  void *page_alloc = new_page(NR_PAGE) + NR_PAGE * PGSIZE;
-  /* deploy user stack layout. */
-  char *brk = (char *)(page_alloc - 4);
-  int argc = 0, envc = 0;
-  if (envp){
-    for (; envp[envc]; ++envc){}
-  }
-  if (argv){
-    for (; argv[argc]; ++argc){}
-  }
-  char **args = (char **)malloc(sizeof(char*) * argc);
-  char **envs = (char **)malloc(sizeof(char*) * envc);
-  
-  //printf("it is safe now \n");
-  /* Copy String Area. */
-  for (int i = 0; i < argc; ++i) {
-    /* Note that it is neccessary to make memory align. */
-    brk -= ROUNDUP(strlen(argv[i]) + 1 ,sizeof(int));
-    args[i] = brk;
-    strcpy(brk, argv[i]);
-    //printf("The strlen(argv[i]) is %d\n", strlen(argv[i]));
-    //printf("Here we got brk is %p and args is %s\n", brk, argv[i]);
-  }
-  for (int i = 0; i < envc; ++i) {
-    brk -= ROUNDUP(strlen(envp[i]) + 1, sizeof(int));
-    envs[i] = brk;
-    strcpy(brk, envp[i]);
-  }
 
-  intptr_t *ptr_brk = (intptr_t *)brk;
-  *(--ptr_brk) = 0;
-  ptr_brk -= envc;
-  for (int i = 0; i < envc; ++i)  ptr_brk[i] = (intptr_t)(envs[i]);
-  *(--ptr_brk) = 0;
-  ptr_brk = ptr_brk - argc;
-  for (int i = 0; i < argc; ++i) {
-    //printf("So i write %p to %p\n", args[i], ptr_brk + i);
-    ptr_brk[i] = (intptr_t)(args[i]);
-  }
-  *(--ptr_brk) = argc;
-  //printf("So i write %d to %p\n", argc, ptr_brk);
-  free(args);
-  free(envs);
 
-  uintptr_t entry = loader(pcb, filename);
-  Area stack;
-  stack.start = &pcb->cp;
-  stack.end = &pcb->cp + STACK_SIZE;
-  Context *ucxt = ucontext(NULL, stack, (void *)entry);
-  pcb->cp = ucxt;
-  ucxt->GPRx = (intptr_t)ptr_brk;
-  //printf("And now ptr_brk is %p\n", ptr_brk);
-}
+
+

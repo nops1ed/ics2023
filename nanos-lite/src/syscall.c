@@ -76,6 +76,10 @@ static void sys_brk(Context *c) {
 #endif
 }
 
+/* Syscalls below are not used in Nanos-lite.
+* But to pass linking, they are defined as dummy functions.
+*/
+
 static void sys_kill(Context *c) {
   panic("Not implement");
 }
