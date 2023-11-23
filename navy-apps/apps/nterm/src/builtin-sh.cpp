@@ -29,6 +29,9 @@ static void sh_handle_cmd(const char *cmd) {
   new_str[pos] = '\0'; 
   char *__tmp = (char *)malloc(sizeof(char) * pos + 1);
 
+  /* Need to handle bulid-in commands here. */
+  //TODO()
+
   /* Parse arguments count. */
   int argc = 1;
   strcpy(__tmp, new_str);
@@ -36,7 +39,7 @@ static void sh_handle_cmd(const char *cmd) {
   while(strtok(NULL, " ")) argc++;
 
   /* Parse arguments list. */ 
-  char *argv[argc] = {NULL};
+  char *argv[argc + 1] = {NULL};
   strcpy(__tmp, new_str);
   argv[0] = strtok(__tmp, " ");
   for(int i = 1; i < argc; i++) {
@@ -44,7 +47,8 @@ static void sh_handle_cmd(const char *cmd) {
     if(argv[i] == NULL) break;
   }
 
-  execvp(argv[0], argv);
+  if(execvp(argv[0], argv) == -1)
+    sh_printf("%s: command not found\n", argv[0]);
   free(new_str);
   free(__tmp);
 }
