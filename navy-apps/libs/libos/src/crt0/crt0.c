@@ -41,12 +41,12 @@
 int main(int argc, char *argv[], char *envp[]);
 extern char **environ;
 void call_main(uintptr_t *args) {
-  printf("In call_main, we got address %p\n", args);
+  //printf("In call_main, we got address %p\n", args);
   int argc = *((int *)args); 
-  printf("So the argc is %d\n",argc);
+  //printf("So the argc is %d\n",argc);
   char **argv = (char **)args + 1; 
-  printf("CTE0: We gonna track address %p and Argv[0] is %s\n",*argv, argv[0]);
-  printf("CTE0: We gonna track address %p and Argv[1] is %s\n",*(argv + 1), argv[1]);
+  //printf("CTE0: We gonna track address %p and Argv[0] is %s\n",*argv, argv[0]);
+  //printf("CTE0: We gonna track address %p and Argv[1] is %s\n",*(argv + 1), argv[1]);
   for (args += 1; *args; ++args){}
   char **envp = (char **)(args + 1);
   environ = envp;
