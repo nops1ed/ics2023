@@ -43,7 +43,7 @@ static void sh_handle_cmd(const char *cmd) {
   for(int i = 0; i < argc; i++) 
     printf("argv[%d] is %s\n", i, argv[i]);
   printf("Finished ...\n");
-  execvp(argv[0], NULL);
+  execvp(argv[0], argv);
   for(int i = 0; i < argc; i++) 
     free(*(argv + i));
   free(argv);
