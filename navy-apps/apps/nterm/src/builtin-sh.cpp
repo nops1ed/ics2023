@@ -49,8 +49,8 @@ static void sh_handle_cmd(const char *cmd) {
 
   if(execvp(argv[0], argv) == -1)
     sh_printf("%s: command not found\n", argv[0]);
-  free(new_str);
-  free(__tmp);
+  //free(new_str);
+  //free(__tmp);
 }
 
 void builtin_sh_run() {
