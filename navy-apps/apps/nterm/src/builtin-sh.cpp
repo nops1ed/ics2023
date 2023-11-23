@@ -58,7 +58,7 @@ void builtin_sh_run() {
   //setenv("PATH", "/bin/", 0);
   sh_banner();
   sh_prompt();
-
+  printf("%s\n", getenv("PATH"));
   while (1) {
     SDL_Event ev;
     if (SDL_PollEvent(&ev)) {
