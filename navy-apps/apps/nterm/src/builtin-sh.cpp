@@ -27,23 +27,23 @@ static void sh_handle_cmd(const char *cmd) {
   char *new_str = (char *)malloc(pos + 1); 
   strncpy(new_str, cmd, pos); 
   new_str[pos] = '\0'; 
-  /* Parse arguments list. */ 
+  char *__tmp = (char *)malloc(sizeof(char) * pos + 1);
+
+  /* Parse arguments count. */
   int argc = 1;
-  for(int i = 0; *(new_str + i); i++)
-    if(*(new_str + i) == ' ') 
-      argc += 1;
-  printf("New_str is %s\n", new_str);
-  char **argv = (char **)malloc(sizeof(char *) * argc);
-  printf("So argc is %d\n", argc);
-  *argv = strtok(new_str, " ");
-  for(int i = 0; i < argc; i++) {
-    *(argv + i) = strtok(NULL, " ");
-    if(*(argv + i) == NULL) break;
-    printf("So argv[%d] is %s\n", i, *(argv + i));
+  strcpy(__tmp, new_str);
+  strtok(__tmp, " ");
+  while(strtok(NULL, " ")) argc++;
+
+  /* Parse arguments list. */ 
+  char *argv[argc + 1] = {NULL};
+  strcpy(__tmp, new_str);
+  argv[0] = strtok(__tmp, " ");
+  for(int i = 1; i < argc; i++) {
+    argv[i] = strtok(NULL, " ");
+    if(argv[i] == NULL) break;
   }
-  for(int i = 0; i < argc; i++) 
-  printf("argv[%d] is %s\n", i, argv[i]);
-  printf("Finished ...\n");
+
   execvp(argv[0], argv);
   /*
   for(int i = 0; i < argc; i++) 
