@@ -84,15 +84,17 @@ void map(AddrSpace *as, void *va, void *pa, int prot) {
     *page_table_entry = (*page_table_entry | PTE_V);
   }
 
-  PTE* p1= (PTE *)(PTE_PPN(*page_table_entry) * PGSIZE + PMD(va) * 8);
-  if (!(*p1 & PTE_V)){ 
+/*
+  page_table_entry = (PTE *)(PTE_PPN(*page_table_entry) * PGSIZE + PMD(va) * 8);
+  if (!(*page_table_entry & PTE_V)){ 
     void *alloced_page = pgalloc_usr(PGSIZE);
-    *p1 = (*p1 & ~PTE_PPN_MASK) | (PTE_PPN_MASK & ((uintptr_t)alloced_page >> 2));
-    *p1 = (*p1| PTE_V);
+    *page_table_entry = (*page_table_entry & ~PTE_PPN_MASK) | (PTE_PPN_MASK & ((uintptr_t)alloced_page >> 2));
+    *page_table_entry = (*page_table_entry | PTE_V);
   }
+  */
 
-  PTE *p2= (PTE *)(PTE_PPN(*p1) * 4096 + PTE(va) * 8);
-  *p2 = (PTE_PPN_MASK & ((uintptr_t)pa >> 2)) | (PTE_V | PTE_R | PTE_W | PTE_X) | (prot ? PTE_U : 0);
+  page_table_entry = (PTE *)(PTE_PPN(*page_table_entry) * 4096 + PTE(va) * 8);
+  *page_table_entry = (PTE_PPN_MASK & ((uintptr_t)pa >> 2)) | (PTE_V | PTE_R | PTE_W | PTE_X) | (prot ? PTE_U : 0);
 }
 
 Context *ucontext(AddrSpace *as, Area kstack, void *entry) {
