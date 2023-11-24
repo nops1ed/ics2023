@@ -82,6 +82,7 @@ int fs_open(const char *pathname, int flags, int mode) {
   for(i = 0; i < NR_FILE; i++) {
     if(!strcmp(pathname, file_table[i].name)) {
       file_table[i].open_offset = 0;
+      printf("sFS: open file: %s success\n", pathname);
       return i;
     }
   }
