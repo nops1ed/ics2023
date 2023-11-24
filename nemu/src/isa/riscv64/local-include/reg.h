@@ -25,7 +25,7 @@
 //   f(a0) f(a1) f(a2) ...
 // NOTE2: each element in the container can be a tuple
 #define CSR(f) f(MTVEC), f(MEPC), f(MSTATUS), f(MCAUSE), \
-            f(MIE), f(MIP), f(MTVAL), f(MSCRATCH)
+            f(MIE), f(MIP), f(MTVAL), f(MSCRATCH), f(SATP)
 #define CSRPREFIX(name) concat(CSR_, name)
     /* CSR FILE. */
 enum { CSR(CSRPREFIX) };
@@ -53,6 +53,7 @@ static inline int csr_idx(uint32_t idx) {
     case 0x342: return CSR_MCAUSE;
     case 0x343: return CSR_MTVAL;
     case 0x344: return CSR_MIP;
+    case 0x180: return CSR_SATP;
     default:  
       panic("Undefined CSR\n");
   }

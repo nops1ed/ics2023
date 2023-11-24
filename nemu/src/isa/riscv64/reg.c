@@ -25,7 +25,7 @@ const char *regs[] = {
 
 const char *csrs[] = {
 	"mtvec", "mepc", "mstatus", "mcause", "mie",
-	"mip", "mtval", "mscratch"
+	"mip", "mtval", "mscratch", "satp"
 };
 
 static uint32_t nr_regs = sizeof(regs) / sizeof(regs[0]);
