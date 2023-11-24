@@ -85,6 +85,7 @@ void map(AddrSpace *as, void *va, void *pa, int prot) {
   }
 
   page_table_entry = (PTE *)(PTE_PPN(*page_table_entry) * PGSIZE + PMD(va) * 8);
+    printf("stat done\n");
   if (page_table_entry == NULL || !(*page_table_entry & PTE_V)){ 
     printf("if done\n");
     void *alloced_page = pgalloc_usr(PGSIZE);
