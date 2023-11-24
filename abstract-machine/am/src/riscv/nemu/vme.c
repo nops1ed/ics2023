@@ -95,6 +95,7 @@ void map(AddrSpace *as, void *va, void *pa, int prot) {
 
   page_table_entry = (PTE *)(PTE_PPN(*page_table_entry) * 4096 + PTE(va) * 8);
   *page_table_entry = (PTE_PPN_MASK & ((uintptr_t)pa >> 2)) | (PTE_V | PTE_R | PTE_W | PTE_X) | (prot ? PTE_U : 0);
+  printf("It is done\n");
 }
 
 Context *ucontext(AddrSpace *as, Area kstack, void *entry) {
