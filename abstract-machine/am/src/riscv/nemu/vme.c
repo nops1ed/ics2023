@@ -86,12 +86,12 @@ void map(AddrSpace *as, void *va, void *pa, int prot) {
 
   page_table_entry = (PTE *)(PTE_PPN(*page_table_entry) * PGSIZE + PMD(va) * 8);
   if (page_table_entry == NULL || !(*page_table_entry & PTE_V)){ 
+    printf("if done\n");
     void *alloced_page = pgalloc_usr(PGSIZE);
     *page_table_entry = (*page_table_entry & ~PTE_PPN_MASK) | (PTE_PPN_MASK & ((uintptr_t)alloced_page >> 2));
     *page_table_entry = (*page_table_entry | PTE_V);
   }
 
-  printf("Donee");
   page_table_entry = (PTE *)(PTE_PPN(*page_table_entry) * 4096 + PTE(va) * 8);
   *page_table_entry = (PTE_PPN_MASK & ((uintptr_t)pa >> 2)) | (PTE_V | PTE_R | PTE_W | PTE_X) | (prot ? PTE_U : 0);
   printf("It is done\n");
