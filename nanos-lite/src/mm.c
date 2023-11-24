@@ -13,7 +13,15 @@ void* new_page(size_t nr_page) {
 
 #ifdef HAS_VME
 static void* pg_alloc(int n) {
-  return NULL;
+/* The parameter of pg_alloc() is the number of bytes to allocate, 
+* but we must ensure that the space requested by AM is always an integer multiple of the page size
+*/
+  if(n < 0) {
+    printf("\033[31mFatal Error occured: page to be alloced could not be negetive.\033[0m\n");
+    assert(0);
+  }
+  void *alloc_ptr = new_page((size_t)(n / PGSIZE) + (size_t)(n % PGSIZE == 0));
+
 }
 #endif
 

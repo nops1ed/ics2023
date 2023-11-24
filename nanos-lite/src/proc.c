@@ -17,10 +17,6 @@ void switch_boot_pcb() {
   current = &pcb_boot;
 }
 
-void wrapper() {
-  context_uload(&pcb[1], "/bin/menu", NULL, NULL); 
-}
-
 void hello_fun(void *arg) {
   int j = 1;
   while (1) {

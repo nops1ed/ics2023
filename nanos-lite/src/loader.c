@@ -101,7 +101,7 @@ Context *context_kload(PCB* pcb, void(*func)(void *), void *args) {
 } 
 
 void context_uload(PCB *pcb, const char *filename, char *const argv[], char *const envp[]) {
-  /* each process will obtain 32KB size as its stack size which we think enough for ics.  */
+  /* each process will obtain 32KB size as its stack size which we think it is enough for ics.  */
   void *page_alloc = new_page(NR_PAGE) + NR_PAGE * PGSIZE;
 
   /* deploy user stack layout. */
@@ -115,7 +115,7 @@ void context_uload(PCB *pcb, const char *filename, char *const argv[], char *con
   /* Copy String Area. */
   for (int i = 0; i < argc; ++i) {
     /* Note that it is neccessary to make memory *align*. */
-    brk -= ROUNDUP(strlen(argv[i]) + 1 ,sizeof(int));
+    brk -= ROUNDUP(strlen(argv[i]) + 1, sizeof(int));
     args[i] = brk;
     strcpy(brk, argv[i]);
   }

@@ -109,7 +109,7 @@ size_t fs_write(int fd, const void *buf, size_t len) {
     file_table[fd].open_offset += ret_val;
   }
   else
-    panic("sys_write: Error\n");
+    panic("Fatal Error: unaccessiable file table. \n");
   return ret_val;
 }
 

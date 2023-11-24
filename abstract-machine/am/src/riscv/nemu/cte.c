@@ -7,6 +7,7 @@ static Context* (*user_handler)(Event, Context*) = NULL;
 Context* __am_irq_handle(Context *c) {
   if (user_handler) {
     Event ev = {0};
+    /* All of the irqs will be treated as MODE_MACHINE. */
     if(c->mcause == MODE_M) {
       switch(c->GPR1) {
         case -1:
@@ -21,11 +22,14 @@ Context* __am_irq_handle(Context *c) {
       c->mepc += 4;
     }
     else {
-      printf("User/Super mode not support\n");
+      printf("User/Supervisor mode is not supported\n");
       assert(0);
     }
     c = user_handler(ev, c);
-    assert(c != NULL);
+    if(c == NULL) {
+      printf("Error occured when execute user handler.\n");
+      assert(0);
+    }
   }
   return c;
 }
