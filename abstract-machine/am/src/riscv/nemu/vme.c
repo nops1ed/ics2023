@@ -99,7 +99,6 @@ void map(AddrSpace *as, void *va, void *pa, int prot) {
       pagetable = (pagetable_t)pgalloc_usr(PGSIZE);
       memset(pagetable, 0, PGSIZE);
       *pte = PA2PTE(pagetable) | PTE_V;
-      pagetable = (pagetable_t)PTE2PA(*pte);
     }
     printf("pagetable is %p and *pte is %p\n", pagetable, *pte);
   }
