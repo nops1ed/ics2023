@@ -103,7 +103,7 @@ Context *context_kload(PCB* pcb, void(*func)(void *), void *args) {
 void context_uload(PCB *pcb, const char *filename, char *const argv[], char *const envp[]) {
   /* each process will obtain 32KB size as its stack size which we think it is enough for ics.  */
   void *page_alloc = new_page(NR_PAGE) + NR_PAGE * PGSIZE;
-
+  printf("safe here ...\n");
   /* deploy user stack layout. */
   char *brk = (char *)(page_alloc - 4);
   int argc = 0, envc = 0;
