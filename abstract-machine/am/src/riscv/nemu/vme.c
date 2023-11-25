@@ -101,9 +101,10 @@ void map(AddrSpace *as, void *va, void *pa, int prot) {
       *pte = PA2PTE(pagetable) | PTE_V;
       pagetable = (pagetable_t)PTE2PA(*pte);
     }
+    printf("pagetable is %p and *pte is %p\n", pagetable, *pte);
   }
   *pte = PA2PTE(pa) | PTE_V;
-  printf("Mapping %p to %p successfully\n", pa, va);
+  //printf("Mapping %p to %p successfully\n", pa, va);
 }
 
 Context *ucontext(AddrSpace *as, Area kstack, void *entry) {
