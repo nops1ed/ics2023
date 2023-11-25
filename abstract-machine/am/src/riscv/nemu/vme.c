@@ -12,9 +12,9 @@ static Area segments[] = {      // Kernel memory mappings
 };
 
 #define USER_SPACE RANGE(0x40000000, 0x80000000)
-#define PGD(X) ((((uintptr_t)X >> 30) & 0x1FF) << 30)   //VPN[2]
-#define PMD(X) ((((uintptr_t)X >> 21) & 0x1FF) << 21)   //VPN[1]
-#define PTE(X) ((((uintptr_t)X >> 12) & 0x1FF) << 12)   //VPN[0]
+#define PGD(X) ((((uintptr_t)X >> 30) & 0x1FF))   //VPN[2]
+#define PMD(X) ((((uintptr_t)X >> 21) & 0x1FF))   //VPN[1]
+#define PTE(X) ((((uintptr_t)X >> 12) & 0x1FF))   //VPN[0]
 #define VA_OFFSET(X) ((uintptr_t)X & 0xFFF)
 #define PTE_PPN_MASK (0x00FFFFFFFFFFF000)
 #define PTE_PPN(X) (((uintptr_t)X & PTE_PPN_MASK) >> 12)
@@ -73,8 +73,8 @@ void __am_switch(Context *c) {
 }
 
 void map(AddrSpace *as, void *va, void *pa, int prot) {
-  //va = (void *)(((uintptr_t)va) & (~0xfff));
-  //pa = (void *)(((uintptr_t)pa) & (~0xfff));
+  va = (void *)(((uintptr_t)va) & (~0xfff));
+  pa = (void *)(((uintptr_t)pa) & (~0xfff));
 
   /* The size of each page table entry is 8B. */
   PTE *page_table_entry = as->ptr + PGD(va) * 8;
