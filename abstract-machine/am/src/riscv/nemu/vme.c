@@ -12,13 +12,6 @@ static Area segments[] = {      // Kernel memory mappings
 };
 
 #define USER_SPACE RANGE(0x40000000, 0x80000000)
-#define PGD(X) ((((uintptr_t)X >> 30) & 0x1FF))   //VPN[2]
-#define PMD(X) ((((uintptr_t)X >> 21) & 0x1FF))   //VPN[1]
-#define PTE(X) ((((uintptr_t)X >> 12) & 0x1FF))   //VPN[0]
-#define VA_OFFSET(X) ((uintptr_t)X & 0xFFF)
-#define PTE_PPN_MASK (0x00FFFFFFFFFFF000)
-#define PTE_PPN(X) (((uintptr_t)X & PTE_PPN_MASK) >> 12)
-
 #define PGSHIFT         12
 /* extract the three 9-bit page table indices from a virtual address. */
 #define PXMASK          0x1FF // 9 bits
@@ -29,7 +22,7 @@ static Area segments[] = {      // Kernel memory mappings
 #define PA2PTE(pa) ((((uint64_t)pa) >> 12) << 10)
 #define PTE2PA(pte) (((pte) >> 10) << 12)
 
-typedef uint64_t *pagetable_t; // 512 PTEs，一个级别页表含有512个PTE，正好对应4K的页大小
+typedef uint64_t *pagetable_t; // 512 PTEs
 
 static inline void set_satp(void *pdir) {
   uintptr_t mode = 1ul << (__riscv_xlen - 1);
@@ -84,58 +77,30 @@ void __am_switch(Context *c) {
   }
 }
 
-// The risc-v Sv39 scheme has three levels of page-table
-// pages. A page-table page contains 512 64-bit PTEs.
-// A 64-bit virtual address is split into five fields:
-//   39..63 -- must be zero.
-//   30..38 -- 9 bits of level-2 index.
-//   21..29 -- 9 bits of level-1 index.
-//   12..20 -- 9 bits of level-0 index.
-//    0..11 -- 12 bits of byte offset within the page.
+/* The risc-v Sv39 scheme has three levels of page-table
+* pages. A page-table page contains 512 64-bit PTEs.
+* A 64-bit virtual address is split into five fields:
+*   39..63 -- must be zero.
+*   30..38 -- 9 bits of level-2 index.
+*   21..29 -- 9 bits of level-1 index.
+*   12..20 -- 9 bits of level-0 index.
+*    0..11 -- 12 bits of byte offset within the page.
+*/
 void map(AddrSpace *as, void *va, void *pa, int prot) {
-  va = (void *)(((uintptr_t)va) & (~0xfff));
-  pa = (void *)(((uintptr_t)pa) & (~0xfff));
-
-  PTE *page_table_entry = as->ptr + PGD(va) * 8;
-  if (!(*page_table_entry & PTE_V)){ 
-    void *alloced_page = pgalloc_usr(PGSIZE);
-    *page_table_entry = (*page_table_entry & ~PTE_PPN_MASK) | (PTE_PPN_MASK & ((uintptr_t)alloced_page >> 2));
-    *page_table_entry = (*page_table_entry | PTE_V);
-  }
- 
-  page_table_entry = (PTE *)(PTE_PPN(*page_table_entry) * PGSIZE + PMD(va) * 8);
-  if (page_table_entry == NULL || !(*page_table_entry & PTE_V)){ 
-    void *alloced_page = pgalloc_usr(PGSIZE);
-    *page_table_entry = (*page_table_entry & ~PTE_PPN_MASK) | (PTE_PPN_MASK & ((uintptr_t)alloced_page >> 2));
-    *page_table_entry = (*page_table_entry | PTE_V);
-  }
-
-  page_table_entry = (PTE *)(PTE_PPN(*page_table_entry) * 4096 + PTE(va) * 8);
-  *page_table_entry = (PTE_PPN_MASK & ((uintptr_t)pa >> 2)) | (PTE_V | PTE_R | PTE_W | PTE_X) | (prot ? PTE_U : 0);
-  printf("It is done\n");
-  /*
   pagetable_t pagetable = as->ptr;
+  PTE *pte;
   for(int level = 2; level > 0; level--) {
-    	// 索引到对应的PTE项
-    PTE *pte = &pagetable[PX(level, va)];
-    // 确认一下索引到的PTE项是否有效(valid位是否为1)
+    pte = &pagetable[PX(level, va)];
     if(*pte & PTE_V) {
-      // 如果有效接着进行下一层索引
       pagetable = (pagetable_t)PTE2PA(*pte);
-    } else {
-      // 如果无效(说明对应页表没有分配)
-      // 则根据alloc标志位决定是否需要申请新的页表
-      // < 注意，当且仅当低两级页表页(中间级、叶子级页表页)不存在且不需要分配时，walk函数会返回0 >
-      // 所以我们可以通过返回值来确定walk函数失败的原因
+    } 
+    else {
       pagetable = (pagetable_t)pgalloc_usr(PGSIZE);
-      // 将申请的页表填满0
       memset(pagetable, 0, PGSIZE);
-      // 将申请来的页表物理地址，转化为PTE并将有效位置1，记录在当前级页表
-      // 这样在下一次访问时，就可以直接索引到这个页表项
       *pte = PA2PTE(pagetable) | PTE_V;
     }
   }
-  */
+  *pte = PA2PTE(pa) | PTE_V;
 }
 
 Context *ucontext(AddrSpace *as, Area kstack, void *entry) {
