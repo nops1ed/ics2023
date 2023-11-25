@@ -12,7 +12,7 @@ static Area segments[] = {      // Kernel memory mappings
 };
 
 #define USER_SPACE RANGE(0x40000000, 0x80000000)
-#define PGD(X) ((((uint64_t)X >> 30) & 0x1FF) << 30)   //VPN[2]
+#define PGD(X) ((((uintptr_t)X >> 30) & 0x1FF) << 30)   //VPN[2]
 #define PMD(X) ((((uintptr_t)X >> 21) & 0x1FF) << 21)   //VPN[1]
 #define PTE(X) ((((uintptr_t)X >> 12) & 0x1FF) << 12)   //VPN[0]
 #define VA_OFFSET(X) ((uintptr_t)X & 0xFFF)
@@ -78,6 +78,8 @@ void map(AddrSpace *as, void *va, void *pa, int prot) {
 
   /* The size of each page table entry is 8B. */
   PTE *page_table_entry = as->ptr + PGD(va) * 8;
+
+  printf("So the va is %p\n", va);
   printf("So the satp is %p\n", page_table_entry);
   printf("So the as is %p\n", as->ptr);
   printf("So the PGD is %p\n", PGD(va) * 8);
