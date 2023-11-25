@@ -85,7 +85,7 @@ void map(AddrSpace *as, void *va, void *pa, int prot) {
   printf("So the PLUS is %p\n", as->ptr + PGD(va) * 8);
   if (!(*page_table_entry & PTE_V)){ 
     void *alloced_page = pgalloc_usr(PGSIZE);
-  printf("alloced_page is %p\n", alloced_page); 
+  printf("alloced_page is %p\n", (uintptr_t)alloced_page >> 2); 
     *page_table_entry = (*page_table_entry & ~PTE_PPN_MASK) | (PTE_PPN_MASK & ((uintptr_t)alloced_page >> 2));
     *page_table_entry = (*page_table_entry | PTE_V);
   }
