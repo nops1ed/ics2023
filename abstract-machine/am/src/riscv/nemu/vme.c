@@ -105,6 +105,7 @@ void map(AddrSpace *as, void *va, void *pa, int prot) {
 }
 
 Context *ucontext(AddrSpace *as, Area kstack, void *entry) {
+  printf("safe here...");
   Context *kctx = (Context *)(kstack.end - sizeof(Context)); 
 
   kctx->mepc = (uintptr_t)entry;

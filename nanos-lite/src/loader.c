@@ -143,7 +143,6 @@ void context_uload(PCB *pcb, const char *filename, char *const argv[], char *con
   stack.start = &pcb->cp;
   stack.end = &pcb->cp + STACK_SIZE;
   Context *ucxt = ucontext(NULL, stack, (void *)entry);
-  printf("safe here\n");
   pcb->cp = ucxt;
   ucxt->GPRx = (intptr_t)ptr_brk;
 }
