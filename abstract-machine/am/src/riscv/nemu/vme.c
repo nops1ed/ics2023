@@ -93,7 +93,6 @@ void __am_switch(Context *c) {
 //   12..20 -- 9 bits of level-0 index.
 //    0..11 -- 12 bits of byte offset within the page.
 void map(AddrSpace *as, void *va, void *pa, int prot) {
-  /*
   va = (void *)(((uintptr_t)va) & (~0xfff));
   pa = (void *)(((uintptr_t)pa) & (~0xfff));
 
@@ -114,7 +113,7 @@ void map(AddrSpace *as, void *va, void *pa, int prot) {
   page_table_entry = (PTE *)(PTE_PPN(*page_table_entry) * 4096 + PTE(va) * 8);
   *page_table_entry = (PTE_PPN_MASK & ((uintptr_t)pa >> 2)) | (PTE_V | PTE_R | PTE_W | PTE_X) | (prot ? PTE_U : 0);
   printf("It is done\n");
-  */
+  /*
   pagetable_t pagetable = as->ptr;
   for(int level = 2; level > 0; level--) {
     	// 索引到对应的PTE项
@@ -136,7 +135,7 @@ void map(AddrSpace *as, void *va, void *pa, int prot) {
       *pte = PA2PTE(pagetable) | PTE_V;
     }
   }
-  printf("Done \n");
+  */
 }
 
 Context *ucontext(AddrSpace *as, Area kstack, void *entry) {
