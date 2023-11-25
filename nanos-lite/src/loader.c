@@ -31,39 +31,26 @@
 
 #define NR_PAGE 8
 
-/*
- #define EI_NIDENT 16
- typedef struct {
-    unsigned char e_ident[EI_NIDENT];
-    uint16_t      e_type;
-    uint16_t      e_machine;
-    uint32_t      e_version;
-    ElfN_Addr     e_entry;
-    ElfN_Off      e_phoff;
-    ElfN_Off      e_shoff;
-    uint32_t      e_flags;
-    uint16_t      e_ehsize;
-    uint16_t      e_phentsize;
-    uint16_t      e_phnum;
-    uint16_t      e_shentsize;
-    uint16_t      e_shnum;
-    uint16_t      e_shstrndx;
-  } ElfN_Ehdr;
-*/
+ __attribute__ ((__used__)) 
+ static void * alloc_section_space(AddrSpace *as, uintptr_t vaddr, size_t p_memsz){
+  //size_t page_n = p_memsz % PAGESIZE == 0 ? p_memsz / 4096 : (p_memsz / 4096 + 1);
+  size_t page_n = ((vaddr + p_memsz - 1) >> 12) - (vaddr >> 12) + 1;
+  void *page_start = new_page(page_n);
+  
+  for (int i = 0; i < page_n; ++i)
+    map(as, (void *)((vaddr & ~0xfff) + i * PGSIZE), (void *)(page_start + i * PGSIZE), 1);
 
-/*
-  typedef struct {
-    uint32_t   p_type;
-    uint32_t   p_flags;
-    Elf64_Off  p_offset;
-    Elf64_Addr p_vaddr;
-    Elf64_Addr p_paddr;
-    uint64_t   p_filesz;
-    uint64_t   p_memsz;
-    uint64_t   p_align;
-  } Elf64_Phdr;
-*/
+  return page_start;
+}
 
+/* After obtaining the size of the program, load it in pages:
+* 1. Request a free physical page
+* 2. Map() this physical page to the virtual address space of the user process.
+*     Since AM native implements permission checks, 
+*     in order for the program to run correctly on AM native, 
+*     you need to set prot to read-write-execute when calling map()
+* 3. Read a page of content from the file into this physical page.
+*/
 static uintptr_t loader(PCB *pcb, const char *filename) {
   Elf_Ehdr ehdr;
   int fd = fs_open(filename, 0, 0);
@@ -79,9 +66,10 @@ static uintptr_t loader(PCB *pcb, const char *filename) {
   fs_read(fd, phdr, sizeof(Elf_Phdr) * ehdr.e_phnum);
   for (int i = 0; i < ehdr.e_phnum; i++) {
     if (phdr[i].p_type == PT_LOAD) {
+      void *paddr = alloc_section_space(&pcb->as, phdr[i].p_vaddr, phdr[i].p_memsz);
       fs_lseek(fd, phdr[i].p_offset, SEEK_SET);
-      fs_read(fd, (void *)phdr[i].p_vaddr, phdr[i].p_memsz);
-      memset((void *)(phdr[i].p_vaddr + phdr[i].p_filesz), 0, phdr[i].p_memsz - phdr[i].p_filesz);
+      fs_read(fd, (void *)((phdr[i].p_vaddr & 0xFFF) + paddr), phdr[i].p_memsz);
+      memset((void *)((phdr[i].p_vaddr & 0xFFF) + phdr[i].p_filesz + paddr), 0, phdr[i].p_memsz - phdr[i].p_filesz);
     }
   }
   return ehdr.e_entry;
@@ -101,8 +89,9 @@ Context *context_kload(PCB* pcb, void(*func)(void *), void *args) {
 } 
 
 void context_uload(PCB *pcb, const char *filename, char *const argv[], char *const envp[]) {
-  /* each process will obtain 32KB size as its stack size which we think it is enough for ics.  */
+  /* Each process holds 32kb of stack space, which we think is sufficient for ics processes*/
   void *page_alloc = new_page(NR_PAGE) + NR_PAGE * PGSIZE;
+  protect(&pcb->as);
 
   /* deploy user stack layout. */
   char *brk = (char *)(page_alloc - 4);

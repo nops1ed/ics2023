@@ -36,6 +36,7 @@ paddr_t isa_mmu_translate(vaddr_t vaddr, int len, int type) {
     pagetable = (paddr_t *)PTE2PA(*pte);
     assert(pagetable != NULL);
   }
+  assert(vaddr >= 0x40000000 && vaddr <= 0xa1200000);
   paddr_t paddr = (paddr_t)(pagetable[PX(0, vaddr)]);
   assert(paddr == vaddr);
   return paddr;
