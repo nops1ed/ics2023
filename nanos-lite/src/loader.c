@@ -124,7 +124,6 @@ void context_uload(PCB *pcb, const char *filename, char *const argv[], char *con
     envs[i] = brk;
     strcpy(brk, envp[i]);
   }
-  printf("safe here ...\n");
 
   /* Copy envp & argv area. */
   intptr_t *ptr_brk = (intptr_t *)brk;
@@ -135,6 +134,7 @@ void context_uload(PCB *pcb, const char *filename, char *const argv[], char *con
   ptr_brk = ptr_brk - argc;
   for (int i = 0; i < argc; ++i)  ptr_brk[i] = (intptr_t)(args[i]);
   *(--ptr_brk) = argc;
+  printf("safe here ...\n");
 
   free(args);
   free(envs);
