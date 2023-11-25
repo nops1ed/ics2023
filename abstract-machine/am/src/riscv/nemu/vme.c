@@ -49,8 +49,10 @@ bool vme_init(void* (*pgalloc_f)(int), void (*pgfree_f)(void*)) {
     }
   }
 
+  printf("Parse 1 done\n");
   set_satp(kas.ptr);
   vme_enable = 1;
+  printf("Parse 2 done\n");
 
   return true;
 }
@@ -101,7 +103,7 @@ void map(AddrSpace *as, void *va, void *pa, int prot) {
     }
   }
   *pte = PA2PTE(pa) | PTE_V;
-  printf("Mapping %p to %p successfully\n", pa, va);
+  //printf("Mapping %p to %p successfully\n", pa, va);
 }
 
 Context *ucontext(AddrSpace *as, Area kstack, void *entry) {
