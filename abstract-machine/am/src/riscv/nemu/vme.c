@@ -109,7 +109,7 @@ Context *ucontext(AddrSpace *as, Area kstack, void *entry) {
   Context *kctx = (Context *)(kstack.end - sizeof(Context)); 
 
   /* Bug occured here. */
-  //kctx->pdir = as->ptr;
+  kctx->pdir = as->ptr;
 
   kctx->mepc = (uintptr_t)entry;
   return kctx;
