@@ -90,6 +90,7 @@ void map(AddrSpace *as, void *va, void *pa, int prot) {
     *page_table_entry = (*page_table_entry | PTE_V);
   }
 
+  printf("pppppaddr is %p\n", (PTE *)(PTE_PPN(*page_table_entry) * PGSIZE + PMD(va) * 8));
   page_table_entry = (PTE *)(PTE_PPN(*page_table_entry) * PGSIZE + PMD(va) * 8);
   printf("addr is %p\n", page_table_entry);
     printf("stat done\n");
