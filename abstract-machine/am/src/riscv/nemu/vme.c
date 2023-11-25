@@ -136,6 +136,7 @@ void map(AddrSpace *as, void *va, void *pa, int prot) {
       *pte = PA2PTE(pagetable) | PTE_V;
     }
   }
+  printf("Done \n");
 }
 
 Context *ucontext(AddrSpace *as, Area kstack, void *entry) {
