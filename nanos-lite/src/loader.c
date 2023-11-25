@@ -92,13 +92,11 @@ void context_uload(PCB *pcb, const char *filename, char *const argv[], char *con
   /* Each process holds 32kb of stack space, which we think is sufficient for ics processes. */
   void *page_alloc = new_page(NR_PAGE) + NR_PAGE * PGSIZE;
   AddrSpace *as = &pcb->as;
-  printf("Safe here\n");
   protect(as);
 
   /* Mapping user stack here. */
   for(int i = NR_PAGE; i >= 0; i--) 
     map(as, as->area.end - i * PGSIZE, page_alloc - i * PGSIZE, 1);
-  printf("Mapping successfully\n");
 
   /* deploy user stack layout. */
   char *brk = (char *)(page_alloc - 4);
@@ -141,6 +139,7 @@ void context_uload(PCB *pcb, const char *filename, char *const argv[], char *con
   Context *ucxt = ucontext(NULL, stack, (void *)entry);
   pcb->cp = ucxt;
   ucxt->GPRx = (intptr_t)ptr_brk;
+  printf("Done\n");
 }
 
 /*
