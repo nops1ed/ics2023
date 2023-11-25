@@ -92,6 +92,7 @@ void context_uload(PCB *pcb, const char *filename, char *const argv[], char *con
   /* Each process holds 32kb of stack space, which we think is sufficient for ics processes. */
   void *page_alloc = new_page(NR_PAGE) + NR_PAGE * PGSIZE;
   AddrSpace *as = &pcb->as;
+  printf("Safe here\n");
   protect(as);
 
   /* Mapping user stack here. */
