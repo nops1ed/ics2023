@@ -28,7 +28,9 @@ void hello_fun(void *arg) {
 }
 
 void init_proc() {
+  printf("\033[31mtraping here...\033[0m\n");
   context_kload(&pcb[0], hello_fun, "Message from proc #1");
+  printf("\033[31mpcb 0 finished ...\033[0m\n");
   //context_uload(&pcb[0], "/bin/hello"); 
   //context_kload(&pcb[0], "/bin/nterm", NULL); 
   //context_uload(&pcb[1], "/bin/pal", args_pal, NULL); 

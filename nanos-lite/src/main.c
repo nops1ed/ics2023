@@ -21,12 +21,9 @@ int main() {
 
 #ifdef HAS_CTE
   init_irq();
-  Log("Finish initialization of irq");
 #endif
 
   init_fs();
-
-  Log("Finish initialization of fs");
 
   init_proc();
 
