@@ -87,6 +87,7 @@ void __am_switch(Context *c) {
 *    0..11 -- 12 bits of byte offset within the page.
 */
 void map(AddrSpace *as, void *va, void *pa, int prot) {
+  /* Perform a page table walk. */
   pagetable_t pagetable = as->ptr;
   PTE *pte;
   for(int level = 2; level > 0; level--) {
@@ -107,7 +108,9 @@ void map(AddrSpace *as, void *va, void *pa, int prot) {
 Context *ucontext(AddrSpace *as, Area kstack, void *entry) {
   Context *kctx = (Context *)(kstack.end - sizeof(Context)); 
 
+  /* Bug occured here. */
   kctx->pdir = as->ptr;
+
   kctx->mepc = (uintptr_t)entry;
   return kctx;
 }
