@@ -17,6 +17,31 @@
 #include <memory/vaddr.h>
 #include <memory/paddr.h>
 
+#define PGSHIFT         12
+/* extract the three 9-bit page table indices from a virtual address. */
+#define PXMASK          0x1FF // 9 bits
+#define PXSHIFT(level)  (PGSHIFT+(9*(level)))
+#define PX(level, va) ((((uint64_t) (va)) >> PXSHIFT(level)) & PXMASK)
+
+// shift a physical address to the right place for a PTE.
+#define PA2PTE(pa) ((((uint64_t)pa) >> 12) << 10)
+#define PTE2PA(pte) (((pte) >> 10) << 12)
+
 paddr_t isa_mmu_translate(vaddr_t vaddr, int len, int type) {
-  return MEM_RET_FAIL;
+  paddr_t *pagetable = (paddr_t *)guest_to_host((paddr_t)(cpu.csr[CSR_SATP].val << PGSHIFT));
+  word_t *pte;
+  for(int level = 2; level > 0; level--) {
+    pte = (word_t *)guest_to_host(pagetable[PX(level, vaddr)]);
+    pagetable = (paddr_t *)PTE2PA(*pte);
+  }
+  paddr_t paddr = (paddr_t)(pagetable[PX(0, vaddr)]);
+  return paddr;
+
+/*
+  word_t va_raw = (uint32_t)vaddr;
+  paddr_t *pt_1 = (paddr_t *)guest_to_host((paddr_t)(cpu.csr[REG_SATP]._32 << PG_SHIFT));
+  word_t *pt_2 = (word_t *)guest_to_host(pt_1[PGT1_ID(va_raw)]);
+  paddr_t paddr = (paddr_t)((pt_2[PGT2_ID(va_raw)] & (~0xfff)) | OFFSET(va_raw));
+  return paddr;
+  */
 }
