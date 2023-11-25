@@ -12,7 +12,7 @@ static Area segments[] = {      // Kernel memory mappings
 };
 
 #define USER_SPACE RANGE(0x40000000, 0x80000000)
-#define PGD(X) ((((uintptr_t)X >> 30) & 0x1FF) << 30)   //VPN[2]
+#define PGD(X) ((((uint64_t)X >> 30) & 0x1FF) << 30)   //VPN[2]
 #define PMD(X) ((((uintptr_t)X >> 21) & 0x1FF) << 21)   //VPN[1]
 #define PTE(X) ((((uintptr_t)X >> 12) & 0x1FF) << 12)   //VPN[0]
 #define VA_OFFSET(X) ((uintptr_t)X & 0xFFF)
