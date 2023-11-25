@@ -73,8 +73,8 @@ void __am_switch(Context *c) {
 }
 
 void map(AddrSpace *as, void *va, void *pa, int prot) {
-  va = (void *)(((uintptr_t)va) & (~0xfff));
-  pa = (void *)(((uintptr_t)pa) & (~0xfff));
+  //va = (void *)(((uintptr_t)va) & (~0xfff));
+  //pa = (void *)(((uintptr_t)pa) & (~0xfff));
 
   /* The size of each page table entry is 8B. */
   PTE *page_table_entry = as->ptr + PGD(va) * 8;
