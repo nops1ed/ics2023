@@ -81,6 +81,7 @@ void map(AddrSpace *as, void *va, void *pa, int prot) {
   printf("So the satp is %p\n", page_table_entry);
   printf("So the as is %p\n", as->ptr);
   printf("So the PGD is %d\n", PGD(va) * 8);
+  printf("So the PLUS is %p\n", as->ptr + PGD(va) * 8);
   if (!(*page_table_entry & PTE_V)){ 
     void *alloced_page = pgalloc_usr(PGSIZE);
     *page_table_entry = (*page_table_entry & ~PTE_PPN_MASK) | (PTE_PPN_MASK & ((uintptr_t)alloced_page >> 2));
