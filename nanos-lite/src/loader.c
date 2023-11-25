@@ -105,7 +105,7 @@ void context_uload(PCB *pcb, const char *filename, char *const argv[], char *con
   if (argv) for (; argv[argc]; ++argc) ;
   char **args = (char **)malloc(sizeof(char*) * argc);
   char **envs = (char **)malloc(sizeof(char*) * envc);
-  printf("safe here\n"); 
+
   /* Copy String Area. */
   for (int i = 0; i < argc; ++i) {
     /* Note that it is neccessary to make memory *align*. */
@@ -128,6 +128,7 @@ void context_uload(PCB *pcb, const char *filename, char *const argv[], char *con
   ptr_brk = ptr_brk - argc;
   for (int i = 0; i < argc; ++i)  ptr_brk[i] = (intptr_t)(args[i]);
   *(--ptr_brk) = argc;
+  printf("safe here\n");
 
   free(args);
   free(envs);
