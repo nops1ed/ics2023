@@ -138,8 +138,9 @@ void context_uload(PCB *pcb, const char *filename, char *const argv[], char *con
   free(args);
   free(envs);
 
-  printf("safe here ...\n");
   uintptr_t entry = loader(pcb, filename);
+  printf("safe here ...\n");
+
   Area stack;
   stack.start = &pcb->cp;
   stack.end = &pcb->cp + STACK_SIZE;
