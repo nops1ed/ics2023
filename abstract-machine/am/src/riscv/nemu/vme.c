@@ -78,6 +78,7 @@ void map(AddrSpace *as, void *va, void *pa, int prot) {
 
   /* The size of each page table entry is 8B. */
   PTE *page_table_entry = as->ptr + PGD(va) * 8;
+  printf("So the satp is %p\n", page_table_entry);
   if (!(*page_table_entry & PTE_V)){ 
     void *alloced_page = pgalloc_usr(PGSIZE);
     *page_table_entry = (*page_table_entry & ~PTE_PPN_MASK) | (PTE_PPN_MASK & ((uintptr_t)alloced_page >> 2));
