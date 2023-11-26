@@ -51,74 +51,31 @@
 *     you need to set prot to read-write-execute when calling map()
 * 3. Read a page of content from the file into this physical page.
 */
-
-
-#define MAX(a, b)((a) > (b) ? (a) : (b))
-static void read(int fd, void *buf, size_t offset, size_t len){
-  fs_lseek(fd, offset, SEEK_SET);
-  fs_read(fd, buf, len);
-}
-
 static uintptr_t loader(PCB *pcb, const char *filename) {
+  Elf_Ehdr ehdr;
+  printf("Ready to open\n");
   int fd = fs_open(filename, 0, 0);
-  if (fd == -1){ 
-    assert(0); //filename指向文件不存在
-  }
-  
-  AddrSpace *as = &pcb->as;
-  
-  Elf_Ehdr elf_header;
-  read(fd, &elf_header, 0, sizeof(elf_header));
-  //根据小端法 0x7F E L F
-  assert(*(uint32_t *)elf_header.e_ident == 0x464c457f);
-  
-  Elf_Off program_header_offset = elf_header.e_phoff;
-  size_t headers_entry_size = elf_header.e_phentsize;
-  int headers_entry_num = elf_header.e_phnum;
+  printf("Before\n");
+  fs_read(fd, &ehdr, sizeof(ehdr));  
+  printf("After\n");
 
-  for (int i = 0; i < headers_entry_num; ++i){
-    Elf_Phdr section_entry;
-    read(fd, &section_entry, 
-      i * headers_entry_size + program_header_offset, sizeof(elf_header));
-    void *phys_addr;
-    uintptr_t virt_addr;
-    switch (section_entry.p_type) {
-    case PT_LOAD:
-      //virt_addr = (void *)section_entry.p_vaddr; 
-      // phys_addr = (void *)alloced_page_start + (section_entry.p_vaddr - 0x40000000); // 这里是把0x40000000加载到他对应的实际地址
-      virt_addr = section_entry.p_vaddr;
-      phys_addr = alloc_section_space(as, virt_addr, section_entry.p_memsz);
+  /* check magic number. */
+  assert((*(uint64_t *)ehdr.e_ident == 0x010102464c457f));
+  /* check architecture. */
+  assert(ehdr.e_machine == EXPECT_TYPE);
 
-      // printf("Load to %x with offset %x\n", phys_addr, section_entry.p_offset);
-      //做一个偏移
-      read(fd, phys_addr + (virt_addr & 0xfff), section_entry.p_offset, section_entry.p_filesz);
-      //同样做一个偏移
-      memset(phys_addr + (virt_addr & 0xfff) + section_entry.p_filesz, 0, 
-        section_entry.p_memsz - section_entry.p_filesz);
-      
-      if (section_entry.p_filesz < section_entry.p_memsz){// 应该是.bss节
-        //做一个向上的4kb取整数
-        // if (pcb->max_brk == 0){
-        printf("Setting .bss end %x\n", section_entry.p_vaddr + section_entry.p_memsz);
-        // 我们虽然用max_brk记录了最高达到的位置，但是在新的PCB中，我们并未在页表目录中更新这些信息，oH，所以就会失效啦。
-        // 于是我们就做了一些权衡。
-        //pcb->max_brk = MAX(pcb->max_brk, ROUNDUP(section_entry.p_vaddr + section_entry.p_memsz, 0xfff));
-        //TODO: Trade-off
-        pcb->max_brk = ROUNDUP(section_entry.p_vaddr + section_entry.p_memsz, 0xfff);
-        
-        // }
-      }
-      
-      break;
-    
-    default:
-      break;
+  Elf_Phdr phdr[ehdr.e_phnum];
+  fs_lseek(fd, ehdr.e_phoff, SEEK_SET);
+  fs_read(fd, phdr, sizeof(Elf_Phdr) * ehdr.e_phnum);
+  for (int i = 0; i < ehdr.e_phnum; i++) {
+    if (phdr[i].p_type == PT_LOAD) {
+      void *paddr = alloc_section_space(&pcb->as, phdr[i].p_vaddr, phdr[i].p_memsz);
+      fs_lseek(fd, phdr[i].p_offset, SEEK_SET);
+      fs_read(fd, (void *)((phdr[i].p_vaddr & 0xFFF) + paddr), phdr[i].p_memsz);
+      memset((void *)((phdr[i].p_vaddr & 0xFFF) + phdr[i].p_filesz + paddr), 0, phdr[i].p_memsz - phdr[i].p_filesz);
     }
-
   }
-  
-  printf("Entry: %p\n", elf_header.e_entry);
-  return elf_header.e_entry;
+  return ehdr.e_entry;
 }
 
 void naive_uload(PCB *pcb, const char *filename) {

@@ -91,7 +91,7 @@ void map(AddrSpace *as, void *va, void *pa, int prot) {
   pagetable_t pagetable = as->ptr;
   PTE *pte;
   for(int level = 2; level > 0; level--) {
-    printf("Now px is %x\n",PX(level, va));
+    //printf("Now px is %x\n",PX(level, va));
     pte = &pagetable[PX(level, va)];
     if(*pte & PTE_V) {
       pagetable = (pagetable_t)PTE2PA(*pte);
