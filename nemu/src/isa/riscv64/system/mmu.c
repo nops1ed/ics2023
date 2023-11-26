@@ -36,6 +36,7 @@ paddr_t isa_mmu_translate(vaddr_t vaddr, int len, int type) {
   assert(pt_2 != NULL);
   printf("pt_2 address is %p\n", pt_2);
   word_t *pt_3 = (word_t *)guest_to_host(pt_2[PX(1, va_raw)]);
+  printf("pt_3 address is %p\n", pt_3);
   assert(pt_3 != NULL);
 
 /*
