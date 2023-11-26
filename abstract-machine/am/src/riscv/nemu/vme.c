@@ -107,6 +107,7 @@ void map(AddrSpace *as, void *va, void *pa, int prot) {
   *pte = PA2PTE(pa) | PTE_V;
   */
   //printf("Mapping %p to %p successfully\n", pa, va);
+  /*
   uint64_t pa_raw = (uint64_t)pa;
   uint64_t va_raw = (uint64_t)va;
   uint64_t **pt_1 = (uint64_t **)as->ptr;
@@ -125,6 +126,23 @@ void map(AddrSpace *as, void *va, void *pa, int prot) {
     //Assert(0, "remap virtual address\n!");
     assert(0);
   }
+  */
+  #define PGT1_ID(val) (val >> 22)
+#define PGT2_ID(val) ((val & 0x3fffff) >> 12)
+  uint64_t pa_raw = (uint64_t)pa;
+  uint64_t va_raw = (uint64_t)va;
+  uint64_t **pt_1 = (uint64_t **)as->ptr;
+  if (pt_1[PGT1_ID(va_raw)] == NULL)
+    pt_1[PGT1_ID(va_raw)] = (uint64_t *)pgalloc_usr(PGSIZE);
+
+  uint64_t *pt_2 = pt_1[PGT1_ID(va_raw)];
+  if (pt_2[PGT2_ID(va_raw)] == 0)
+    pt_2[PGT2_ID(va_raw)] = (pa_raw & (~0xfff)) | prot;
+  else
+  {
+    assert(0);
+  }
+   printf("map vrirtual address %p to physical address %p, pt2 id is %p, store addr %p\n", va_raw, pa_raw, PGT2_ID(va_raw), pt_2[PGT2_ID(va_raw)] >> 12);
 }
 
 Context *ucontext(AddrSpace *as, Area kstack, void *entry) {
