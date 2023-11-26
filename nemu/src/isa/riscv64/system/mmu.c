@@ -31,6 +31,7 @@ paddr_t isa_mmu_translate(vaddr_t vaddr, int len, int type) {
   printf("\033[32mNow satp has val %lx\033[0m\n", cpu.csr[CSR_SATP].val);
   word_t va_raw = (uint64_t)vaddr;
   paddr_t *pt_1 = (paddr_t *)guest_to_host((paddr_t)(cpu.csr[CSR_SATP].val << PGSHIFT));
+  printf("pt_1 address is %p\n", pt_1);
   assert(pt_1 != NULL);
   word_t *pt_2 = (word_t *)guest_to_host(pt_1[PX(2, va_raw)]);
   assert(pt_2 != NULL);
