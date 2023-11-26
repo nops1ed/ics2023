@@ -88,6 +88,7 @@ void __am_switch(Context *c) {
 */
 void map(AddrSpace *as, void *va, void *pa, int prot) {
   /* Perform a page table walk. */
+  /*
   pagetable_t pagetable = as->ptr;
   PTE *pte;
   for(int level = 2; level > 0; level--) {
@@ -104,7 +105,26 @@ void map(AddrSpace *as, void *va, void *pa, int prot) {
   }
   pte = &pagetable[PX(0, va)];
   *pte = PA2PTE(pa) | PTE_V;
+  */
   //printf("Mapping %p to %p successfully\n", pa, va);
+  uint64_t pa_raw = (uint64_t)pa;
+  uint64_t va_raw = (uint64_t)va;
+  uint64_t **pt_1 = (uint64_t **)as->ptr;
+  if (pt_1[PX(2, va_raw)] == NULL)
+    pt_1[PX(2, va_raw)] = (uint64_t *)pgalloc_usr(PGSIZE);
+
+  uint64_t **pt_2 = (uint64_t **)pt_1[PX(2, va_raw)];
+  if (pt_2[PX(1, va_raw)] == NULL)
+    pt_2[PX(1, va_raw)] = (uint64_t *)pgalloc_usr(PGSIZE);
+
+  uint64_t *pt_3 = pt_2[PX(1, va_raw)];
+  if (pt_3[PX(0, va_raw)] == 0)
+    pt_3[PX(0, va_raw)] = (pa_raw & (~0xfff)) | prot;
+  else
+  {
+    //Assert(0, "remap virtual address\n!");
+    assert(0);
+  }
 }
 
 Context *ucontext(AddrSpace *as, Area kstack, void *entry) {
