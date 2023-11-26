@@ -54,7 +54,7 @@ paddr_t isa_mmu_translate(vaddr_t vaddr, int len, int type) {
     paddr_write(leaf_page_table_entry_addr, 8, leaf_page_table_entry | PTE_D);
   }
   paddr_t pa = PTE_PPN(leaf_page_table_entry) * 4096 + VA_OFFSET(vaddr);
-   assert(pa == vaddr);
+  //assert(pa == vaddr);
 
   return pa;
 }
