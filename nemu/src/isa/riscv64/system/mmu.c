@@ -33,7 +33,7 @@
 typedef uint64_t PTE;
 
 paddr_t isa_mmu_translate(vaddr_t vaddr, int len, int type) {
-  //printf("Starting translate\n");
+  printf("Starting translate\n");
   paddr_t page_table_entry_addr = (cpu.csr[CSR_SATP].val << 12) + VA_VPN_2(vaddr) * 8;
   PTE page_table_entry = paddr_read(page_table_entry_addr, 8);
   // if ((page_table_entry & PTE_V) == 0){
