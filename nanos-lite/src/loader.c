@@ -69,6 +69,7 @@ static uintptr_t loader(PCB *pcb, const char *filename) {
       void *paddr = alloc_section_space(&pcb->as, phdr[i].p_vaddr, phdr[i].p_memsz);
       fs_lseek(fd, phdr[i].p_offset, SEEK_SET);
       fs_read(fd, (void *)((phdr[i].p_vaddr & 0xFFF) + paddr), phdr[i].p_memsz);
+      printf("GOOD trap here\n");
       memset((void *)((phdr[i].p_vaddr & 0xFFF) + phdr[i].p_filesz + paddr), 0, phdr[i].p_memsz - phdr[i].p_filesz);
     }
   }
@@ -132,7 +133,6 @@ void context_uload(PCB *pcb, const char *filename, char *const argv[], char *con
   free(args);
   free(envs);
 
-  printf("safe here\n");
   uintptr_t entry = loader(pcb, filename);
   printf("loader finished\n");
   Area stack;
