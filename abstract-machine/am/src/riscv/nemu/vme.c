@@ -127,6 +127,7 @@ void map(AddrSpace *as, void *va, void *pa, int prot) {
     assert(0);
   }
    //printf("map vrirtual address %p to physical address %p, pt2 id is %p, store addr %p\n", va_raw, pa_raw, PGT2_ID(va_raw), pt_2[PGT2_ID(va_raw)] >> 12);
+   printf("Done\n");
 }
 
 Context *ucontext(AddrSpace *as, Area kstack, void *entry) {
