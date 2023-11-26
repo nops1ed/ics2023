@@ -87,7 +87,7 @@ paddr_t isa_mmu_translate(vaddr_t vaddr, int len, int type) {
 #define PGT1_ID(val) (val >> 22)
 #define PGT2_ID(val) ((val & 0x3fffff) >> 12)
 #define OFFSET(val) (val & 0xfff)
-  word_t va_raw = (uint32_t)vaddr;
+  word_t va_raw = (uint64_t)vaddr;
   paddr_t *pt_1 = (paddr_t *)guest_to_host((paddr_t)(cpu.csr[CSR_SATP].val << PG_SHIFT));
   // printf("pt1[id1(vaddr)] is 0x%x\n", pt_1[PGT1_ID(va_raw)]);
   assert(pt_1 != NULL);
