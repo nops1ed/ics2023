@@ -88,6 +88,7 @@ void __am_switch(Context *c) {
 */
 void map(AddrSpace *as, void *va, void *pa, int prot) {
   /* Perform a page table walk. */
+  /*
   pagetable_t pagetable = as->ptr;
   PTE *pte;
   for(int level = 2; level > 0; level--) {
@@ -106,7 +107,7 @@ void map(AddrSpace *as, void *va, void *pa, int prot) {
   *pte = PA2PTE(pa) | PTE_V;
   //printf("Finally store %p to %p\n\n", *pte, pte);
   //printf("Mapping %p to %p successfully\n", pa, va);
-  /*
+  */
   uint64_t pa_raw = (uint64_t)pa;
   uint64_t va_raw = (uint64_t)va;
   uint64_t **pt_1 = (uint64_t **)as->ptr;
@@ -126,7 +127,6 @@ void map(AddrSpace *as, void *va, void *pa, int prot) {
     assert(0);
   }
    //printf("map vrirtual address %p to physical address %p, pt2 id is %p, store addr %p\n", va_raw, pa_raw, PGT2_ID(va_raw), pt_2[PGT2_ID(va_raw)] >> 12);
-   */
 }
 
 Context *ucontext(AddrSpace *as, Area kstack, void *entry) {
