@@ -37,6 +37,7 @@ paddr_t isa_mmu_translate(vaddr_t vaddr, int len, int type) {
   assert(pt_2 != NULL);
   word_t *pt_3 = (word_t *)guest_to_host(pt_2[PX(1, va_raw)]);
   assert(pt_3 != NULL);
+  printf("safe here\n");
 
   paddr_t paddr = (paddr_t)((pt_3[PX(0, va_raw)] & (~0xfff)) | (va_raw & 0xfff));
   assert(vaddr >= 0x40000000 && vaddr <= 0xa1200000);
