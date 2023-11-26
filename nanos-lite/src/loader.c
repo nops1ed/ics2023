@@ -97,7 +97,7 @@ void context_uload(PCB *pcb, const char *filename, char *const argv[], char *con
   /* Mapping user stack here. */
   for(int i = NR_PAGE; i >= 0; i--) 
     map(as, as->area.end - i * PGSIZE, page_alloc - i * PGSIZE, 1);
-  printf("Mapping finished\n");
+
   /* deploy user stack layout. */
   char *brk = (char *)(page_alloc - 4);
   int argc = 0, envc = 0;
@@ -131,7 +131,7 @@ void context_uload(PCB *pcb, const char *filename, char *const argv[], char *con
 
   free(args);
   free(envs);
-
+  printf("Arguments deploy successfully\n");
   uintptr_t entry = loader(pcb, filename);
   Area stack;
   stack.start = &pcb->cp;
