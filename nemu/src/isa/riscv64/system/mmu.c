@@ -34,8 +34,9 @@ paddr_t isa_mmu_translate(vaddr_t vaddr, int len, int type) {
   paddr_t *pt_1 = (paddr_t *)guest_to_host((paddr_t)(cpu.csr[CSR_SATP].val << PGSHIFT));
   assert(pt_1 != NULL);
   word_t *pt_2 = (word_t *)guest_to_host(pt_1[PX(2, va_raw)]);
-  printf("safe here\n");
   assert(pt_2 != NULL);
+  /* Bug occured here. */
+  printf("pt_2 address is %p\n", pt_2);
   word_t *pt_3 = (word_t *)guest_to_host(pt_2[PX(1, va_raw)]);
   assert(pt_3 != NULL);
 
