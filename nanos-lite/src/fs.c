@@ -88,7 +88,7 @@ int fs_open(const char *pathname, int flags, int mode) {
     }
   }
 
-  printf("sFS: open file: %s failed\n", pathname);
+  printf("\033[31msFS: open file: %s failed\033[0m\n", pathname);
   return -1;
 }
 
