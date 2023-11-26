@@ -102,6 +102,7 @@ void map(AddrSpace *as, void *va, void *pa, int prot) {
     }
     //printf("pagetable is %p and *pte is %p\n", pagetable, *pte);
   }
+  pte = &pagetable[PX(0, va)];
   *pte = PA2PTE(pa) | PTE_V;
   //printf("Mapping %p to %p successfully\n", pa, va);
 }
