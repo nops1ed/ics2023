@@ -132,11 +132,12 @@ void context_uload(PCB *pcb, const char *filename, char *const argv[], char *con
   free(args);
   free(envs);
 
+  printf("safe here\n");
   uintptr_t entry = loader(pcb, filename);
+  printf("loader finished\n");
   Area stack;
   stack.start = &pcb->cp;
   stack.end = &pcb->cp + STACK_SIZE;
-  printf("safe here\n");
   Context *ucxt = ucontext(as, stack, (void *)entry);
   printf("safe here\n");
   pcb->cp = ucxt;
