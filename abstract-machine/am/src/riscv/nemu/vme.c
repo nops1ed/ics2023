@@ -142,14 +142,14 @@ void map(AddrSpace *as, void *va, void *pa, int prot) {
   {
     assert(0);
   }
-   printf("map vrirtual address %p to physical address %p, pt2 id is %p, store addr %p\n", va_raw, pa_raw, PGT2_ID(va_raw), pt_2[PGT2_ID(va_raw)] >> 12);
+   //printf("map vrirtual address %p to physical address %p, pt2 id is %p, store addr %p\n", va_raw, pa_raw, PGT2_ID(va_raw), pt_2[PGT2_ID(va_raw)] >> 12);
 }
 
 Context *ucontext(AddrSpace *as, Area kstack, void *entry) {
   Context *kctx = (Context *)(kstack.end - sizeof(Context)); 
 
   /* Bug occured here. */
-  kctx->pdir = as->ptr;
+  //kctx->pdir = as->ptr;
 
   kctx->mepc = (uintptr_t)entry;
   return kctx;
