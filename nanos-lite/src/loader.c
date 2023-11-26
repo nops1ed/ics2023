@@ -54,7 +54,9 @@
 static uintptr_t loader(PCB *pcb, const char *filename) {
   Elf_Ehdr ehdr;
   int fd = fs_open(filename, 0, 0);
+  printf("Before\n");
   fs_read(fd, &ehdr, sizeof(ehdr));  
+  printf("After\n");
 
   /* check magic number. */
   assert((*(uint64_t *)ehdr.e_ident == 0x010102464c457f));
@@ -63,9 +65,7 @@ static uintptr_t loader(PCB *pcb, const char *filename) {
 
   Elf_Phdr phdr[ehdr.e_phnum];
   fs_lseek(fd, ehdr.e_phoff, SEEK_SET);
-  printf("Before read\n");
   fs_read(fd, phdr, sizeof(Elf_Phdr) * ehdr.e_phnum);
-  printf("After read\n");
   for (int i = 0; i < ehdr.e_phnum; i++) {
     if (phdr[i].p_type == PT_LOAD) {
       void *paddr = alloc_section_space(&pcb->as, phdr[i].p_vaddr, phdr[i].p_memsz);
