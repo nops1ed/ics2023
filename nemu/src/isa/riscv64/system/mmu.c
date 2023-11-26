@@ -19,7 +19,7 @@
 
 
 #define VA_VPN_0(x) (((vaddr_t)x & 0x001FF000u) >> 12)
-#define VA_VPN_1(x) (((vaddr_t)x & 0x1FE00000u) >> 21)
+#define VA_VPN_1(x) (((vaddr_t)x & 0x3FE00000u) >> 21)
 #define VA_VPN_2(x) (((vaddr_t)x & 0xFFC0000000u) >> 30)
 #define VA_OFFSET(x) ((vaddr_t)x & 0x00000FFFu)
 
