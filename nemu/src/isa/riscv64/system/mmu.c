@@ -29,18 +29,17 @@
 paddr_t isa_mmu_translate(vaddr_t vaddr, int len, int type) {
   printf("\033[31mTraping into mmu translate\033[0m\n");
   printf("\033[32mNow satp has val %lx\033[0m\n", cpu.csr[CSR_SATP].val);
-  paddr_t *pagetable = (paddr_t *)guest_to_host((paddr_t)(cpu.csr[CSR_SATP].val << PGSHIFT));
-  word_t *pte;
-  for(int level = 2; level > 0; level--) {
-    pte = (word_t *)guest_to_host(pagetable[PX(level, vaddr)]);
-    assert(pte != NULL);
-    pagetable = (paddr_t *)PTE2PA(*pte);
-    assert(pagetable != NULL);
-  }
-  printf("Safe here\n");
+
+  word_t va_raw = (uint64_t)vaddr;
+  paddr_t *pt_1 = (paddr_t *)guest_to_host((paddr_t)(cpu.csr[CSR_SATP].val << PGSHIFT));
+  assert(pt_1 != NULL);
+  word_t *pt_2 = (word_t *)guest_to_host(pt_1[PX(2, va_raw)]);
+  assert(pt_2 != NULL);
+  word_t *pt_3 = (word_t *)guest_to_host(pt_2[PX(1, va_raw)]);
+  assert(pt_3 != NULL);
+
+  paddr_t paddr = (paddr_t)((pt_3[PX(0, va_raw)] & (~0xfff)) | (va_raw & 0xfff));
   assert(vaddr >= 0x40000000 && vaddr <= 0xa1200000);
-  paddr_t paddr = (paddr_t)(pagetable[PX(0, vaddr)]);
-  assert(paddr == vaddr);
   printf("Successfully convert %lx to %x\n", vaddr, paddr);
   return paddr;
 }
