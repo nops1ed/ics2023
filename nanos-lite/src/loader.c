@@ -112,12 +112,14 @@ void context_uload(PCB *pcb, const char *filename, char *const argv[], char *con
   /* Copy String Area. */
   for (int i = 0; i < argc; ++i) {
     /* Note that it is neccessary to make memory *align*. */
-    brk -= ROUNDUP(strlen(argv[i]) + 1, sizeof(int));
+    //brk -= ROUNDUP(strlen(argv[i]) + 1, sizeof(int));
+    brk -= strlen(argv[i]) + 1;
     args[i] = brk;
     strcpy(brk, argv[i]);
   }
   for (int i = 0; i < envc; ++i) {
-    brk -= ROUNDUP(strlen(envp[i]) + 1, sizeof(int));
+    //brk -= ROUNDUP(strlen(envp[i]) + 1, sizeof(int));
+    brk -= strlen(envp[i]) + 1;
     envs[i] = brk;
     strcpy(brk, envp[i]);
   }
