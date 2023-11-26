@@ -30,6 +30,7 @@ paddr_t isa_mmu_translate(vaddr_t vaddr, int len, int type) {
   printf("\033[31mTraping into mmu translate\033[0m\n");
   printf("\033[32mNow satp has val %lx\033[0m\n", cpu.csr[CSR_SATP].val);
   paddr_t *pagetable = (paddr_t *)guest_to_host((paddr_t)(cpu.csr[CSR_SATP].val << PGSHIFT));
+  printf("Safe here\n");
   word_t *pte;
   for(int level = 2; level > 0; level--) {
     pte = (word_t *)guest_to_host(pagetable[PX(level, vaddr)]);
