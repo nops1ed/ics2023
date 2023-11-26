@@ -77,5 +77,6 @@ paddr_t isa_mmu_translate(vaddr_t vaddr, int len, int type) {
   assert(vaddr >= 0x40000000 && vaddr <= 0xa1200000);
   // assert(paddr == vaddr);
   // return MEM_RET_FAIL;
+  printf("Safe here.\n");
   return paddr;
 }
