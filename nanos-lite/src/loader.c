@@ -95,65 +95,104 @@ Context *context_kload(PCB* pcb, void(*func)(void *), void *args) {
   return kcxt;
 } 
 
+static size_t ceil_4_bytes(size_t size){
+  if (size & 0x3)
+    return (size & (~0x3)) + 0x4;
+  return size;
+}
+
 void context_uload(PCB *pcb, const char *filename, char *const argv[], char *const envp[]) {
-  /* Each process holds 32kb of stack space, which we think is sufficient for ics processes. */
+  
+
+   int envc = 0, argc = 0;
   AddrSpace *as = &pcb->as;
-  /* Mapping address space. */
-  //printf("\033[33mCreating kernel address space...\033[0m\n");
-  //protect(&pcb->as);
-  //printf("\033[33mKernel address space created\033[0m\n");
-  void *page_alloc = new_page(NR_PAGE) + NR_PAGE * PGSIZE;
-
-  /* Mapping user stack here. */
-  //printf("\033[33m\nMapping user stack...\033[0m\n");
-  //for(int i = NR_PAGE; i >= 0; i--) 
-    //map(as, as->area.end - i * PGSIZE, page_alloc - i * PGSIZE, 1);
-  //printf("\033[33mUser stack mapped\033[0m\n");
-
-  /* deploy user stack layout. */
-  char *brk = (char *)(page_alloc - 4);
-  int argc = 0, envc = 0;
-  if (envp) for (; envp[envc]; ++envc) ;
-  if (argv) for (; argv[argc]; ++argc) ;
-  char **args = (char **)malloc(sizeof(char*) * argc);
-  char **envs = (char **)malloc(sizeof(char*) * envc);
-
-  /* Copy String Area. */
-  for (int i = 0; i < argc; ++i) {
-    /* Note that it is neccessary to make memory *align*. */
-    brk -= ROUNDUP(strlen(argv[i]) + 1, sizeof(int));
-    args[i] = brk;
-    strcpy(brk, argv[i]);
+  //protect(as);
+  
+  if (envp){
+    for (; envp[envc]; ++envc){}
   }
-  for (int i = 0; i < envc; ++i) {
-    brk -= ROUNDUP(strlen(envp[i]) + 1, sizeof(int));
-    envs[i] = brk;
+  if (argv){
+    for (; argv[argc]; ++argc){}
+  }
+  char *envp_ustack[envc];
+
+  void *alloced_page = new_page(NR_PAGE) + NR_PAGE * 4096; //得到栈顶
+
+  //这段代码有古怪，一动就会出问题，莫动
+  //这个问题确实已经被修正了，TMD，真cao dan
+  // 2021/12/16
+  
+  //map(as, as->area.end - 8 * PAGESIZE, alloced_page - 8 * PAGESIZE, 1); 
+  //map(as, as->area.end - 7 * PAGESIZE, alloced_page - 7 * PAGESIZE, 1);
+  //map(as, as->area.end - 6 * PAGESIZE, alloced_page - 6 * PAGESIZE, 1); 
+  //map(as, as->area.end - 5 * PAGESIZE, alloced_page - 5 * PAGESIZE, 1);
+  //map(as, as->area.end - 4 * PAGESIZE, alloced_page - 4 * PAGESIZE, 1); 
+  //map(as, as->area.end - 3 * PAGESIZE, alloced_page - 3 * PAGESIZE, 1);
+  //map(as, as->area.end - 2 * PAGESIZE, alloced_page - 2 * PAGESIZE, 1); 
+  //map(as, as->area.end - 1 * PAGESIZE, alloced_page - 1 * PAGESIZE, 1); 
+  
+  char *brk = (char *)(alloced_page - 4);
+  // 拷贝字符区
+  for (int i = 0; i < envc; ++i){
+    brk -= (ceil_4_bytes(strlen(envp[i]) + 1)); // 分配大小
+    envp_ustack[i] = brk;
     strcpy(brk, envp[i]);
   }
 
-  /* Copy envp & argv area. */
-  intptr_t *ptr_brk = (intptr_t *)brk;
-  *(--ptr_brk) = 0;
+  char *argv_ustack[envc];
+  for (int i = 0; i < argc; ++i){
+    brk -= (ceil_4_bytes(strlen(argv[i]) + 1)); // 分配大小
+    argv_ustack[i] = brk;
+    strcpy(brk, argv[i]);
+  }
+  
+  intptr_t *ptr_brk = (intptr_t *)(brk);
+
+  // 分配envp空间
+  ptr_brk -= 1;
+  *ptr_brk = 0;
   ptr_brk -= envc;
-  for (int i = 0; i < envc; ++i)  ptr_brk[i] = (intptr_t)(envs[i]);
-  *(--ptr_brk) = 0;
+  for (int i = 0; i < envc; ++i){
+    ptr_brk[i] = (intptr_t)(envp_ustack[i]);
+  }
+
+  // 分配argv空间
+  ptr_brk -= 1;
+  *ptr_brk = 0;
   ptr_brk = ptr_brk - argc;
-  for (int i = 0; i < argc; ++i)  ptr_brk[i] = (intptr_t)(args[i]);
-  *(--ptr_brk) = argc;
+  
+  // printf("%p\n", ptr_brk);
+  printf("%p\t%p\n", alloced_page, ptr_brk);
+  //printf("%x\n", ptr_brk);
+  //assert((intptr_t)ptr_brk == 0xDD5FDC);
+  for (int i = 0; i < argc; ++i){
+    ptr_brk[i] = (intptr_t)(argv_ustack[i]);
+  }
 
-  free(args);
-  free(envs);
-
-  printf("\033[33mLoading program entry...\033[0m\n");
+  ptr_brk -= 1;
+  *ptr_brk = argc;
+  
+  //这条操作会把参数的内存空间扬了，要放在最后
   uintptr_t entry = loader(pcb, filename);
-  printf("loader finished\n");
-  Area stack;
-  stack.start = &pcb->cp;
-  stack.end = &pcb->cp + STACK_SIZE;
-  Context *ucxt = ucontext(as, stack, (void *)entry);
-  //printf("safe here\n");
-  pcb->cp = ucxt;
-  ucxt->GPRx = (intptr_t)ptr_brk;
+  Area karea;
+  karea.start = &pcb->cp;
+  karea.end = &pcb->cp + STACK_SIZE;
+
+  Context* context = ucontext(as, karea, (void *)entry);
+  pcb->cp = context;
+
+  printf("新分配ptr=%p\n", as->ptr);
+  printf("UContext Allocted at %p\n", context);
+  printf("Alloced Page Addr: %p\t PTR_BRK_ADDR: %p\n", alloced_page, ptr_brk);
+
+  ptr_brk -= 1;
+  *ptr_brk = 0;//为了t0_buffer
+  //设置了sp
+  context->gpr[2]  = (uintptr_t)ptr_brk - (uintptr_t)alloced_page + (uintptr_t)as->area.end;
+
+  //似乎不需要这个了，但我还不想动
+  context->GPRx = (uintptr_t)ptr_brk - (uintptr_t)alloced_page + (uintptr_t)as->area.end + 4;
+  //context->GPRx = (intptr_t)(ptr_brk);
 }
 
 /*
