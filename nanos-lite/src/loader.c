@@ -105,7 +105,7 @@ void context_uload(PCB *pcb, const char *filename, char *const argv[], char *con
     map(as, as->area.end - i * PGSIZE, page_alloc - i * PGSIZE, 1);
 
   /* deploy user stack layout. */
-  char *brk = (char *)(page_alloc - 4);
+  char *brk = (char *)(page_alloc);
   int argc = 0, envc = 0;
   if (envp) for (; envp[envc]; ++envc) ;
   if (argv) for (; argv[argc]; ++argc) ;
