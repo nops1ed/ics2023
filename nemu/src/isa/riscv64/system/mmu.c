@@ -59,6 +59,7 @@ paddr_t isa_mmu_translate(vaddr_t vaddr, int len, int type) {
   printf("Now pa is %x\n", pa);
   return pa;
 #else
+  static int a = 0;
   paddr_t page_table_entry_addr = (cpu.csr[CSR_SATP].val << 12) + VA_VPN_2(vaddr) * 8;
   //printf("Pagetable is %x\n", page_table_entry_addr);
   PTE page_table_entry = paddr_read(page_table_entry_addr, 8);
@@ -75,6 +76,8 @@ paddr_t isa_mmu_translate(vaddr_t vaddr, int len, int type) {
   }
   paddr_t pa = PTE_PPN(leaf_page_table_entry) * 4096 + VA_OFFSET(vaddr);
   printf("Now pa is %x\n", pa);
+  a++;
+  if(a > 20) assert(0);
   //assert(pa == vaddr);
 
 
