@@ -66,7 +66,7 @@ paddr_t isa_mmu_translate(vaddr_t vaddr, int len, int type) {
   paddr_t page1_table_entry_addr = PTE2PA(page_table_entry) + PX(1, vaddr) * 8;
 
   PTE page1_table_entry = paddr_read(page1_table_entry_addr, 8);
-  paddr_t leaf_page_table_entry_addr = PTE_PPN(page1_table_entry) * 4096 + PX(0, vaddr) * 8;
+  paddr_t leaf_page_table_entry_addr = PTE2PA(page1_table_entry) + PX(0, vaddr) * 8;
 
   PTE leaf_page_table_entry = paddr_read(leaf_page_table_entry_addr, 8);
   if (type == 0){//读
@@ -74,7 +74,7 @@ paddr_t isa_mmu_translate(vaddr_t vaddr, int len, int type) {
   }else if (type == 1){//写
     paddr_write(leaf_page_table_entry_addr, 8, leaf_page_table_entry | PTE_D);
   }
-  paddr_t pa = PTE_PPN(leaf_page_table_entry) * 4096 + VA_OFFSET(vaddr);
+  paddr_t pa = PTE2PA(leaf_page_table_entry) + VA_OFFSET(vaddr);
   //printf("Now pa equals to %lx + %lx = %x\n",PTE_PPN(leaf_page_table_entry) * 4096 , VA_OFFSET(vaddr), pa);
   //a++;
   //if(a > 200) assert(0);
