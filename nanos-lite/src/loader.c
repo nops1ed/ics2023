@@ -53,7 +53,9 @@
 */
 static uintptr_t loader(PCB *pcb, const char *filename) {
   Elf_Ehdr ehdr;
+  printf("\033[33mOpening file...\033[0m\n");
   int fd = fs_open(filename, 0, 0);
+  printf("\033[33mFile opened\033[0m\n");
   fs_read(fd, &ehdr, sizeof(ehdr));  
 
   /* check magic number. */
