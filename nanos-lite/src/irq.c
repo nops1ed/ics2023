@@ -10,7 +10,7 @@ static Context* do_event(Event e, Context* c) {
       do_syscall(c);
       break;
     case EVENT_YIELD:
-      Log("Nano: Event yield emit\n");
+      //Log("Nano: Event yield emit\n");
       return schedule(c);
     default: panic("\033[31mUnhandled event ID = %d\033[0m\n", e.event);
   }
