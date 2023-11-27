@@ -93,8 +93,7 @@ void map(AddrSpace *as, void *va, void *pa, int prot) {
   pagetable_t pagetable = as->ptr;
   PTE *pte;
   for(int level = 2; level > 0; level--) {
-    //pte = &pagetable[PX(level, va)];
-    pte = pagetable + PX(level, va) * 8;
+    pte = &pagetable[PX(level, va)];
     if(*pte & PTE_V) {
       pagetable = (pagetable_t)PTE2PA(*pte);
     } 
@@ -106,7 +105,7 @@ void map(AddrSpace *as, void *va, void *pa, int prot) {
     //printf("\033[34mpagetable is %p and *pte is %p\033[0m\n", pagetable, *pte);
   }
   /* Fill PTE fields. */
-  pte = pagetable + PX(0, va) * 8;
+  pte = &pagetable[PX(0, va)];
   *pte = PA2PTE(pa) | PTE_V;
 
 
