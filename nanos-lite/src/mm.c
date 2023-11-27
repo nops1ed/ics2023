@@ -26,14 +26,10 @@ static void* pg_alloc(int n) {
     printf("\033[33mThe number of pages to be allocated is 0, \
             which may not meet your expectations.  \
             If there are any issues, please review your implementation again\033[0m\n");
-            /*
   size_t nr_pg_to_alloc = (size_t)(n / PGSIZE) + (size_t)(n % PGSIZE == 0);
   void *alloc_ptr = new_page(nr_pg_to_alloc);
   memset(alloc_ptr, 0, nr_pg_to_alloc * PGSIZE);
   return alloc_ptr;
-  */
-   void *p = new_page(n / PGSIZE);
-  return memset(p, 0, n);
 }
 #endif
 
