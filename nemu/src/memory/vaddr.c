@@ -17,12 +17,10 @@
 #include <memory/paddr.h>
 
 word_t vaddr_ifetch(vaddr_t addr, int len) {
-  /*
-  if(isa_mmu_check(addr, len, MEM_TYPE_IFETCH)) {
+  if(isa_mmu_check(addr, len, MEM_TYPE_IFETCH) == MMU_TRANSLATE) {
     //printf("\033[31mTraping into vaddr_ifetch\033[0m\n");
     return paddr_read(isa_mmu_translate(addr, len, MEM_TYPE_IFETCH), len);
   }
-  */
   return paddr_read(addr, len);
 }
 
@@ -32,7 +30,7 @@ word_t vaddr_read(vaddr_t addr, int len) {
   /* This performed better */
   printf("Memory Read : 0x%lx at pc: 0x%lx\n", addr, cpu.pc);
 #endif
-  if(isa_mmu_check(addr, len, MEM_TYPE_READ)) 
+  if(isa_mmu_check(addr, len, MEM_TYPE_READ) == MMU_TRANSLATE) 
     return paddr_read(isa_mmu_translate(addr, len, MEM_TYPE_READ), len);
   return paddr_read(addr, len);
 }
@@ -44,7 +42,7 @@ void vaddr_write(vaddr_t addr, int len, word_t data) {
   //Log("Memory Write: " FMT_PADDR "at pc: " FMT_WORD, addr, cpu.pc);
   //Log("Try to write  " FMT_WORD, data);
 #endif
-  if(isa_mmu_check(addr, len, MEM_TYPE_WRITE)) 
+  if(isa_mmu_check(addr, len, MEM_TYPE_WRITE) == MMU_TRANSLATE) 
     paddr_write(isa_mmu_translate(addr, len, MEM_TYPE_WRITE), len, data);
   else 
   paddr_write(addr, len, data);
