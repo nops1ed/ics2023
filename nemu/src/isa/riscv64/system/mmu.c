@@ -43,13 +43,14 @@ typedef uint64_t PTE;
 
 paddr_t isa_mmu_translate(vaddr_t vaddr, int len, int type) {
   //printf("\033[31mStarting translate\n");
-  paddr_t pagetable = (cpu.csr[CSR_SATP].val << 12) | (PX(2, vaddr) * 8);
+  paddr_t pagetable = (cpu.csr[CSR_SATP].val << 12);
   printf("Pagetable is %x\n", pagetable);
   PTE pte; 
   for(int level = 2; level > 0; level--) {
-    pte = paddr_read(pagetable, 8);
-    pagetable = PTE2PA(pte) | (PX(level - 1, vaddr) * 8);
+    pte = paddr_read(pagetable + PX(level, vaddr) * 8, 8);
+    pagetable = PTE2PA(pte);
   }
+  pte = paddr_read(pagetable + PX(0, vaddr) * 8, 8);
   uint64_t MODE_PTE = type == 0 ? PTE_A : PTE_D;
   paddr_write(pagetable, 8, pte | MODE_PTE);
   paddr_t pa = PTE2PA(pte) | VA_OFFSET(vaddr);
@@ -58,11 +59,11 @@ paddr_t isa_mmu_translate(vaddr_t vaddr, int len, int type) {
   paddr_t page_table_entry_addr = (cpu.csr[CSR_SATP].val << 12) + VA_VPN_2(vaddr) * 8;
   printf("Pagetable is %x\n", page_table_entry_addr);
   PTE page_table_entry = paddr_read(page_table_entry_addr, 8);
-
   paddr_t page1_table_entry_addr = PTE_PPN(page_table_entry) * 4096 + VA_VPN_1(vaddr) * 8;
+
   PTE page1_table_entry = paddr_read(page1_table_entry_addr, 8);
-  
   paddr_t leaf_page_table_entry_addr = PTE_PPN(page1_table_entry) * 4096 + VA_VPN_0(vaddr) * 8;
+
   PTE leaf_page_table_entry = paddr_read(leaf_page_table_entry_addr, 8);
   if (type == 0){//读
     paddr_write(leaf_page_table_entry_addr, 8, leaf_page_table_entry | PTE_A);
