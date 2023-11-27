@@ -30,8 +30,7 @@ static inline void set_satp(void *pdir) {
   printf("So the mode is %lx\n", mode);
   printf("and the xlen is %x\n", __riscv_xlen);
   printf("store data %p in satp \n", mode | ((uintptr_t)pdir >> 12));
-  uintptr_t x = mode | ((uintptr_t)pdir >> 12);
-  asm volatile("csrw satp, %0" : : "r"(x));
+  asm volatile("csrw satp, %0" : : "r"(mode | ((uintptr_t)pdir >> 12)));
 }
 
 static inline uintptr_t get_satp() {
