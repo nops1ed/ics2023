@@ -142,6 +142,7 @@ void context_uload(PCB *pcb, const char *filename, char *const argv[], char *con
   free(args);
   free(envs);
 
+  printf("\033[33mLoading program entry...\033[0m\n");
   uintptr_t entry = loader(pcb, filename);
   printf("loader finished\n");
   Area stack;
