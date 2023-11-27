@@ -30,7 +30,7 @@
 #define PTE_A 0x40
 #define PTE_D 0x80
 
-typedef vaddr_t PTE;
+typedef uint64_t PTE;
 #define PGSHIFT         12
 /* extract the three 9-bit page table indices from a virtual address. */
 #define PXMASK          0x1FF // 9 bits
