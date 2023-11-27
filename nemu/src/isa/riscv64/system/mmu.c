@@ -41,7 +41,7 @@ typedef uint64_t PTE;
 #define PA2PTE(pa) ((((vaddr_t)pa) >> 12) << 10)
 #define PTE2PA(pte) ((((vaddr_t)pte) >> 10) << 12)
 
-#define CONFIG_FFF 1
+#define CONFIG_FFF 0
 paddr_t isa_mmu_translate(vaddr_t vaddr, int len, int type) {
   //printf("\033[31mStarting translate\n");
 #ifdef CONFIG_FFF
