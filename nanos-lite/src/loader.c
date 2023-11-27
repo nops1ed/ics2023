@@ -131,6 +131,7 @@ static size_t ceil_4_bytes(size_t size){
 
 
 void context_uload(PCB *pcb, const char *filename, char *const argv[], char *const envp[]){
+  printf("hhhh\n");
   int envc = 0, argc = 0;
   AddrSpace *as = &pcb->as;
   protect(as);
