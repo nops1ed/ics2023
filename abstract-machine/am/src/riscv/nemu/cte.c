@@ -7,7 +7,9 @@ void __am_get_cur_as(Context *c);
 void __am_switch(Context *c);
 
 Context* __am_irq_handle(Context *c) {
+  printf("Before get cur as, pdir is %x\n", c->pdir);
   __am_get_cur_as(c);
+  printf("After get cur as, pdir is %x\n", c->pdir);
   if (user_handler) {
     Event ev = {0};
     /* All of the interrupts will be treated as MODE_MACHINE. */
