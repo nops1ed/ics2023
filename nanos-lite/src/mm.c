@@ -39,7 +39,6 @@ void free_page(void *p) {
 
 /* The brk() system call handler. */
 int mm_brk(uintptr_t brk) {
-  /*
 #define PG_MASK ~0xfff
   if (current->max_brk == 0)
   {
@@ -54,7 +53,6 @@ int mm_brk(uintptr_t brk) {
   }
 
   return 0;
-  */
   return 0;
 }
 
