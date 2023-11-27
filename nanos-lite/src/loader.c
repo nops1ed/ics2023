@@ -95,15 +95,75 @@ Context *context_kload(PCB* pcb, void(*func)(void *), void *args) {
   return kcxt;
 } 
 
+/*
 static size_t ceil_4_bytes(size_t size){
   if (size & 0x3)
     return (size & (~0x3)) + 0x4;
   return size;
 }
+*/
 
 void context_uload(PCB *pcb, const char *filename, char *const argv[], char *const envp[]) {
-  
+    /* Each process holds 32kb of stack space, which we think is sufficient for ics processes. */
+  AddrSpace *as = &pcb->as;
+  /* Mapping address space. */
+  //printf("\033[33mCreating kernel address space...\033[0m\n");
+  //protect(&pcb->as);
+  //printf("\033[33mKernel address space created\033[0m\n");
+  void *page_alloc = new_page(NR_PAGE) + NR_PAGE * PGSIZE;
 
+  /* Mapping user stack here. */
+  //printf("\033[33m\nMapping user stack...\033[0m\n");
+  //for(int i = NR_PAGE; i >= 0; i--) 
+    //map(as, as->area.end - i * PGSIZE, page_alloc - i * PGSIZE, 1);
+  //printf("\033[33mUser stack mapped\033[0m\n");
+
+  /* deploy user stack layout. */
+  char *brk = (char *)(page_alloc - 4);
+  int argc = 0, envc = 0;
+  if (envp) for (; envp[envc]; ++envc) ;
+  if (argv) for (; argv[argc]; ++argc) ;
+  char **args = (char **)malloc(sizeof(char*) * argc);
+  char **envs = (char **)malloc(sizeof(char*) * envc);
+
+  /* Copy String Area. */
+  for (int i = 0; i < argc; ++i) {
+    /* Note that it is neccessary to make memory *align*. */
+    brk -= ROUNDUP(strlen(argv[i]) + 1, sizeof(int));
+    args[i] = brk;
+    strcpy(brk, argv[i]);
+  }
+  for (int i = 0; i < envc; ++i) {
+    brk -= ROUNDUP(strlen(envp[i]) + 1, sizeof(int));
+    envs[i] = brk;
+    strcpy(brk, envp[i]);
+  }
+
+  /* Copy envp & argv area. */
+  intptr_t *ptr_brk = (intptr_t *)brk;
+  *(--ptr_brk) = 0;
+  ptr_brk -= envc;
+  for (int i = 0; i < envc; ++i)  ptr_brk[i] = (intptr_t)(envs[i]);
+  *(--ptr_brk) = 0;
+  ptr_brk = ptr_brk - argc;
+  for (int i = 0; i < argc; ++i)  ptr_brk[i] = (intptr_t)(args[i]);
+  *(--ptr_brk) = argc;
+
+  free(args);
+  free(envs);
+
+  printf("\033[33mLoading program entry...\033[0m\n");
+  uintptr_t entry = loader(pcb, filename);
+  printf("loader finished\n");
+  Area stack;
+  stack.start = &pcb->cp;
+  stack.end = &pcb->cp + STACK_SIZE;
+  Context *ucxt = ucontext(as, stack, (void *)entry);
+  //printf("safe here\n");
+  pcb->cp = ucxt;
+  ucxt->GPRx = (intptr_t)ptr_brk;
+  
+/*
    int envc = 0, argc = 0;
   AddrSpace *as = &pcb->as;
   //protect(as);
@@ -190,7 +250,7 @@ void context_uload(PCB *pcb, const char *filename, char *const argv[], char *con
 
   //似乎不需要这个了，但我还不想动
   context->GPRx = (intptr_t)(ptr_brk);
-
+*/
 
 }
 
