@@ -138,5 +138,6 @@ Context *ucontext(AddrSpace *as, Area kstack, void *entry) {
   kctx->pdir = as->ptr;
 
   kctx->mepc = (uintptr_t)entry;
+  printf("\033[033mUser context created\033[0m\n");
   return kctx;
 }
