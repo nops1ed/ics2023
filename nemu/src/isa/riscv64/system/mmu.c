@@ -56,7 +56,7 @@ paddr_t isa_mmu_translate(vaddr_t vaddr, int len, int type) {
   uint64_t MODE_PTE = type == 0 ? PTE_A : PTE_D;
   paddr_write(pagetable, 8, pte | MODE_PTE);
   paddr_t pa = PTE2PA(pte) + VA_OFFSET(vaddr);
-  printf("Now pa is %x\n", pa);
+  printf("Now pa equals to %lx plus %lx = %x\n",PTE2PA(pte), VA_OFFSET(vaddr), pa);
   return pa;
 #else
   static int a = 0;
