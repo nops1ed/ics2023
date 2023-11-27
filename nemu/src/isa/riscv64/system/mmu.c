@@ -41,18 +41,18 @@ typedef uint64_t PTE;
 #define PA2PTE(pa) ((((uint64_t)pa) >> 12) << 10)
 #define PTE2PA(pte) (((pte) >> 10) << 12)
 
-//#define CONFIG_FFF 1
+#define CONFIG_FFF 1
 paddr_t isa_mmu_translate(vaddr_t vaddr, int len, int type) {
   //printf("\033[31mStarting translate\n");
 #ifdef CONFIG_FFF
-  paddr_t pagetable = (cpu.csr[CSR_SATP].val << 12);
+  paddr_t pagetable = (cpu.csr[CSR_SATP].val << 12) + PX(2, vaddr);
   //printf("Pagetable is %x\n", pagetable);
   PTE pte; 
   for(int level = 2; level > 0; level--) {
-    pte = paddr_read(pagetable + (PX(level, vaddr) * 8), 8);
-    pagetable = PTE2PA(pte);
+    pte = paddr_read(pagetable, 8);
+    pagetable = PTE2PA(pte) + PX(level - 1, vaddr);
   }
-  pte = paddr_read(pagetable + (PX(0, vaddr) * 8), 8);
+  pte = paddr_read(pagetable, 8);
   uint64_t MODE_PTE = type == 0 ? PTE_A : PTE_D;
   paddr_write(pagetable, 8, pte | MODE_PTE);
   paddr_t pa = PTE2PA(pte) + VA_OFFSET(vaddr);
