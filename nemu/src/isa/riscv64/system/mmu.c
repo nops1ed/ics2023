@@ -31,23 +31,37 @@
 #define PTE_D 0x80
 
 typedef uint64_t PTE;
+#define PGSHIFT         12
+/* extract the three 9-bit page table indices from a virtual address. */
+#define PXMASK          0x1FF // 9 bits
+#define PXSHIFT(level)  (PGSHIFT+(9*(level)))
+#define PX(level, va) ((((uint64_t) (va)) >> PXSHIFT(level)) & PXMASK)
+
+// shift a physical address to the right place for a PTE.
+#define PA2PTE(pa) ((((uint64_t)pa) >> 12) << 10)
+#define PTE2PA(pte) (((pte) >> 10) << 12)
+
 
 paddr_t isa_mmu_translate(vaddr_t vaddr, int len, int type) {
   //printf("\033[31mStarting translate\n");
-  paddr_t page_table_entry_addr = (cpu.csr[CSR_SATP].val << 12) + VA_VPN_2(vaddr) * 8;
+  paddr_t pagetable = (cpu.csr[CSR_SATP].val << 12);
+  PTE pte; 
+  for(int level = 2; level > 0; level--) {
+    pte = paddr_read(pagetable + PX(level, vaddr), 8);
+    pagetable = paddr_read(PTE2PA(pte), 8);
+  }
+  uint64_t MODE_PTE = type == 0 ? PTE_A : PTE_D;
+  paddr_write(pagetable, 8, pte | MODE_PTE);
+  paddr_t pa = PTE2PA(pte) | (vaddr & 0xFFF);
+  return pa;
+  /*
   PTE page_table_entry = paddr_read(page_table_entry_addr, 8);
-  // if ((page_table_entry & PTE_V) == 0){
-  //   Log("page_table_entry not valid, vaddr: %#x", vaddr);
-  // }
-  //paddr_t page1_table_entry_addr = PTE_PPN(page_table_entry) * 4096 + VA_VPN_1(vaddr) * 8;
-  //PTE page1_table_entry = paddr_read(page1_table_entry_addr, 8);
-  
-  paddr_t leaf_page_table_entry_addr = PTE_PPN(page_table_entry) * 4096 + VA_VPN_0(vaddr) * 8;
-  PTE leaf_page_table_entry = paddr_read(leaf_page_table_entry_addr, 8);
-  // if ((leaf_page_table_entry & PTE_V) == 0){
-  //   Log("leaf_page_table_entry not valid, vaddr: %#x, pte_entry: %#x", vaddr, leaf_page_table_entry_addr);
-  // }
 
+  paddr_t page1_table_entry_addr = PTE_PPN(page_table_entry) * 4096 + VA_VPN_1(vaddr) * 8;
+  PTE page1_table_entry = paddr_read(page1_table_entry_addr, 8);
+  
+  paddr_t leaf_page_table_entry_addr = PTE_PPN(page1_table_entry) * 4096 + VA_VPN_0(vaddr) * 8;
+  PTE leaf_page_table_entry = paddr_read(leaf_page_table_entry_addr, 8);
   if (type == 0){//读
     paddr_write(leaf_page_table_entry_addr, 8, leaf_page_table_entry | PTE_A);
   }else if (type == 1){//写
@@ -55,6 +69,8 @@ paddr_t isa_mmu_translate(vaddr_t vaddr, int len, int type) {
   }
   paddr_t pa = PTE_PPN(leaf_page_table_entry) * 4096 + VA_OFFSET(vaddr);
   //assert(pa == vaddr);
+  */
 
   return pa;
 }
+
