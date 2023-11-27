@@ -57,7 +57,6 @@ paddr_t isa_mmu_translate(vaddr_t vaddr, int len, int type) {
   return pa;
   */
 
-  /*
   paddr_t page_table_entry_addr = (cpu.csr[CSR_SATP].val << 12) + VA_VPN_2(vaddr) * 8;
   PTE page_table_entry = paddr_read(page_table_entry_addr, 8);
 
@@ -73,7 +72,7 @@ paddr_t isa_mmu_translate(vaddr_t vaddr, int len, int type) {
   }
   paddr_t pa = PTE_PPN(leaf_page_table_entry) * 4096 + VA_OFFSET(vaddr);
   //assert(pa == vaddr);
-  */
+  /*
   paddr_t page_table_entry_addr = (cpu.csr[CSR_SATP].val << 12) ;
   PTE page_table_entry = paddr_read(page_table_entry_addr + VA_VPN_2(vaddr) * 8, 8);
 
@@ -89,6 +88,7 @@ paddr_t isa_mmu_translate(vaddr_t vaddr, int len, int type) {
   }
   paddr_t pa = PTE_PPN(leaf_page_table_entry) * 4096 + VA_OFFSET(vaddr);
   //assert(pa == vaddr);
+  */
   return pa;
 }
 
