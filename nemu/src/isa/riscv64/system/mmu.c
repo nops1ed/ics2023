@@ -49,10 +49,10 @@ paddr_t isa_mmu_translate(vaddr_t vaddr, int len, int type) {
   //printf("Pagetable is %x\n", pagetable);
   PTE pte; 
   for(int level = 2; level > 0; level--) {
-    pte = paddr_read(pagetable + PX(level, vaddr) * 8, 8);
+    pte = paddr_read(pagetable + (PX(level, vaddr) * 8), 8);
     pagetable = PTE2PA(pte);
   }
-  pte = paddr_read(pagetable + PX(0, vaddr) * 8, 8);
+  pte = paddr_read(pagetable + (PX(0, vaddr) * 8), 8);
   uint64_t MODE_PTE = type == 0 ? PTE_A : PTE_D;
   paddr_write(pagetable, 8, pte | MODE_PTE);
   paddr_t pa = PTE2PA(pte) + VA_OFFSET(vaddr);
