@@ -44,7 +44,7 @@ typedef uint64_t PTE;
 
 paddr_t isa_mmu_translate(vaddr_t vaddr, int len, int type) {
   //printf("\033[31mStarting translate\n");
-  paddr_t pagetable = (cpu.csr[CSR_SATP].val << 12) + PX(3, vaddr);
+  paddr_t pagetable = (cpu.csr[CSR_SATP].val << 12) + PX(2, vaddr);
   PTE pte; 
   for(int level = 2; level > 0; level--) {
     pte = paddr_read(pagetable, 8);
