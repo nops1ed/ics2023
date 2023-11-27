@@ -79,7 +79,7 @@ int fs_open(const char *pathname, int flags, int mode) {
   */
   
   /* just compare the filename here. */
-  //printf("\033[31mTraping \033[0m\n");
+  printf("\033[31mTraping \033[0m\n");
   for(i = 0; i < NR_FILE; i++) {
     if(!strcmp(pathname, file_table[i].name)) {
       file_table[i].open_offset = 0;
