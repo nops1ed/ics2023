@@ -39,12 +39,7 @@ void free_page(void *p) {
 
 /* The brk() system call handler. */
 int mm_brk(uintptr_t brk) {
-    // assert(brk >= 0x)
-  // f (brk < (uintptr_t)USR_SPACE.start || (brk > (uintptr_t)USR_SPACE.end - USR_STACK_PG_NUM * PGSIZE))
-  // {
-  //   printf("invalid!\n");
-  //   return 0;i
-  // }
+  /*
 #define PG_MASK ~0xfff
   if (current->max_brk == 0)
   {
@@ -55,13 +50,11 @@ int mm_brk(uintptr_t brk) {
 
   for (; current->max_brk < brk; current->max_brk += PGSIZE)
   {
-    // printf("malloc new space for virtual %p, brk is %p\n", (void *)current->max_brk, (void *)brk);
-    // printf("malloc new space %p for virtual %p\n", pg_p, (void *)i);
-    // map(&current->as, (void *)current->max_brk, pg_alloc(PGSIZE), PGSIZE);
     map(&current->as, (void *)current->max_brk, pg_alloc(PGSIZE), 1);
   }
 
-  // printf("finished malloc\n");
+  return 0;
+  */
   return 0;
 }
 
