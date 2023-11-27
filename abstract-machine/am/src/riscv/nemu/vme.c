@@ -75,6 +75,7 @@ void __am_switch(Context *c) {
   if (vme_enable && c->pdir != NULL) {
     set_satp(c->pdir);
   }
+  printf("Finished\n");
 }
 
 /* The risc-v Sv39 scheme has three levels of page-table
