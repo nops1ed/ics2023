@@ -43,6 +43,7 @@ typedef uint64_t PTE;
 
 paddr_t isa_mmu_translate(vaddr_t vaddr, int len, int type) {
   //printf("\033[31mStarting translate\n");
+  /*
   paddr_t pagetable = (cpu.csr[CSR_SATP].val << 12);
   //printf("Pagetable is %x\n", pagetable);
   PTE pte; 
@@ -56,7 +57,7 @@ paddr_t isa_mmu_translate(vaddr_t vaddr, int len, int type) {
   paddr_t pa = PTE2PA(pte) + VA_OFFSET(vaddr);
   printf("Now pa is %x\n", pa);
   return pa;
-  /*
+  */
   paddr_t page_table_entry_addr = (cpu.csr[CSR_SATP].val << 12) + VA_VPN_2(vaddr) * 8;
   printf("Pagetable is %x\n", page_table_entry_addr);
   PTE page_table_entry = paddr_read(page_table_entry_addr, 8);
@@ -72,8 +73,8 @@ paddr_t isa_mmu_translate(vaddr_t vaddr, int len, int type) {
     paddr_write(leaf_page_table_entry_addr, 8, leaf_page_table_entry | PTE_D);
   }
   paddr_t pa = PTE_PPN(leaf_page_table_entry) * 4096 + VA_OFFSET(vaddr);
+  printf("Now pa is %x\n", pa);
   //assert(pa == vaddr);
-  */
 
 
   /*
