@@ -52,7 +52,7 @@ paddr_t isa_mmu_translate(vaddr_t vaddr, int len, int type) {
   }
   uint64_t MODE_PTE = type == 0 ? PTE_A : PTE_D;
   paddr_write(pagetable, 8, pte | MODE_PTE);
-  paddr_t pa = PTE2PA(pte) + VA_OFFSET(vaddr);
+  paddr_t pa = PTE2PA(pte) | VA_OFFSET(vaddr);
   return pa;
   /*
   paddr_t page_table_entry_addr = (cpu.csr[CSR_SATP].val << 12) + VA_VPN_2(vaddr) * 8;
