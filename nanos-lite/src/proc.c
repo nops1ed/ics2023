@@ -29,11 +29,11 @@ void hello_fun(void *arg) {
 
 void init_proc() {
   printf("\033[31mtraping here...\033[0m\n");
-  context_kload(&pcb[0], hello_fun, "Message from proc #1");
+  //context_kload(&pcb[0], hello_fun, "Message from proc #1");
   printf("\033[31mpcb 0 finished ...\033[0m\n");
   //context_uload(&pcb[0], "/bin/hello"); 
   //context_uload(&pcb[1], "/bin/pal", args_pal, NULL); 
-  context_uload(&pcb[1], "/bin/pal", NULL, NULL); 
+  context_uload(&pcb[0], "/bin/dummy", NULL, NULL); 
   printf("\033[31mpcb 1 finished ...\033[0m\n");
   //context_kload(&pcb[1], hello_fun, "proc1");
   switch_boot_pcb();
@@ -44,9 +44,9 @@ void init_proc() {
 }
 
 Context* schedule(Context *prev) {
-  //printf("schedule: Traping here...\n");
+  printf("schedule: Traping here...\n");
   current->cp = prev;
   current = (current == &pcb[0] ? &pcb[1] : &pcb[0]);
-  //printf("Finished...\n");
+  printf("Finished...\n");
   return current->cp;
 }
