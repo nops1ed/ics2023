@@ -35,11 +35,11 @@ typedef uint64_t PTE;
 /* extract the three 9-bit page table indices from a virtual address. */
 #define PXMASK          0x1FF // 9 bits
 #define PXSHIFT(level)  (PGSHIFT+(9*(level)))
-#define PX(level, va) ((((vaddr_t) (va)) >> PXSHIFT(level)) & PXMASK)
+#define PX(level, va) ((((uint64_t) (va)) >> PXSHIFT(level)) & PXMASK)
 
 // shift a physical address to the right place for a PTE.
-#define PA2PTE(pa) ((((vaddr_t)pa) >> 12) << 10)
-#define PTE2PA(pte) ((((vaddr_t)pte) >> 10))
+#define PA2PTE(pa) ((((uint64_t)pa) >> 12) << 10)
+#define PTE2PA(pte) (((pte) >> 10) << 12)
 
 #define CONFIG_FFF 1
 paddr_t isa_mmu_translate(vaddr_t vaddr, int len, int type) {
