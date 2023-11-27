@@ -95,9 +95,10 @@ Context *context_kload(PCB* pcb, void(*func)(void *), void *args) {
 
 void context_uload(PCB *pcb, const char *filename, char *const argv[], char *const envp[]) {
   /* Each process holds 32kb of stack space, which we think is sufficient for ics processes. */
-  void *page_alloc = new_page(NR_PAGE) + NR_PAGE * PGSIZE;
   AddrSpace *as = &pcb->as;
-  //protect(as);
+  /* Mapping address space. */
+  protect(as);
+  void *page_alloc = new_page(NR_PAGE) + NR_PAGE * PGSIZE;
 
   /* Mapping user stack here. */
   //for(int i = NR_PAGE; i >= 0; i--) 
