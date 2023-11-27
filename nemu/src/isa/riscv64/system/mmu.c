@@ -44,11 +44,11 @@ typedef vaddr_t PTE;
 
 paddr_t isa_mmu_translate(vaddr_t vaddr, int len, int type) {
   //printf("\033[31mStarting translate\n");
-  paddr_t pagetable = (cpu.csr[CSR_SATP].val << 12) + PX(2, vaddr);
+  paddr_t pagetable = (cpu.csr[CSR_SATP].val << 12) + PX(2, vaddr) * 8;
   PTE pte; 
   for(int level = 2; level > 0; level--) {
     pte = paddr_read(pagetable, 8);
-    pagetable = PTE2PA(pte) + PX(level - 1, vaddr);
+    pagetable = PTE2PA(pte) + PX(level - 1, vaddr) * 8;
   }
   uint64_t MODE_PTE = type == 0 ? PTE_A : PTE_D;
   paddr_write(pagetable, 8, pte | MODE_PTE);
