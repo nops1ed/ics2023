@@ -17,9 +17,10 @@
 #include <memory/paddr.h>
 
 word_t vaddr_ifetch(vaddr_t addr, int len) {
-  printf("\033[31mTraping into vaddr_ifetch\033[0m\n");
-  if(isa_mmu_check(addr, len, MEM_TYPE_IFETCH)) 
+  if(isa_mmu_check(addr, len, MEM_TYPE_IFETCH)) {
+    printf("\033[31mTraping into vaddr_ifetch\033[0m\n");
     return paddr_read(isa_mmu_translate(addr, len, MEM_TYPE_IFETCH), len);
+  }
   return paddr_read(addr, len);
 }
 
