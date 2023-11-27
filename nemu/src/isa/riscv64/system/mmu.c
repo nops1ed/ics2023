@@ -39,7 +39,7 @@ typedef uint64_t PTE;
 
 // shift a physical address to the right place for a PTE.
 #define PA2PTE(pa) ((((vaddr_t)pa) >> 12) << 10)
-#define PTE2PA(pte) (((pte) >> 10) << 12)
+#define PTE2PA(pte) ((((vaddr_t)pte) >> 10) << 12)
 
 
 paddr_t isa_mmu_translate(vaddr_t vaddr, int len, int type) {
@@ -52,7 +52,7 @@ paddr_t isa_mmu_translate(vaddr_t vaddr, int len, int type) {
   }
   uint64_t MODE_PTE = type == 0 ? PTE_A : PTE_D;
   paddr_write(pagetable, 8, pte | MODE_PTE);
-  paddr_t pa = PTE2PA(pte) | (vaddr & 0xFFF);
+  paddr_t pa = PTE2PA(pte) + (vaddr & 0xFFF);
   return pa;
 
   /*
