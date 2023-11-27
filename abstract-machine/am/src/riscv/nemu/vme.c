@@ -90,11 +90,11 @@ void __am_switch(Context *c) {
 */
 void map(AddrSpace *as, void *va, void *pa, int prot) {
   /* Perform a page table walk. */
-  /*
   pagetable_t pagetable = as->ptr;
   PTE *pte;
   for(int level = 2; level > 0; level--) {
-    pte = &pagetable[PX(level, va)];
+    //pte = &pagetable[PX(level, va)];
+    pte = pagetable + PX(level, va) * 8;
     if(*pte & PTE_V) {
       pagetable = (pagetable_t)PTE2PA(*pte);
     } 
@@ -105,29 +105,10 @@ void map(AddrSpace *as, void *va, void *pa, int prot) {
     }
     //printf("\033[34mpagetable is %p and *pte is %p\033[0m\n", pagetable, *pte);
   }
-  */
   /* Fill PTE fields. */
-  /*
-  pte = &pagetable[PX(0, va)];
+  pte = pagetable + PX(0, va) * 8;
   *pte = PA2PTE(pa) | PTE_V;
-  */
 
-
-  #define PGT1_ID(val) (val >> 22)
-#define PGT2_ID(val) ((val & 0x3fffff) >> 12)
-  uint64_t pa_raw = (uint64_t)pa;
-  uint64_t va_raw = (uint64_t)va;
-  uint64_t **pt_1 = (uint64_t **)as->ptr;
-  if (pt_1[PGT1_ID(va_raw)] == NULL)
-    pt_1[PGT1_ID(va_raw)] = (uint64_t *)pgalloc_usr(PGSIZE);
-
-  uint64_t *pt_2 = pt_1[PGT1_ID(va_raw)];
-  if (pt_2[PGT2_ID(va_raw)] == 0)
-    pt_2[PGT2_ID(va_raw)] = (pa_raw & (~0xfff)) | prot;
-  else
-  {
-    assert(0);
-  }
 
   //printf("Finally store %p to %p\n\n", *pte, pte);
   //printf("Mapping %p to %p successfully\n", pa, va);
