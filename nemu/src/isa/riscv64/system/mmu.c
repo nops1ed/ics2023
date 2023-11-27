@@ -39,10 +39,10 @@ paddr_t isa_mmu_translate(vaddr_t vaddr, int len, int type) {
   // if ((page_table_entry & PTE_V) == 0){
   //   Log("page_table_entry not valid, vaddr: %#x", vaddr);
   // }
-  paddr_t page1_table_entry_addr = PTE_PPN(page_table_entry) * 4096 + VA_VPN_1(vaddr) * 8;
-  PTE page1_table_entry = paddr_read(page1_table_entry_addr, 8);
+  //paddr_t page1_table_entry_addr = PTE_PPN(page_table_entry) * 4096 + VA_VPN_1(vaddr) * 8;
+  //PTE page1_table_entry = paddr_read(page1_table_entry_addr, 8);
   
-  paddr_t leaf_page_table_entry_addr = PTE_PPN(page1_table_entry) * 4096 + VA_VPN_0(vaddr) * 8;
+  paddr_t leaf_page_table_entry_addr = PTE_PPN(page_table_entry) * 4096 + VA_VPN_0(vaddr) * 8;
   PTE leaf_page_table_entry = paddr_read(leaf_page_table_entry_addr, 8);
   // if ((leaf_page_table_entry & PTE_V) == 0){
   //   Log("leaf_page_table_entry not valid, vaddr: %#x, pte_entry: %#x", vaddr, leaf_page_table_entry_addr);
