@@ -41,7 +41,7 @@ typedef uint64_t PTE;
 #define PA2PTE(pa) ((((vaddr_t)pa) >> 12) << 10)
 #define PTE2PA(pte) ((((vaddr_t)pte) >> 10) << 12)
 
-#define CONFIG_FFF 1
+//#define CONFIG_FFF 1
 paddr_t isa_mmu_translate(vaddr_t vaddr, int len, int type) {
   //printf("\033[31mStarting translate\n");
 #ifdef CONFIG_FFF
@@ -77,7 +77,7 @@ paddr_t isa_mmu_translate(vaddr_t vaddr, int len, int type) {
   paddr_t pa = PTE_PPN(leaf_page_table_entry) * 4096 + VA_OFFSET(vaddr);
   printf("Now pa is %x\n", pa);
   a++;
-  if(a > 20) assert(0);
+  if(a > 200) assert(0);
   //assert(pa == vaddr);
 
 
