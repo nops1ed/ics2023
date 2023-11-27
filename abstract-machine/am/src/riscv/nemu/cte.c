@@ -7,7 +7,7 @@ void __am_get_cur_as(Context *c);
 void __am_switch(Context *c);
 
 Context* __am_irq_handle(Context *c) {
-  //__am_get_cur_as(c);
+  __am_get_cur_as(c);
   if (user_handler) {
     Event ev = {0};
     /* All of the interrupts will be treated as MODE_MACHINE. */
@@ -34,7 +34,7 @@ Context* __am_irq_handle(Context *c) {
       assert(0);
     }
   }
-  //__am_switch(c);
+  __am_switch(c);
   return c;
 }
 
@@ -52,6 +52,7 @@ bool cte_init(Context*(*handler)(Event, Context*)) {
 
 Context *kcontext(Area kstack, void (*entry)(void *), void *arg) {
   Context *kctx = (Context *)(kstack.end - sizeof(Context)); 
+  memset(kctx, 0, sizeof(kctx));
   kctx->gpr[10] = (uintptr_t)arg;
   kctx->mepc = (uintptr_t)entry;
   return kctx;
