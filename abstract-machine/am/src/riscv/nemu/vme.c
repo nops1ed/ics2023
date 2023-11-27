@@ -72,8 +72,8 @@ void __am_get_cur_as(Context *c) {
 }
 
 void __am_switch(Context *c) {
-  printf("hhhhhhhhhhhhhh\n");
   if (vme_enable && c->pdir != NULL) {
+    printf("Traping set satp\n");
     set_satp(c->pdir);
   }
 }
