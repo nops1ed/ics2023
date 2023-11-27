@@ -101,10 +101,10 @@ void map(AddrSpace *as, void *va, void *pa, int prot) {
       memset(pagetable, 0, PGSIZE);
       *pte = PA2PTE(pagetable) | PTE_V;
     }
-    printf("\033[34mpagetable is %p and *pte is %p\033[0m\n", pagetable, *pte);
+    //printf("\033[34mpagetable is %p and *pte is %p\033[0m\n", pagetable, *pte);
   }
   pte = &pagetable[PX(0, va)];
-  *pte = PA2PTE(pa) | PTE_V;
+  //*pte = PA2PTE(pa) | PTE_V;
   //printf("Finally store %p to %p\n\n", *pte, pte);
   //printf("Mapping %p to %p successfully\n", pa, va);
   /*
