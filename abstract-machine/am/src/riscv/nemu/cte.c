@@ -24,7 +24,7 @@ Context* __am_irq_handle(Context *c) {
         default:
           ev.event = EVENT_ERROR;
       }
-      //c->mepc += 4;
+      c->mepc += 4;
     }
     else {
       printf("\033[33mUser/Supervisor mode is not supported\033[0m\n");
@@ -36,6 +36,7 @@ Context* __am_irq_handle(Context *c) {
       assert(0);
     }
   }
+  printf("before switch, pdir is %x\n", c->pdir);
   printf("Gonna am switch\n");
   __am_switch(c);
   return c;
