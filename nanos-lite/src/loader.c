@@ -189,8 +189,9 @@ void context_uload(PCB *pcb, const char *filename, char *const argv[], char *con
   context->gpr[2]  = (uintptr_t)ptr_brk - (uintptr_t)alloced_page + (uintptr_t)as->area.end;
 
   //似乎不需要这个了，但我还不想动
-  context->GPRx = (uintptr_t)ptr_brk - (uintptr_t)alloced_page + (uintptr_t)as->area.end + 4;
-  //context->GPRx = (intptr_t)(ptr_brk);
+  context->GPRx = (intptr_t)(ptr_brk);
+
+
 }
 
 /*
