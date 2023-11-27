@@ -10,7 +10,7 @@ Context* __am_irq_handle(Context *c) {
   //__am_get_cur_as(c);
   if (user_handler) {
     Event ev = {0};
-    /* All of the irqs will be treated as MODE_MACHINE. */
+    /* All of the interrupts will be treated as MODE_MACHINE. */
     if(c->mcause == MODE_M) {
       switch(c->GPR1) {
         case -1:
@@ -25,12 +25,12 @@ Context* __am_irq_handle(Context *c) {
       c->mepc += 4;
     }
     else {
-      printf("User/Supervisor mode is not supported\n");
+      printf("\033[33mUser/Supervisor mode is not supported\033[0m\n");
       assert(0);
     }
     c = user_handler(ev, c);
     if(c == NULL) {
-      printf("Error occured when execute user handler.\n");
+      printf("\033[31mFatal Error occured when execute user handler.\033[0m\n");
       assert(0);
     }
   }
