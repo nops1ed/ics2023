@@ -50,6 +50,7 @@ paddr_t isa_mmu_translate(vaddr_t vaddr, int len, int type) {
   PTE pte; 
   for(int level = 2; level > 0; level--) {
     pte = paddr_read(pagetable, 8);
+    pagetable = 0;
     pagetable = PTE2PA(pte) + PX(level - 1, vaddr);
   }
   pte = paddr_read(pagetable, 8);
