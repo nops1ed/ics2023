@@ -75,7 +75,7 @@ paddr_t isa_mmu_translate(vaddr_t vaddr, int len, int type) {
     paddr_write(leaf_page_table_entry_addr, 8, leaf_page_table_entry | PTE_D);
   }
   paddr_t pa = PTE_PPN(leaf_page_table_entry) * 4096 + VA_OFFSET(vaddr);
-  printf("Now pa is %x\n", pa);
+  printf("Now pa equals to %lx + %lx = %x\n",PTE_PPN(leaf_page_table_entry) * 4096 , VA_OFFSET(vaddr), pa);
   a++;
   if(a > 200) assert(0);
   //assert(pa == vaddr);
