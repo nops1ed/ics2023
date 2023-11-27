@@ -25,6 +25,7 @@ static Area segments[] = {      // Kernel memory mappings
 typedef uint64_t *pagetable_t; // 512 PTEs
 
 static inline void set_satp(void *pdir) {
+  printf("Now pdir is %x\n", pdir);
   uintptr_t mode = 1ul << (__riscv_xlen - 1);
   asm volatile("csrw satp, %0" : : "r"(mode | ((uintptr_t)pdir >> 12)));
 }
@@ -73,7 +74,6 @@ void __am_get_cur_as(Context *c) {
 
 void __am_switch(Context *c) {
   if (vme_enable && c->pdir != NULL) {
-    printf("Traping set satp\n");
     set_satp(c->pdir);
   }
 }
