@@ -66,15 +66,15 @@ static uintptr_t loader(PCB *pcb, const char *filename) {
   fs_read(fd, phdr, sizeof(Elf_Phdr) * ehdr.e_phnum);
   for (int i = 0; i < ehdr.e_phnum; i++) {
     if (phdr[i].p_type == PT_LOAD) {
-      /*
       void *paddr = alloc_section_space(&pcb->as, phdr[i].p_vaddr, phdr[i].p_memsz);
       fs_lseek(fd, phdr[i].p_offset, SEEK_SET);
       fs_read(fd, (void *)((phdr[i].p_vaddr & 0xFFF) + paddr), phdr[i].p_memsz);
       memset((void *)((phdr[i].p_vaddr & 0xFFF) + phdr[i].p_filesz + paddr), 0, phdr[i].p_memsz - phdr[i].p_filesz);
-      */
+      /*
       fs_lseek(fd, phdr[i].p_offset, SEEK_SET);
       fs_read(fd, (void *)(phdr[i].p_vaddr), phdr[i].p_memsz);
       memset((void *)(phdr[i].p_vaddr + phdr[i].p_filesz), 0, phdr[i].p_memsz - phdr[i].p_filesz);
+      */
     }
   }
   return ehdr.e_entry;
@@ -97,12 +97,12 @@ void context_uload(PCB *pcb, const char *filename, char *const argv[], char *con
   /* Each process holds 32kb of stack space, which we think is sufficient for ics processes. */
   AddrSpace *as = &pcb->as;
   /* Mapping address space. */
-  //protect(as);
+  protect(as);
   void *page_alloc = new_page(NR_PAGE) + NR_PAGE * PGSIZE;
 
   /* Mapping user stack here. */
-  //for(int i = NR_PAGE; i >= 0; i--) 
-  //  map(as, as->area.end - i * PGSIZE, page_alloc - i * PGSIZE, 1);
+  for(int i = NR_PAGE; i >= 0; i--) 
+    map(as, as->area.end - i * PGSIZE, page_alloc - i * PGSIZE, 1);
 
   /* deploy user stack layout. */
   char *brk = (char *)(page_alloc - 4);
