@@ -93,6 +93,7 @@ static void sys_execve(Context *c) {
 }
 
 static void sys_exit(Context *c) {
+  halt(0);
 #ifdef CONFIG_STRACE
   fs_curfilename();
   printf("sys_exit(0) = 0\n");
