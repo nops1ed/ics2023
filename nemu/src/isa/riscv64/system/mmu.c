@@ -50,6 +50,7 @@ paddr_t isa_mmu_translate(vaddr_t vaddr, int len, int type) {
     pte = paddr_read(pagetable, 8);
     pagetable = PTE2PA(pte) + PX(level - 1, vaddr) * 8;
   }
+  printf("sfae here.\n");
   /*
   uint64_t MODE_PTE = type == 0 ? PTE_A : PTE_D;
   paddr_write(pagetable, 8, pte | MODE_PTE);
