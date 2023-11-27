@@ -1,228 +1,191 @@
 #include <proc.h>
 #include <elf.h>
-#include <klib.h>
 #include <fs.h>
+#include <memory.h>
+
+#if defined(__ISA_AM_NATIVE__)
+# define EXPECT_TYPE EM_X86_64
+#elif defined(__ISA_X86__)
+# define EXPECT_TYPE EM_X86_64
+#elif defined(__riscv)
+# define EXPECT_TYPE EM_RISCV
+#elif defined(__ISA_MIPS32__)
+# define EXPECT_TYPE EM_MIPS
+#elif defined(__ISA_LOONGARCH32R__)
+# define EXPECT_TYPE EM_NONE
+#elif
+# error Unsupported ISA
+#endif
 
 #ifdef __LP64__
-#define Elf_Ehdr Elf64_Ehdr
-#define Elf_Phdr Elf64_Phdr
+# define Elf_Ehdr Elf64_Ehdr
+# define Elf_Phdr Elf64_Phdr
+# define Elf_Off  Elf64_Off
+# define Elf_Addr Elf64_Addr
 #else
-#define Elf_Ehdr Elf32_Ehdr
-#define Elf_Phdr Elf32_Phdr
+# define Elf_Ehdr Elf32_Ehdr
+# define Elf_Phdr Elf32_Phdr
+# define Elf_Off  Elf32_Off
+# define Elf_Addr Elf32_Addr
 #endif
 
-#define min(x, y) ((x < y) ? x : y)
+#define NR_PAGE 8
 
-extern uint8_t NR_PROC;
-// 从ramdisk中`offset`偏移处的`len`字节读入到`buf`中
-// size_t ramdisk_read(void *buf, size_t offset, size_t len);
+ __attribute__ ((__used__)) 
+ static void * alloc_section_space(AddrSpace *as, uintptr_t vaddr, size_t p_memsz){
+  //size_t page_n = p_memsz % PAGESIZE == 0 ? p_memsz / 4096 : (p_memsz / 4096 + 1);
+  size_t page_n = ((vaddr + p_memsz - 1) >> 12) - (vaddr >> 12) + 1;
+  void *page_start = new_page(page_n);
+  
+  for (int i = 0; i < page_n; ++i)
+    map(as, (void *)((vaddr & ~0xfff) + i * PGSIZE), (void *)(page_start + i * PGSIZE), 1);
 
-// 把`buf`中的`len`字节写入到ramdisk中`offset`偏移处
-// size_t ramdisk_write(const void *buf, size_t offset, size_t len);
-
-// 返回ramdisk的大小, 单位为字节
-// size_t get_ramdisk_size();
-#define PG_MASK (~0xfff)
-#define ISALIGN(vaddr) ((vaddr) == ((vaddr)&PG_MASK))
-#define OFFSET(vaddr) ((vaddr) & (~PG_MASK))
-#define NEXT_PAGE(vaddr) ((ISALIGN(vaddr)) ? (vaddr) : ((vaddr)&PG_MASK) + PGSIZE)
-static uintptr_t loader(PCB *pcb, const char *filename)
-{
-  Elf_Ehdr ehdr;
-
-  // ramdisk_read(&ehdr, 0, sizeof(ehdr));
-  int fd = fs_open(filename, 0, 0);
-  assert(fd != -1);
-
-  fs_read(fd, &ehdr, sizeof(ehdr));
-
-  char riscv32_magic_num[] = {0x7f, 0x45, 0x4c, 0x46, 0x01, 0x01, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
-  // printf("magic number is %s\n", (char *)(ehdr.e_ident));
-  assert(strcmp((char *)(ehdr.e_ident), riscv32_magic_num) == 0);
-
-  uint32_t entry = ehdr.e_entry;
-  uint32_t ph_offset = ehdr.e_phoff;
-  uint32_t ph_num = ehdr.e_phnum;
-
-  Elf_Phdr phdr;
-  for (int i = 0; i < ph_num; ++i)
-  {
-    // ramdisk_read(&phdr, ph_offset + i * sizeof(phdr), sizeof(phdr));
-    fs_lseek(fd, ph_offset + i * sizeof(phdr), SEEK_SET);
-    fs_read(fd, &phdr, sizeof(phdr));
-    if (phdr.p_type != PT_LOAD)
-      continue;
-
-    // printf("load program header %d", i);
-
-    uint32_t offset = phdr.p_offset;
-    uint32_t file_size = phdr.p_filesz;
-    uint32_t p_vaddr = phdr.p_vaddr;
-    uint32_t mem_size = phdr.p_memsz;
-
-    printf("load program from [%p, %p] to [%p, %p]\n", offset, file_size, p_vaddr, mem_size);
-#ifdef USR_SPACE_ENABLE
-    int left_size = file_size;
-    fs_lseek(fd, offset, SEEK_SET);
-    // printf("vaddr is %p\n", p_vaddr);
-    if (!ISALIGN(p_vaddr))
-    {
-      void *pg_p = new_page(1);
-      int read_len = min(PGSIZE - OFFSET(p_vaddr), left_size);
-      left_size -= read_len;
-      assert(fs_read(fd, pg_p + OFFSET(p_vaddr), read_len) >= 0);
-      map(&pcb->as, (void *)p_vaddr, pg_p, PTE_R | PTE_W | PTE_X);
-      p_vaddr += read_len;
-    }
-
-    for (; p_vaddr < phdr.p_vaddr + file_size; p_vaddr += PGSIZE)
-    {
-      assert(ISALIGN(p_vaddr));
-      void *pg_p = new_page(1);
-      memset(pg_p, 0, PGSIZE);
-      // int len = min(PGSIZE, file_size - fs_lseek(fd, 0, SEEK_CUR));
-      int read_len = min(PGSIZE, left_size);
-      left_size -= read_len;
-      assert(fs_read(fd, pg_p, read_len) >= 0);
-      map(&pcb->as, (void *)p_vaddr, pg_p, PTE_R | PTE_W | PTE_X);
-    }
-    // printf("p_vaddr is %p\n", (void *)p_vaddr);
-    p_vaddr = NEXT_PAGE(p_vaddr);
-    printf("p_vaddr is %p next page, end of uninitialized space is %p\n", (void *)p_vaddr, (void *)(phdr.p_vaddr + mem_size));
-    for (; p_vaddr < phdr.p_vaddr + mem_size; p_vaddr += PGSIZE)
-    {
-      assert(ISALIGN(p_vaddr));
-      void *pg_p = new_page(1);
-      memset(pg_p, 0, PGSIZE);
-      map(&pcb->as, (void *)p_vaddr, pg_p, PTE_R | PTE_W | PTE_X);
-    }
-#else
-    // ramdisk_read((void *)vaddr, offset, file_size);
-    fs_lseek(fd, offset, SEEK_SET);
-    fs_read(fd, (void *)p_vaddr, file_size);
-    memset((void *)(p_vaddr + file_size), 0, mem_size - file_size);
-#endif
-    assert(mem_size >= file_size);
-  }
-
-  // printf("max brk is at %p when load\n", pcb->max_brk);
-  assert(fs_close(fd) != -1);
-
-  return entry;
+  return page_start;
 }
 
-void naive_uload(PCB *pcb, const char *filename)
-{
+/* After obtaining the size of the program, load it in pages:
+* 1. Request a free physical page
+* 2. Map() this physical page to the virtual address space of the user process.
+*     Since AM native implements permission checks, 
+*     in order for the program to run correctly on AM native, 
+*     you need to set prot to read-write-execute when calling map()
+* 3. Read a page of content from the file into this physical page.
+*/
+static uintptr_t loader(PCB *pcb, const char *filename) {
+  Elf_Ehdr ehdr;
+  int fd = fs_open(filename, 0, 0);
+  fs_read(fd, &ehdr, sizeof(ehdr));  
+
+  /* check magic number. */
+  assert((*(uint64_t *)ehdr.e_ident == 0x010102464c457f));
+  /* check architecture. */
+  assert(ehdr.e_machine == EXPECT_TYPE);
+
+  Elf_Phdr phdr[ehdr.e_phnum];
+  fs_lseek(fd, ehdr.e_phoff, SEEK_SET);
+  fs_read(fd, phdr, sizeof(Elf_Phdr) * ehdr.e_phnum);
+  for (int i = 0; i < ehdr.e_phnum; i++) {
+    if (phdr[i].p_type == PT_LOAD) {
+      void *paddr = alloc_section_space(&pcb->as, phdr[i].p_vaddr, phdr[i].p_memsz);
+      fs_lseek(fd, phdr[i].p_offset, SEEK_SET);
+      fs_read(fd, (void *)((phdr[i].p_vaddr & 0xFFF) + paddr), phdr[i].p_memsz);
+      memset((void *)((phdr[i].p_vaddr & 0xFFF) + phdr[i].p_filesz + paddr), 0, phdr[i].p_memsz - phdr[i].p_filesz);
+      /*
+      fs_lseek(fd, phdr[i].p_offset, SEEK_SET);
+      fs_read(fd, (void *)(phdr[i].p_vaddr), phdr[i].p_memsz);
+      memset((void *)(phdr[i].p_vaddr + phdr[i].p_filesz), 0, phdr[i].p_memsz - phdr[i].p_filesz);
+      */
+    }
+  }
+  return ehdr.e_entry;
+}
+
+void naive_uload(PCB *pcb, const char *filename) {
   uintptr_t entry = loader(pcb, filename);
   Log("Jump to entry = %p", entry);
-  ((void (*)())entry)();
+  ((void(*)())entry) ();
 }
 
-Context *context_kload(PCB *pcb, void (*entry)(void *), void *arg)
-{
-  Area kstack = RANGE(pcb, (char *)pcb + STACK_SIZE);
-  Context *ctx = kcontext(kstack, entry, arg);
-  ctx->pdir = NULL;
-  NR_PROC++;
-  return ctx;
-}
+Context *context_kload(PCB* pcb, void(*func)(void *), void *args) {
+  Area stack = RANGE((char *)(uintptr_t)pcb, (char *)(uintptr_t)pcb + STACK_SIZE);
+  Context *kcxt = kcontext(stack, func, args);
+  pcb->cp = kcxt;
+  return kcxt;
+} 
 
-static int __len(char *const str[])
-{
-  int i = 0;
-  // printf("str1 is NULL? %d\n", str[1] == NULL);
-  for (; str[i] != NULL; ++i)
-  {
-    // printf("str is %d\n", i);
-  }
-  return i;
-}
-
-Context *context_uload(PCB *pcb, char *filename, char *const argv[], char *const envp[])
-{
+void context_uload(PCB *pcb, const char *filename, char *const argv[], char *const envp[]) {
+  /* Each process holds 32kb of stack space, which we think is sufficient for ics processes. */
+  AddrSpace *as = &pcb->as;
+  /* Mapping address space. */
   protect(&pcb->as);
-  // printf("in uload\n");
-  // Important: must load after dealing with argv and envp!!!
-  // they may be the data of the previous program (called by execve syscall, rather than init_proc)
-  // found this bug when print printf("addr of envp is at %p\n", envp), it is inside previous program!!!
-  //  uintptr_t entry = loader(pcb, filename);
-  // printf("addr of envp is at %p\n", envp);
-  Area kstack = RANGE(pcb, (char *)pcb + STACK_SIZE);
-  // Context *ctx = ucontext(NULL, kstack, (void *)entry);
-  //   printf("str1 is NULL %d\n", envp[1] == NULL);
+  void *page_alloc = new_page(NR_PAGE) + NR_PAGE * PGSIZE;
 
-  int argc = (argv == NULL) ? 0 : __len(argv);
-  // printf("len arg is %d\n", argc);
+  /* Mapping user stack here. */
+  for(int i = NR_PAGE; i >= 0; i--) 
+    map(as, as->area.end - i * PGSIZE, page_alloc - i * PGSIZE, 1);
 
-  char *(args[argc]);
-  char *sp = (char *)new_page(USR_STACK_PG_NUM) + USR_STACK_PG_NUM * PGSIZE;
-  // memset(sp - USR_STACK_PG_NUM * PGSIZE, 0, USR_STACK_PG_NUM * PGSIZE);
-#ifdef USR_SPACE_ENABLE
-  for (size_t i = USR_STACK_PG_NUM; i > 0; --i)
-    map(&pcb->as, (void *)(pcb->as.area.end - i * PGSIZE), sp - i * PGSIZE, PTE_R | PTE_W | PTE_X);
-  uint32_t map_offset = sp - (char *)(pcb->as.area.end);
-#endif
-  // printf("map offset is %d\n", map_offset);
-  for (int i = 0; i < argc; ++i)
-  {
-    sp -= (strlen(argv[i]) + 1);
-    strcpy(sp, argv[i]);
-    args[i] = sp;
+  /* deploy user stack layout. */
+  char *brk = (char *)(page_alloc - 4);
+  int argc = 0, envc = 0;
+  if (envp) for (; envp[envc]; ++envc) ;
+  if (argv) for (; argv[argc]; ++argc) ;
+  char **args = (char **)malloc(sizeof(char*) * argc);
+  char **envs = (char **)malloc(sizeof(char*) * envc);
+
+  /* Copy String Area. */
+  for (int i = 0; i < argc; ++i) {
+    /* Note that it is neccessary to make memory *align*. */
+    brk -= ROUNDUP(strlen(argv[i]) + 1, sizeof(int));
+    args[i] = brk;
+    strcpy(brk, argv[i]);
+  }
+  for (int i = 0; i < envc; ++i) {
+    brk -= ROUNDUP(strlen(envp[i]) + 1, sizeof(int));
+    envs[i] = brk;
+    strcpy(brk, envp[i]);
   }
 
-  int envc = (envp == NULL) ? 0 : __len(envp);
+  /* Copy envp & argv area. */
+  intptr_t *ptr_brk = (intptr_t *)brk;
+  *(--ptr_brk) = 0;
+  ptr_brk -= envc;
+  for (int i = 0; i < envc; ++i)  ptr_brk[i] = (intptr_t)(envs[i]);
+  *(--ptr_brk) = 0;
+  ptr_brk = ptr_brk - argc;
+  for (int i = 0; i < argc; ++i)  ptr_brk[i] = (intptr_t)(args[i]);
+  *(--ptr_brk) = argc;
 
-  char *(envs[envc]);
-  for (int i = 0; i < envc; ++i)
-  {
-    sp -= (strlen(envp[i]) + 1);
-    strcpy(sp, envp[i]);
-    envs[i] = sp;
-  }
-
-  char **sp_2 = (char **)sp;
-  --sp_2;
-  *sp_2 = NULL;
-
-  for (int i = envc - 1; i >= 0; --i)
-  {
-    // printf("loop %d\n", i);
-    --sp_2;
-    *sp_2 = envs[i];
-  }
-
-  --sp_2;
-  *sp_2 = NULL;
-
-  for (int i = argc - 1; i >= 0; --i)
-  {
-    --sp_2;
-    // printf("the pos of argv is at stack %p is %p\n", sp_2, args[i]);
-    *sp_2 = args[i];
-    // printf("args is %s\n", args[i]);
-  }
-
-  --sp_2;
-  *((int *)sp_2) = argc;
+  free(args);
+  free(envs);
 
   uintptr_t entry = loader(pcb, filename);
-  Context *ctx = ucontext(NULL, kstack, (void *)entry);
-  ctx->pdir = pcb->as.ptr;
-
-#ifdef USR_SPACE_ENABLE
-  // ctx->GPRx = (uintptr_t)((char *)sp_2 - map_offset);
-  // ctx->mscratch = ctx->GPRx;
-  ctx->mscratch = (uintptr_t)((char *)sp_2 - map_offset);
-// #else
-// ctx->GPRx = (uintptr_t)((char *)sp_2);
-#endif
-  // printf("map sp %p to %p\n", sp_2, ctx->GPRx);
-  pcb->max_brk = 0;
-
-  // printf("the argc is at %p\n", sp_2);
-  // printf("arg1 is %s\n", *((char **)(sp_2 + 2)));
-  // printf("arg0 is %s\n", *((char **)(ctx->GPRx + 1)));
-  NR_PROC++;
-
-  return ctx;
+  printf("loader finished\n");
+  Area stack;
+  stack.start = &pcb->cp;
+  stack.end = &pcb->cp + STACK_SIZE;
+  Context *ucxt = ucontext(as, stack, (void *)entry);
+  printf("safe here\n");
+  pcb->cp = ucxt;
+  ucxt->GPRx = (intptr_t)ptr_brk;
 }
+
+/*
+  |               |
+  +---------------+ <---- ustack.end
+  |  Unspecified  |
+  +---------------+
+  |               | <----------+
+  |    string     | <--------+ |
+  |     area      | <------+ | |
+  |               | <----+ | | |
+  |               | <--+ | | | |
+  +---------------+    | | | | |
+  |  Unspecified  |    | | | | |
+  +---------------+    | | | | |
+  |     NULL      |    | | | | |
+  +---------------+    | | | | |
+  |    ......     |    | | | | |
+  +---------------+    | | | | |
+  |    envp[1]    | ---+ | | | |
+  +---------------+      | | | |
+  |    envp[0]    | -----+ | | |
+  +---------------+        | | |
+  |     NULL      |        | | |
+  +---------------+        | | |
+  | argv[argc-1]  | -------+ | |
+  +---------------+          | |
+  |    ......     |          | |
+  +---------------+          | |
+  |    argv[1]    | ---------+ |
+  +---------------+            |
+  |    argv[0]    | -----------+
+  +---------------+
+  |      argc     |
+  +---------------+ <---- cp->GPRx
+  |               |
+*/
+
+
+
+
+
