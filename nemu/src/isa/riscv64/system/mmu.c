@@ -66,9 +66,9 @@ paddr_t isa_mmu_translate(vaddr_t vaddr, int len, int type) {
   paddr_t page1_table_entry_addr = PTE2PA(page_table_entry);
 
   PTE page1_table_entry = paddr_read(page1_table_entry_addr  + PX(1, vaddr) * 8, 8);
-  paddr_t leaf_page_table_entry_addr = PTE2PA(page1_table_entry) + PX(0, vaddr) * 8;
+  paddr_t leaf_page_table_entry_addr = PTE2PA(page1_table_entry);
 
-  PTE leaf_page_table_entry = paddr_read(leaf_page_table_entry_addr, 8);
+  PTE leaf_page_table_entry = paddr_read(leaf_page_table_entry_addr  + PX(0, vaddr) * 8, 8);
 
   if (type == 0){//读
     paddr_write(leaf_page_table_entry_addr, 8, leaf_page_table_entry | PTE_A);
