@@ -47,10 +47,13 @@ void init_proc() {
 
 Context* schedule(Context *prev) {
   printf("schedule: Traping here...\n");
+  /*
   current->cp = prev;
   current = (current == &pcb[0] ? &pcb[1] : &pcb[0]);
   printf("Finished...\n");
   return current->cp;
+  */
+  return NULL;
 }
 
 int execve(const char *pathname, char *const argv[], char *const envp[])
