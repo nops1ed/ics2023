@@ -89,8 +89,49 @@ void __am_switch(Context *c) {
 *   12..20 -- 9 bits of level-0 index.
 *    0..11 -- 12 bits of byte offset within the page.
 */
+#define VA_VPN_0(x) (((uintptr_t)x & 0x001FF000u) >> 12)
+#define VA_VPN_1(x) (((uintptr_t)x & 0x3FE00000u) >> 21)
+#define VA_VPN_2(x) (((uintptr_t)x & 0x7FC0000000u) >> 30)
+#define VA_OFFSET(x) ((uintptr_t)x & 0x00000FFFu)
+
+#define PTE_PPN_MASK (0x3FFFFFFFFFFC00u)
+#define PTE_PPN(x) (((uintptr_t)x & PTE_PPN_MASK) >> 10)
+
 void map(AddrSpace *as, void *va, void *pa, int prot) {
+  va = (void *)(((uintptr_t)va) & (~0xfff));
+  pa = (void *)(((uintptr_t)pa) & (~0xfff));
+
+  PTE *page_table_entry = as->ptr + VA_VPN_2(va) * 8;
+  // assert((uintptr_t)as->ptr + VA_VPN_1(va) * 4 == get_satp() + VA_VPN_1(va) * 4);
+  if (!(*page_table_entry & PTE_V)){ // 说明二级表未分配
+    void *alloced_page = pgalloc_usr(PGSIZE);
+    *page_table_entry = (*page_table_entry & ~PTE_PPN_MASK) | (PTE_PPN_MASK & ((uintptr_t)alloced_page >> 2));
+    *page_table_entry = (*page_table_entry | PTE_V);
+    // printf("二级表未分配\t二级表项地址:%p\t虚拟地址:%p\n", page_table_entry, va);
+    //assert(((PTE_PPN(*page_table_entry) * 4096 + VA_VPN_0(va) * 4) & ~0xFFFFFF) == ((uintptr_t)alloced_page& ~0xFFFFFF));
+  }
+
+  PTE *page2_table_entry = (PTE *)(PTE_PPN(*page_table_entry) * 4096 + VA_VPN_1(va) * 8);
+  if (!(*page2_table_entry & PTE_V)){ // 说明二级表未分配
+    void *alloced_page = pgalloc_usr(PGSIZE);
+    *page2_table_entry = (*page2_table_entry & ~PTE_PPN_MASK) | (PTE_PPN_MASK & ((uintptr_t)alloced_page >> 2));
+    *page2_table_entry = (*page2_table_entry | PTE_V);
+    // printf("二级表未分配\t二级表项地址:%p\t虚拟地址:%p\n", page_table_entry, va);
+    //assert(((PTE_PPN(*page_table_entry) * 4096 + VA_VPN_0(va) * 4) & ~0xFFFFFF) == ((uintptr_t)alloced_page& ~0xFFFFFF));
+  }
+
+  // 找到二级表中的表项
+  PTE *leaf_page_table_entry = (PTE *)(PTE_PPN(*page2_table_entry) * 4096 + VA_VPN_0(va) * 8);
+  // if ((uintptr_t)va <= 0x40100000){
+  //   printf("设置二级表项\t虚拟地址:%p\t实际地址:%p\t表项:%p\n", va, pa, leaf_page_table_entry);
+  // }
+  // 设置PPN
+  *leaf_page_table_entry = (PTE_PPN_MASK & ((uintptr_t)pa >> 2)) | (PTE_V | PTE_R | PTE_W | PTE_X) | (prot ? PTE_U : 0);
+  //assert(PTE_PPN(*leaf_page_table_entry) * 4096 + VA_OFFSET(va) == (uintptr_t)pa);
+
+
   /* Perform a page table walk. */
+  /*
   pagetable_t pagetable = as->ptr;
   PTE *pte;
   for(int level = 2; level > 0; level--) {
@@ -105,9 +146,12 @@ void map(AddrSpace *as, void *va, void *pa, int prot) {
     }
     //printf("\033[34mpagetable is %p and *pte is %p\033[0m\n", pagetable, *pte);
   }
+  */
   /* Fill PTE fields. */
+  /*
   pte = &pagetable[PX(0, va)];
   *pte = PA2PTE(pa) | PTE_V;
+  */
 
 
   //printf("Finally store %p to %p\n\n", *pte, pte);
