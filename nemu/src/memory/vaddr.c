@@ -33,7 +33,7 @@ word_t vaddr_read(vaddr_t addr, int len) {
   printf("Memory Read : 0x%lx at pc: 0x%lx\n", addr, cpu.pc);
 #endif
   if(isa_mmu_check(addr, len, MEM_TYPE_READ) == MMU_TRANSLATE) 
-    return paddr_read(isa_mmu_translate(addr, len, MEM_TYPE_READ), len);
+    return paddr_read(isa_mmu_translate(addr, len, 0), len);
   return paddr_read(addr, len);
 }
 
@@ -46,7 +46,7 @@ void vaddr_write(vaddr_t addr, int len, word_t data) {
   //Log("Try to write  " FMT_WORD, data);
 #endif
   if(isa_mmu_check(addr, len, MEM_TYPE_WRITE) == MMU_TRANSLATE) 
-    paddr_write(isa_mmu_translate(addr, len, MEM_TYPE_WRITE), len, data);
+    paddr_write(isa_mmu_translate(addr, len, 1), len, data);
   else 
   paddr_write(addr, len, data);
 }
