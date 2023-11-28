@@ -11,7 +11,8 @@ static Context* do_event(Event e, Context* c) {
       break;
     case EVENT_YIELD:
       //Log("Nano: Event yield emit\n");
-      return schedule(c);
+      c = schedule(c);
+      break;
     default: panic("\033[31mUnhandled event ID = %d\033[0m\n", e.event);
   }
   return c;
