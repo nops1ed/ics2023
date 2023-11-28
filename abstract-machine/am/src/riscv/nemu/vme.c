@@ -70,7 +70,7 @@ void unprotect(AddrSpace *as) {
 }
 
 void __am_get_cur_as(Context *c) {
-  //if(c->pdir != NULL)
+  if(c->pdir != NULL)
     c->pdir = (vme_enable ? (void *)get_satp() : NULL);
 }
 
