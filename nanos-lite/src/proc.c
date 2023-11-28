@@ -52,3 +52,40 @@ Context* schedule(Context *prev) {
   printf("Finished...\n");
   return current->cp;
 }
+
+
+
+int execve(const char *pathname, char *const argv[], char *const envp[])
+{
+  // char *envp1[] = {NULL};
+  // printf("execve pathname is %s\n", pathname);
+  int fd = fs_open(pathname, 0, 0);
+  if (fd == -1)
+  {
+    return -1;
+  }
+  else
+    fs_close(fd);
+
+  // char* pathname2 = "/bin/pal";
+  // printf("brk is %p\n",heap_brk);
+  // naive_uload(NULL, pathname);
+  // if (argv != NULL)
+  //   for (int i = 0; argv[i] != NULL; ++i)
+  //     printf("argv%d is %s\n", i, argv[i]);
+  // if (envp != NULL)
+  //   for (int i = 0; envp[i] != NULL; ++i)
+  //     printf("envp%d is %s\n", i, envp[i]);
+
+  // printf("envp %s\n", envp[0]);
+  context_uload(current, (char *)pathname, argv, envp);
+  switch_boot_pcb();
+  // printf("yield for execve\n");
+  // printf("return ctx address is %p\n", pcb[1].cp);
+  // pre_process();
+  yield();
+  // printf("return address is %p\n", pcb[1].cp);
+  // schedule(NULL);
+
+  return 0;
+}

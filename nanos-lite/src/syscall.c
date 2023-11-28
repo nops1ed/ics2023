@@ -7,6 +7,7 @@
 void naive_uload(PCB *pcb, const char *filename);
 void context_uload(PCB *pcb, const char *filename, char *const argv[], char *const envp[]);
 void switch_boot_pcb();
+int execve(const char *filename, char *const argv[], char *const envp[]);
 
 typedef struct timeval {
   int64_t tv_sec;     // seconds
@@ -81,6 +82,8 @@ static void sys_execve(Context *c) {
   fs_curfilename();
   printf("sys_execve(%s, %s, %s)  \n", c->GPR2, c->GPR3, c->GPR4);
 #endif
+  execve((const char *)c->GPR2, (char **const)(uintptr_t)c->GPR3, (char **const)(uintptr_t)c->GPR4);
+  /*
   int fd = fs_open((const char *)c->GPR2, 0, 0);
   if(fd == -1) {
     c->GPRx = -1;
@@ -90,6 +93,7 @@ static void sys_execve(Context *c) {
   context_uload(current, (const char *)c->GPR2, (char **const)(uintptr_t)c->GPR3, (char **const)(uintptr_t)c->GPR4);
   switch_boot_pcb();
   yield();
+  */
 }
 
 static void sys_exit(Context *c) {
