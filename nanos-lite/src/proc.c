@@ -28,7 +28,7 @@ void hello_fun(void *arg) {
 }
 
 void init_proc() {
-  switch_boot_pcb();
+  //switch_boot_pcb();
   printf("\033[31mtraping here...\033[0m\n");
   //context_kload(&pcb[0], hello_fun, "Message from proc #1");
   printf("\033[31mpcb 0 finished ...\033[0m\n");
