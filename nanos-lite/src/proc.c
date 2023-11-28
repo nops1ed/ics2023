@@ -56,7 +56,7 @@ Context* schedule(Context *prev) {
 int execve(const char *pathname, char *const argv[], char *const envp[])
 {
   // char *envp1[] = {NULL};
-   printf("execve pathname is %s\n", pathname);
+   printf("\033[31mexecve pathname is %s\033[0m\n", pathname);
   int fd = fs_open(pathname, 0, 0);
   if (fd == -1)
   {
