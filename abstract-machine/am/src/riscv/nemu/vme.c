@@ -25,9 +25,9 @@ static Area segments[] = {      // Kernel memory mappings
 typedef uint64_t *pagetable_t; // 512 PTEs
 
 static inline void set_satp(void *pdir) {
-  printf("Now pdir is %x\n", pdir);
+  //printf("Now pdir is %x\n", pdir);
   uintptr_t mode = 1ul << (__riscv_xlen - 1);
-  printf("store data %p in satp \n", mode | ((uintptr_t)pdir >> 12));
+  //printf("store data %p in satp \n", mode | ((uintptr_t)pdir >> 12));
   asm volatile("csrw satp, %0" : : "r"(mode | ((uintptr_t)pdir >> 12)));
 }
 
