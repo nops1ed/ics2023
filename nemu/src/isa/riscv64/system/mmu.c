@@ -67,7 +67,6 @@ paddr_t isa_mmu_translate(vaddr_t vaddr, int len, int type) {
   return pa;
 #else
   //static int a = 0;
-  /*
   paddr_t page_table_entry_addr = (cpu.csr[CSR_SATP].val << 12);
   //printf("Pagetable is %x\n", page_table_entry_addr);
   PTE page_table_entry = paddr_read(page_table_entry_addr  + PX(2, vaddr) * 8, 8);
@@ -88,8 +87,8 @@ paddr_t isa_mmu_translate(vaddr_t vaddr, int len, int type) {
   //a++;
   //if(a > 200) assert(0);
   //assert(pa == vaddr);
-  */
 
+/*
 #define SATP_MASK 0X3fffff
 #define PG_SHIFT 12
 #define PGT1_ID(val) (val >> 22)
@@ -114,6 +113,7 @@ paddr_t isa_mmu_translate(vaddr_t vaddr, int len, int type) {
   // assert(paddr == vaddr);
   // return MEM_RET_FAIL;
   return paddr;
+  */
 /*
    //static int a = 0;
   paddr_t page_table_entry_addr = (cpu.csr[CSR_SATP].val << 12) + VA_VPN_2(vaddr) * 8;
