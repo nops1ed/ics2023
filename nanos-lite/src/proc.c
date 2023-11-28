@@ -38,7 +38,7 @@ void init_proc() {
   context_uload(&pcb[1], "/bin/pal", NULL, NULL); 
   printf("\033[31mpcb 1 finished ...\033[0m\n");
   //context_kload(&pcb[1], hello_fun, "proc1");
-  switch_boot_pcb();
+  //switch_boot_pcb();
 
   Log("Initializing processes...");
   // load program here
