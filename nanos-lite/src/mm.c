@@ -3,6 +3,9 @@
 
 static void *pf = NULL;
 extern PCB *current;
+#ifndef PXMASK
+  #define PXMASK 0xFFF
+#endif
 
 /* The new_page() function manages the heap with a pf pointer to allocate a contiguous memory area of nr_page * 4KB in size, 
 * and returns the *first* address of the area.
@@ -40,9 +43,8 @@ void free_page(void *p) {
 
 /* The brk() syscall handler. */
 int mm_brk(uintptr_t brk) {
-#define PG_MASK ~0xfff
   if (current->max_brk == 0) {
-    current->max_brk = (brk & ~PG_MASK) ? ((brk & PG_MASK) + PGSIZE) : brk;
+    current->max_brk = (brk & PXMASK) ? ((brk & ~PXMASK) + PGSIZE) : brk;
     printf("\033[33mfirst malloc is at %p\033[0m\n", (void *)current->max_brk);
     return 0;
   }
