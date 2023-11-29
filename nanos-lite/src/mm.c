@@ -23,7 +23,7 @@ static void* pg_alloc(int n) {
     assert(0);
   }
   if(n == 0) 
-    printf("\033[33mThe number of pages to be allocated is 0, \
+    Log("\033[33mThe number of pages to be allocated is 0, \
             which may not meet your expectations.  \
             If there are any issues, please review your implementation again\033[0m\n");
   size_t nr_pg_to_alloc = (size_t)(n / PGSIZE) + (size_t)(n % PGSIZE == 0);
