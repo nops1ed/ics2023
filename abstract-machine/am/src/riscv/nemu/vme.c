@@ -133,13 +133,13 @@ void map(AddrSpace *as, void *va, void *pa, int prot) {
     else {
       pagetable = (pagetable_t)pgalloc_usr(PGSIZE);
       memset(pagetable, 0, PGSIZE);
-      *pte = PA2PTE(pagetable) | PTE_V;
+      *pte = PA2PTE(pagetable) | PTE_V | PTE_R |PTE_W;
     }
     //printf("\033[34mpagetable is %p and *pte is %p\033[0m\n", pagetable, *pte);
   }
   /* Fill PTE fields. */
   pte = &pagetable[PX(0, va)];
-  *pte = PA2PTE(pa) | PTE_V;
+  *pte = PA2PTE(pa) | PTE_V | PTE_R | PTE_W;
 
 
   //printf("Finally store %p to %p\n\n", *pte, pte);

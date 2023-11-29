@@ -58,6 +58,7 @@ paddr_t isa_mmu_translate(vaddr_t vaddr, int len, int type) {
     pagetable = PTE2PA(pte) + PX(level - 1, vaddr) * 8;
   }
   pte = paddr_read(pagetable, 8);
+  /* PTE dirty bit is ready for TLB. */
   uint64_t MODE_PTE = type == 0 ? PTE_A : PTE_D;
   paddr_write(pagetable, 8, pte | MODE_PTE);
   paddr_t pa = PTE2PA(pte) + VA_OFFSET(vaddr);

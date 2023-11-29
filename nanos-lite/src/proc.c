@@ -54,24 +54,3 @@ Context* schedule(Context *prev) {
   //printf("\033[33mFinished...\033[0m\n");
   return current->cp;
 }
-
-int execve(const char *pathname, char *const argv[], char *const envp[])
-{
-  // char *envp1[] = {NULL};
-   //printf("\033[31mexecve pathname is %s\033[0m\n", pathname);
-  int fd = fs_open(pathname, 0, 0);
-  if (fd == -1)
-  {
-    return -1;
-  }
-  else
-    fs_close(fd);
-  context_uload(current, (char *)pathname, argv, envp);
-  switch_boot_pcb();
-
-  yield();
-  // printf("return address is %p\n", pcb[1].cp);
-  // schedule(NULL);
-
-  return 0;
-}
