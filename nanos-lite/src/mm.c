@@ -26,16 +26,10 @@ static void* pg_alloc(int n) {
     printf("\033[33mThe number of pages to be allocated is 0, \
             which may not meet your expectations.  \
             If there are any issues, please review your implementation again\033[0m\n");
-    /*
   size_t nr_pg_to_alloc = (size_t)(n / PGSIZE) + (size_t)(n % PGSIZE == 0);
   void *alloc_ptr = new_page(nr_pg_to_alloc);
   memset(alloc_ptr, 0, nr_pg_to_alloc * PGSIZE);
   return alloc_ptr;
-  */
-
-    assert(n >= PGSIZE);
-  void *p = new_page(n / PGSIZE);
-  return memset(p, 0, n);
 }
 #endif
 
@@ -46,19 +40,13 @@ void free_page(void *p) {
 /* The brk() system call handler. */
 int mm_brk(uintptr_t brk) {
 #define PG_MASK ~0xfff
-  if (current->max_brk == 0)
-  {
+  if (current->max_brk == 0) {
     current->max_brk = (brk & ~PG_MASK) ? ((brk & PG_MASK) + PGSIZE) : brk;
     printf("\033[33mfirst malloc is at %p\033[0m\n", (void *)current->max_brk);
     return 0;
   }
-
   for (; current->max_brk < brk; current->max_brk += PGSIZE)
-  {
     map(&current->as, (void *)current->max_brk, pg_alloc(PGSIZE), 1);
-  }
-
-  return 0;
   return 0;
 }
 
