@@ -22,92 +22,100 @@ size_t fs_write(int fd, const void *buf, size_t len);
 size_t fs_lseek(int fd, size_t offset, int whence);
 int fs_close(int fd);
 
-static void read(int fd, void *buf, size_t offset, size_t len){
-  fs_lseek(fd, offset, SEEK_SET);
-  fs_read(fd, buf, len);
-}
-
 
 #define NR_PAGE 8
 #define PAGESIZE 4096
+#define min(x, y) ((x < y) ? x : y)
 
- __attribute__ ((__used__)) static void * alloc_section_space(AddrSpace *as, uintptr_t vaddr, size_t p_memsz){
-  //size_t page_n = p_memsz % PAGESIZE == 0 ? p_memsz / 4096 : (p_memsz / 4096 + 1);
-  size_t page_n = ((vaddr + p_memsz - 1) >> 12) - (vaddr >> 12) + 1;
-  void *page_start = new_page(page_n);
+#define PTE_V 0x01
+#define PTE_R 0x02
+#define PTE_W 0x04
+#define PTE_X 0x08
+#define PTE_U 0x10
+#define PTE_A 0x40
+#define PTE_D 0x80
 
-  printf("Loaded Segment from [%x to %x)\n", vaddr, vaddr + p_memsz);
-  
-  for (int i = 0; i < page_n; ++i){
-    // TODO: 这里prot参数不规范
-    map(as, (void *)((vaddr & ~0xfff) + i * PAGESIZE), (void *)(page_start + i * PAGESIZE), 1);
-  }
 
-  return page_start;
-}
+#define PG_MASK (~0xfff)
+#define ISALIGN(vaddr) ((vaddr) == ((vaddr)&PG_MASK))
+#define OFFSET(vaddr) ((vaddr) & (~PG_MASK))
+#define NEXT_PAGE(vaddr) ((ISALIGN(vaddr)) ? (vaddr) : ((vaddr)&PG_MASK) + PGSIZE)
+static uintptr_t loader(PCB *pcb, const char *filename)
+{
+  Elf_Ehdr ehdr;
 
-#define MAX(a, b)((a) > (b) ? (a) : (b))
-
-static uintptr_t loader(PCB *pcb, const char *filename) {
+  // ramdisk_read(&ehdr, 0, sizeof(ehdr));
   int fd = fs_open(filename, 0, 0);
-  if (fd == -1){ 
-    assert(0); //filename指向文件不存在
-  }
-  
-  AddrSpace *as = &pcb->as;
-  
-  Elf_Ehdr elf_header;
-  read(fd, &elf_header, 0, sizeof(elf_header));
-  //根据小端法 0x7F E L F
-  assert(*(uint32_t *)elf_header.e_ident == 0x464c457f);
-  
-  ELF_Off program_header_offset = elf_header.e_phoff;
-  size_t headers_entry_size = elf_header.e_phentsize;
-  int headers_entry_num = elf_header.e_phnum;
+  assert(fd != -1);
 
-  for (int i = 0; i < headers_entry_num; ++i){
-    Elf_Phdr section_entry;
-    read(fd, &section_entry, 
-      i * headers_entry_size + program_header_offset, sizeof(elf_header));
-    void *phys_addr;
-    uintptr_t virt_addr;
-    switch (section_entry.p_type) {
-    case PT_LOAD:
-      //virt_addr = (void *)section_entry.p_vaddr; 
-      // phys_addr = (void *)alloced_page_start + (section_entry.p_vaddr - 0x40000000); // 这里是把0x40000000加载到他对应的实际地址
-      virt_addr = section_entry.p_vaddr;
-      phys_addr = alloc_section_space(as, virt_addr, section_entry.p_memsz);
+  fs_read(fd, &ehdr, sizeof(ehdr));
 
-      // printf("Load to %x with offset %x\n", phys_addr, section_entry.p_offset);
-      //做一个偏移
-      read(fd, phys_addr + (virt_addr & 0xfff), section_entry.p_offset, section_entry.p_filesz);
-      //同样做一个偏移
-      memset(phys_addr + (virt_addr & 0xfff) + section_entry.p_filesz, 0, 
-        section_entry.p_memsz - section_entry.p_filesz);
-      
-      if (section_entry.p_filesz < section_entry.p_memsz){// 应该是.bss节
-        //做一个向上的4kb取整数
-        // if (pcb->max_brk == 0){
-        printf("Setting .bss end %x\n", section_entry.p_vaddr + section_entry.p_memsz);
-        // 我们虽然用max_brk记录了最高达到的位置，但是在新的PCB中，我们并未在页表目录中更新这些信息，oH，所以就会失效啦。
-        // 于是我们就做了一些权衡。
-        //pcb->max_brk = MAX(pcb->max_brk, ROUNDUP(section_entry.p_vaddr + section_entry.p_memsz, 0xfff));
-        //TODO: Trade-off
-        pcb->max_brk = ROUNDUP(section_entry.p_vaddr + section_entry.p_memsz, 0xfff);
-        
-        // }
-      }
-      
-      break;
-    
-    default:
-      break;
+  char riscv64_magic_num[] = {0x7f, 0x45, 0x4c, 0x46, 0x01, 0x01, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
+  // printf("magic number is %s\n", (char *)(ehdr.e_ident));
+  assert(strcmp((char *)(ehdr.e_ident), riscv64_magic_num) == 0);
+
+  uint32_t entry = ehdr.e_entry;
+  uint32_t ph_offset = ehdr.e_phoff;
+  uint32_t ph_num = ehdr.e_phnum;
+
+  Elf_Phdr phdr;
+  for (int i = 0; i < ph_num; ++i)
+  {
+    // ramdisk_read(&phdr, ph_offset + i * sizeof(phdr), sizeof(phdr));
+    fs_lseek(fd, ph_offset + i * sizeof(phdr), SEEK_SET);
+    fs_read(fd, &phdr, sizeof(phdr));
+    if (phdr.p_type != PT_LOAD)
+      continue;
+
+    // printf("load program header %d", i);
+
+    uint32_t offset = phdr.p_offset;
+    uint32_t file_size = phdr.p_filesz;
+    uint32_t p_vaddr = phdr.p_vaddr;
+    uint32_t mem_size = phdr.p_memsz;
+
+    printf("load program from [%p, %p] to [%p, %p]\n", offset, file_size, p_vaddr, mem_size);
+    int left_size = file_size;
+    fs_lseek(fd, offset, SEEK_SET);
+    // printf("vaddr is %p\n", p_vaddr);
+    if (!ISALIGN(p_vaddr))
+    {
+      void *pg_p = new_page(1);
+      int read_len = min(PGSIZE - OFFSET(p_vaddr), left_size);
+      left_size -= read_len;
+      assert(fs_read(fd, pg_p + OFFSET(p_vaddr), read_len) >= 0);
+      map(&pcb->as, (void *)(uintptr_t)p_vaddr, pg_p, PTE_R | PTE_W | PTE_X);
+      p_vaddr += read_len;
     }
 
+    for (; p_vaddr < phdr.p_vaddr + file_size; p_vaddr += PGSIZE)
+    {
+      assert(ISALIGN(p_vaddr));
+      void *pg_p = new_page(1);
+      memset(pg_p, 0, PGSIZE);
+      // int len = min(PGSIZE, file_size - fs_lseek(fd, 0, SEEK_CUR));
+      int read_len = min(PGSIZE, left_size);
+      left_size -= read_len;
+      assert(fs_read(fd, pg_p, read_len) >= 0);
+      map(&pcb->as, (void *)(uintptr_t)p_vaddr, pg_p, PTE_R | PTE_W | PTE_X);
+    }
+    // printf("p_vaddr is %p\n", (void *)p_vaddr);
+    p_vaddr = NEXT_PAGE(p_vaddr);
+    printf("p_vaddr is %p next page, end of uninitialized space is %p\n", (void *)(uintptr_t)p_vaddr, (void *)(phdr.p_vaddr + mem_size));
+    for (; p_vaddr < phdr.p_vaddr + mem_size; p_vaddr += PGSIZE)
+    {
+      assert(ISALIGN(p_vaddr));
+      void *pg_p = new_page(1);
+      memset(pg_p, 0, PGSIZE);
+      map(&pcb->as, (void *)(uintptr_t)p_vaddr, pg_p, PTE_R | PTE_W | PTE_X);
+    }
+    assert(mem_size >= file_size);
   }
-  
-  printf("Entry: %p\n", elf_header.e_entry);
-  return elf_header.e_entry;
+
+  // printf("max brk is at %p when load\n", pcb->max_brk);
+  assert(fs_close(fd) != -1);
+
+  return entry;
 }
 
 void naive_uload(PCB *pcb, const char *filename) {
@@ -143,7 +151,7 @@ void context_uload(PCB *pcb, const char *filename, char *const argv[], char *con
   printf("\033[33mUser stack mapped\033[0m\n");
 
   /* deploy user stack layout. */
-  char *brk = (char *)(page_alloc );
+  char *brk = (char *)(page_alloc - 4);
   int argc = 0, envc = 0;
   if (envp) for (; envp[envc]; ++envc) ;
   if (argv) for (; argv[argc]; ++argc) ;
@@ -183,7 +191,6 @@ void context_uload(PCB *pcb, const char *filename, char *const argv[], char *con
   stack.start = &pcb->cp;
   stack.end = &pcb->cp + STACK_SIZE;
   Context *ucxt = ucontext(as, stack, (void *)entry);
-  printf("safe here\n");
   pcb->cp = ucxt;
   ucxt->GPRx = (intptr_t)ptr_brk;
 }
