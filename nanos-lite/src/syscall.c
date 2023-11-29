@@ -80,7 +80,6 @@ static void sys_brk(Context *c) {
 }
 
 static void sys_execve(Context *c) { 
-  printf("\033[31mhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh\033[0m\n");
 #ifdef CONFIG_STRACE
   fs_curfilename();
   printf("sys_execve(%s, %s, %s)  \n", c->GPR2, c->GPR3, c->GPR4);
