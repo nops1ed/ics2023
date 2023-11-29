@@ -39,6 +39,7 @@ Context* __am_irq_handle(Context *c) {
   printf("before switch, pdir is %x\n", c->pdir);
   printf("Gonna am switch\n");
   __am_switch(c);
+  printf("Switch finished\n");
   return c;
 }
 
