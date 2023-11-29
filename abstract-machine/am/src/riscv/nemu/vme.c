@@ -133,7 +133,7 @@ void map(AddrSpace *as, void *va, void *pa, int prot) {
     else {
       pagetable = (pagetable_t)pgalloc_usr(PGSIZE);
       memset(pagetable, 0, PGSIZE);
-      *pte = PA2PTE(pagetable) | PTE_V;
+      *pte = PA2PTE(pagetable) | PTE_V | PTE_R;
     }
     //printf("\033[34mpagetable is %p and *pte is %p\033[0m\n", pagetable, *pte);
   }
