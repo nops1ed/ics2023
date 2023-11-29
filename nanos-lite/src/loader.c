@@ -126,13 +126,6 @@ void context_kload(PCB *pcb, void (*entry)(void *), void *arg){
   printf("kcontext地址为:%p\n", pcb->cp);
 }
 
-
-static size_t ceil_4_bytes(size_t size){
-  if (size & 0x3)
-    return (size & (~0x3)) + 0x4;
-  return size;
-}
-
 void context_uload(PCB *pcb, const char *filename, char *const argv[], char *const envp[]) {
   /* Each process holds 32kb of stack space, which we think is sufficient for ics processes. */
   AddrSpace *as = &pcb->as;
@@ -170,20 +163,17 @@ void context_uload(PCB *pcb, const char *filename, char *const argv[], char *con
   /* Copy String Area. */
   for (int i = 0; i < argc; ++i) {
     /* Note that it is neccessary to make memory *align*. */
-    //brk -= ROUNDUP(strlen(argv[i]) + 1, sizeof(int));
-    brk -= (ceil_4_bytes(strlen(argv[i]) + 1));
+    brk -= ROUNDUP(strlen(argv[i]) + 1, sizeof(int));
     args[i] = brk;
     strcpy(brk, argv[i]);
   }
   for (int i = 0; i < envc; ++i) {
-    //brk -= ROUNDUP(strlen(envp[i]) + 1, sizeof(int));
-    brk -= (ceil_4_bytes(strlen(envp[i]) + 1));
+    brk -= ROUNDUP(strlen(envp[i]) + 1, sizeof(int));
     envs[i] = brk;
     strcpy(brk, envp[i]);
   }
 
   /* Copy envp & argv area. */
-  /*
   intptr_t *ptr_brk = (intptr_t *)brk;
   *(--ptr_brk) = 0;
   ptr_brk -= envc;
@@ -192,33 +182,6 @@ void context_uload(PCB *pcb, const char *filename, char *const argv[], char *con
   ptr_brk = ptr_brk - argc;
   for (int i = 0; i < argc; ++i)  ptr_brk[i] = (intptr_t)(args[i]);
   *(--ptr_brk) = argc;
-  */
-
-  intptr_t *ptr_brk = (intptr_t *)(brk);
-
-  // 分配envp空间
-  ptr_brk -= 1;
-  *ptr_brk = 0;
-  ptr_brk -= envc;
-  for (int i = 0; i < envc; ++i){
-    ptr_brk[i] = (intptr_t)(envs[i]);
-  }
-
-  // 分配argv空间
-  ptr_brk -= 1;
-  *ptr_brk = 0;
-  ptr_brk = ptr_brk - argc;
-  
-  // printf("%p\n", ptr_brk);
-  //printf("%p\t%p\n", alloced_page, ptr_brk);
-  //printf("%x\n", ptr_brk);
-  //assert((intptr_t)ptr_brk == 0xDD5FDC);
-  for (int i = 0; i < argc; ++i){
-    ptr_brk[i] = (intptr_t)(args[i]);
-  }
-
-  ptr_brk -= 1;
-  *ptr_brk = argc;
 
   //free(args);
   //free(envs);
