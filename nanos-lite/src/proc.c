@@ -35,7 +35,8 @@ void init_proc() {
   //context_uload(&pcb[0], "/bin/hello"); 
   //context_uload(&pcb[1], "/bin/pal", args_pal, NULL); 
   //context_uload(&pcb[0], "/bin/nterm", NULL, NULL); 
-  context_uload(&pcb[1], "/bin/nterm", NULL, NULL); 
+  //context_uload(&pcb[1], "/bin/nterm", NULL, NULL); 
+  context_kload(&pcb[1], hello_fun, "Message from proc #2");
   //printf("\033[31mpcb 1 finished ...\033[0m\n");
   //context_kload(&pcb[1], hello_fun, "proc1");
   switch_boot_pcb();
