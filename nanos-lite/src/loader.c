@@ -123,7 +123,7 @@ void context_kload(PCB *pcb, void (*entry)(void *), void *arg){
   karea.end = &pcb->cp + STACK_SIZE;
 
   pcb->cp = kcontext(karea, entry, arg);
-  printf("kcontext地址为:%p\n", pcb->cp);
+  //printf("kcontext地址为:%p\n", pcb->cp);
 }
 
 void context_uload(PCB *pcb, const char *filename, char *const argv[], char *const envp[]) {
