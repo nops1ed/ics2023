@@ -211,9 +211,9 @@ void context_uload(PCB *pcb, const char *filename, char *const argv[], char *con
   Context* context = ucontext(as, karea, (void *)entry);
   pcb->cp = context;
 
-  printf("新分配ptr=%p\n", as->ptr);
-  printf("UContext Allocted at %p\n", context);
-  printf("Alloced Page Addr: %p\t PTR_BRK_ADDR: %p\n", alloced_page, ptr_brk);
+  //printf("新分配ptr=%p\n", as->ptr);
+  //printf("UContext Allocted at %p\n", context);
+  //printf("Alloced Page Addr: %p\t PTR_BRK_ADDR: %p\n", alloced_page, ptr_brk);
 
   //设置了sp
   //context->gpr[2]  = (uintptr_t)ptr_brk - (uintptr_t)alloced_page + (uintptr_t)as->area.end;
