@@ -173,8 +173,8 @@ void context_uload(PCB *pcb, const char *filename, char *const argv[], char *con
   for (int i = 0; i < argc; ++i)  ptr_brk[i] = (intptr_t)(args[i]);
   *(--ptr_brk) = argc;
 
-  free(args);
-  free(envs);
+  //free(args);
+  //free(envs);
 
   printf("\033[33mLoading program entry...\033[0m\n");
   uintptr_t entry = loader(pcb, filename);
