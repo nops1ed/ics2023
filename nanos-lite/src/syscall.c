@@ -8,6 +8,7 @@ void naive_uload(PCB *pcb, const char *filename);
 void context_uload(PCB *pcb, const char *filename, char *const argv[], char *const envp[]);
 void switch_boot_pcb();
 int execve(const char *filename, char *const argv[], char *const envp[]);
+int mm_brk(uintptr_t brk);
 
 typedef struct timeval {
   int64_t tv_sec;     // seconds
@@ -70,7 +71,8 @@ static void sys_close(Context *c) {
 }
 
 static void sys_brk(Context *c) {
-  c->GPRx = 0;
+  c->GPRx = mm_brk((uintptr_t)c->GPR2);
+  //c->GPRx = 0;
 #ifdef CONFIG_STRACE
   fs_curfilename();
   printf("sys_brk(NULL) = %d\n", c->GPRx);
