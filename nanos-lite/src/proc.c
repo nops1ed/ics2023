@@ -29,14 +29,14 @@ void hello_fun(void *arg) {
 
 void init_proc() {
   //switch_boot_pcb();
-  printf("\033[31mtraping here...\033[0m\n");
+  //printf("\033[31mtraping here...\033[0m\n");
   context_kload(&pcb[0], hello_fun, "Message from proc #1");
-  printf("\033[31mpcb 0 finished ...\033[0m\n");
+  //printf("\033[31mpcb 0 finished ...\033[0m\n");
   //context_uload(&pcb[0], "/bin/hello"); 
   //context_uload(&pcb[1], "/bin/pal", args_pal, NULL); 
   //context_uload(&pcb[0], "/bin/nterm", NULL, NULL); 
   context_uload(&pcb[1], "/bin/pal", NULL, NULL); 
-  printf("\033[31mpcb 1 finished ...\033[0m\n");
+  //printf("\033[31mpcb 1 finished ...\033[0m\n");
   //context_kload(&pcb[1], hello_fun, "proc1");
   switch_boot_pcb();
 
@@ -46,17 +46,17 @@ void init_proc() {
 }
 
 Context* schedule(Context *prev) {
-  printf("\033[33mschedule: Traping here...\033[0m\n");
+  //printf("\033[33mschedule: Traping here...\033[0m\n");
   current->cp = prev;
   current = (current == &pcb[0] ? &pcb[1] : &pcb[0]);
-  printf("\033[33mFinished...\033[0m\n");
+  //printf("\033[33mFinished...\033[0m\n");
   return current->cp;
 }
 
 int execve(const char *pathname, char *const argv[], char *const envp[])
 {
   // char *envp1[] = {NULL};
-   printf("\033[31mexecve pathname is %s\033[0m\n", pathname);
+   //printf("\033[31mexecve pathname is %s\033[0m\n", pathname);
   int fd = fs_open(pathname, 0, 0);
   if (fd == -1)
   {
