@@ -127,6 +127,12 @@ void context_kload(PCB *pcb, void (*entry)(void *), void *arg){
 }
 
 
+static size_t ceil_4_bytes(size_t size){
+  if (size & 0x3)
+    return (size & (~0x3)) + 0x4;
+  return size;
+}
+
 void context_uload(PCB *pcb, const char *filename, char *const argv[], char *const envp[]) {
   /* Each process holds 32kb of stack space, which we think is sufficient for ics processes. */
   AddrSpace *as = &pcb->as;
@@ -147,19 +153,20 @@ void context_uload(PCB *pcb, const char *filename, char *const argv[], char *con
   int argc = 0, envc = 0;
   if (envp) for (; envp[envc]; ++envc) ;
   if (argv) for (; argv[argc]; ++argc) ;
-  //char **args = (char **)malloc(sizeof(char*) * argc);
-  char *args[argc], *envs[envc];
-  //char **envs = (char **)malloc(sizeof(char*) * envc);
+  char **args = (char **)malloc(sizeof(char*) * argc);
+  char **envs = (char **)malloc(sizeof(char*) * envc);
 
   /* Copy String Area. */
   for (int i = 0; i < argc; ++i) {
     /* Note that it is neccessary to make memory *align*. */
-    brk -= ROUNDUP(strlen(argv[i]) + 1, sizeof(int));
+    //brk -= ROUNDUP(strlen(argv[i]) + 1, sizeof(int));
+    brk -= (ceil_4_bytes(strlen(argv[i]) + 1));
     args[i] = brk;
     strcpy(brk, argv[i]);
   }
   for (int i = 0; i < envc; ++i) {
-    brk -= ROUNDUP(strlen(envp[i]) + 1, sizeof(int));
+    //brk -= ROUNDUP(strlen(envp[i]) + 1, sizeof(int));
+    brk -= (ceil_4_bytes(strlen(envp[i]) + 1));
     envs[i] = brk;
     strcpy(brk, envp[i]);
   }
