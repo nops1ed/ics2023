@@ -47,7 +47,7 @@ typedef uint64_t PTE;
 
 #define CONFIG_FFF 1
 paddr_t isa_mmu_translate(vaddr_t vaddr, int len, int type) {
-  printf("\033[31mStarting translate\n");
+  //printf("\033[31mStarting translate\n");
 #ifdef CONFIG_FFF
   paddr_t pagetable = (cpu.csr[CSR_SATP].val << 12) + PX(2, vaddr) * 8;
   //printf("Pagetable is %x\n", pagetable);
