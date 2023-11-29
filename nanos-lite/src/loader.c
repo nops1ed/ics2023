@@ -172,6 +172,7 @@ void context_uload(PCB *pcb, const char *filename, char *const argv[], char *con
   }
 
   /* Copy envp & argv area. */
+  /*
   intptr_t *ptr_brk = (intptr_t *)brk;
   *(--ptr_brk) = 0;
   ptr_brk -= envc;
@@ -180,6 +181,33 @@ void context_uload(PCB *pcb, const char *filename, char *const argv[], char *con
   ptr_brk = ptr_brk - argc;
   for (int i = 0; i < argc; ++i)  ptr_brk[i] = (intptr_t)(args[i]);
   *(--ptr_brk) = argc;
+  */
+
+  intptr_t *ptr_brk = (intptr_t *)(brk);
+
+  // 分配envp空间
+  ptr_brk -= 1;
+  *ptr_brk = 0;
+  ptr_brk -= envc;
+  for (int i = 0; i < envc; ++i){
+    ptr_brk[i] = (intptr_t)(envs[i]);
+  }
+
+  // 分配argv空间
+  ptr_brk -= 1;
+  *ptr_brk = 0;
+  ptr_brk = ptr_brk - argc;
+  
+  // printf("%p\n", ptr_brk);
+  //printf("%p\t%p\n", alloced_page, ptr_brk);
+  //printf("%x\n", ptr_brk);
+  //assert((intptr_t)ptr_brk == 0xDD5FDC);
+  for (int i = 0; i < argc; ++i){
+    ptr_brk[i] = (intptr_t)(args[i]);
+  }
+
+  ptr_brk -= 1;
+  *ptr_brk = argc;
 
   //free(args);
   //free(envs);
