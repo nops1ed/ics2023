@@ -97,6 +97,7 @@ void __am_switch(Context *c) {
 #define PTE_PPN(x) (((uintptr_t)x & PTE_PPN_MASK) >> 10)
 
 void map(AddrSpace *as, void *va, void *pa, int prot) {
+  /*
   va = (void *)(((uintptr_t)va) & (~0xfff));
   pa = (void *)(((uintptr_t)pa) & (~0xfff));
 
@@ -127,10 +128,10 @@ void map(AddrSpace *as, void *va, void *pa, int prot) {
   // 设置PPN
   *leaf_page_table_entry = (PTE_PPN_MASK & ((uintptr_t)pa >> 2)) | (PTE_V);
   //assert(PTE_PPN(*leaf_page_table_entry) * 4096 + VA_OFFSET(va) == (uintptr_t)pa);
+  */
 
 
   /* Perform a page table walk. */
-  /*
   pagetable_t pagetable = as->ptr;
   PTE *pte;
   for(int level = 2; level > 0; level--) {
@@ -145,12 +146,9 @@ void map(AddrSpace *as, void *va, void *pa, int prot) {
     }
     //printf("\033[34mpagetable is %p and *pte is %p\033[0m\n", pagetable, *pte);
   }
-  */
   /* Fill PTE fields. */
-  /*
   pte = &pagetable[PX(0, va)];
   *pte = PA2PTE(pa) | PTE_V;
-  */
 
 
   //printf("Finally store %p to %p\n\n", *pte, pte);
