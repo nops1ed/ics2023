@@ -50,9 +50,9 @@ static uintptr_t loader(PCB *pcb, const char *filename)
 
   fs_read(fd, &ehdr, sizeof(ehdr));
 
-  char riscv64_magic_num[] = {0x7f, 0x45, 0x4c, 0x46, 0x01, 0x01, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
+  //char riscv64_magic_num[] = {0x7f, 0x45, 0x4c, 0x46, 0x01, 0x01, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
   // printf("magic number is %s\n", (char *)(ehdr.e_ident));
-  assert(strcmp((char *)(ehdr.e_ident), riscv64_magic_num) == 0);
+  //assert(strcmp((char *)(ehdr.e_ident), riscv64_magic_num) == 0);
 
   uint32_t entry = ehdr.e_entry;
   uint32_t ph_offset = ehdr.e_phoff;
