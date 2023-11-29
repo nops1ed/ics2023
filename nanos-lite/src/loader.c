@@ -133,27 +133,17 @@ void context_uload(PCB *pcb, const char *filename, char *const argv[], char *con
   printf("\033[33mCreating kernel address space...\033[0m\n");
   protect(&pcb->as);
   printf("\033[33mKernel address space created\033[0m\n");
-  //void *page_alloc = new_page(NR_PAGE) + NR_PAGE * PGSIZE;
-  void *alloced_page = new_page(NR_PAGE) + NR_PAGE * PGSIZE;
+  void *page_alloc = new_page(NR_PAGE) + NR_PAGE * PGSIZE;
 
   /* Mapping user stack here. */
   printf("\033[33m\nMapping user stack...\033[0m\n");
-  //for(int i = NR_PAGE; i >= 0; i--) 
-    //map(as, as->area.end - i * PGSIZE, page_alloc - i * PGSIZE, 1);
-
-      map(as, as->area.end - 8 * PAGESIZE, alloced_page - 8 * PAGESIZE, 1); 
-  map(as, as->area.end - 7 * PAGESIZE, alloced_page - 7 * PAGESIZE, 1);
-  map(as, as->area.end - 6 * PAGESIZE, alloced_page - 6 * PAGESIZE, 1); 
-  map(as, as->area.end - 5 * PAGESIZE, alloced_page - 5 * PAGESIZE, 1);
-  map(as, as->area.end - 4 * PAGESIZE, alloced_page - 4 * PAGESIZE, 1); 
-  map(as, as->area.end - 3 * PAGESIZE, alloced_page - 3 * PAGESIZE, 1);
-  map(as, as->area.end - 2 * PAGESIZE, alloced_page - 2 * PAGESIZE, 1); 
-  map(as, as->area.end - 1 * PAGESIZE, alloced_page - 1 * PAGESIZE, 1); 
+  for(int i = NR_PAGE; i > 0; i--) 
+    map(as, as->area.end - i * PGSIZE, page_alloc - i * PGSIZE, 1);
   
   printf("\033[33mUser stack mapped\033[0m\n");
 
   /* deploy user stack layout. */
-  char *brk = (char *)(alloced_page - 4);
+  char *brk = (char *)(page_alloc - 4);
   int argc = 0, envc = 0;
   if (envp) for (; envp[envc]; ++envc) ;
   if (argv) for (; argv[argc]; ++argc) ;
