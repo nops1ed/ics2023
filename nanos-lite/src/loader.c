@@ -42,7 +42,7 @@ int fs_close(int fd);
   size_t page_n = ((vaddr + p_memsz - 1) >> 12) - (vaddr >> 12) + 1;
   void *page_start = new_page(page_n);
 
-  printf("Loaded Segment from [%x to %x)\n", vaddr, vaddr + p_memsz);
+  Log("\033[32mLoaded Segment from [%x to %x)\033[0m\n", vaddr, vaddr + p_memsz);
   
   for (int i = 0; i < page_n; ++i){
     map(as, (void *)((vaddr & ~0xfff) + i * PAGESIZE), (void *)(page_start + i * PAGESIZE), 1);
@@ -61,9 +61,9 @@ int fs_close(int fd);
 */
 static uintptr_t loader(PCB *pcb, const char *filename) {
   Elf_Ehdr ehdr;
-  printf("\033[33mOpening file...\033[0m\n");
+  Log("\033[33mOpening file...\033[0m\n");
   int fd = fs_open(filename, 0, 0);
-  printf("\033[33mFile opened\033[0m\n");
+  Log("\033[33mFile opened\033[0m\n");
   fs_read(fd, &ehdr, sizeof(ehdr));  
 
   /* check magic number. */
@@ -111,15 +111,14 @@ void context_uload(PCB *pcb, const char *filename, char *const argv[], char *con
   /* Mapping address space. */
   Log("\033[33mCreating kernel address space...\033[0m\n");
   protect(&pcb->as);
-  printf("\033[33mKernel address space created\033[0m\n");
+  Log("\033[33mKernel address space created\033[0m\n");
   void *page_alloc = new_page(NR_PAGE) + NR_PAGE * PGSIZE;
 
   /* Mapping user stack here. */
-  printf("\033[33m\nMapping user stack...\033[0m\n");
+  Log("\033[33m\nMapping user stack...\033[0m\n");
   for(int i = NR_PAGE; i > 0; i--) 
     map(as, as->area.end - i * PGSIZE, page_alloc - i * PGSIZE, 1);
-  
-  printf("\033[33mUser stack mapped\033[0m\n");
+  Log("\033[33mUser stack established\033[0m\n");
 
   /* deploy user stack layout. */
   char *brk = (char *)(page_alloc - 4);
@@ -155,9 +154,9 @@ void context_uload(PCB *pcb, const char *filename, char *const argv[], char *con
   free(args);
   free(envs);
 
-  printf("\033[33mLoading program entry...\033[0m\n");
+  Log("\033[33mLoading program entry...\033[0m\n");
   uintptr_t entry = loader(pcb, filename);
-  printf("\033[33mloader finished\033[0m\n");
+  Log("\033[33mloader finished\033[0m\n");
   Area stack;
   stack.start = &pcb->cp;
   stack.end = &pcb->cp + STACK_SIZE;
@@ -165,6 +164,45 @@ void context_uload(PCB *pcb, const char *filename, char *const argv[], char *con
   pcb->cp = ucxt;
   ucxt->GPRx = (intptr_t)ptr_brk;
 }
+/*
+  |               |
+  +---------------+ <---- ustack.end
+  |  Unspecified  |
+  +---------------+
+  |               | <----------+
+  |    string     | <--------+ |
+  |     area      | <------+ | |
+  |               | <----+ | | |
+  |               | <--+ | | | |
+  +---------------+    | | | | |
+  |  Unspecified  |    | | | | |
+  +---------------+    | | | | |
+  |     NULL      |    | | | | |
+  +---------------+    | | | | |
+  |    ......     |    | | | | |
+  +---------------+    | | | | |
+  |    envp[1]    | ---+ | | | |
+  +---------------+      | | | |
+  |    envp[0]    | -----+ | | |
+  +---------------+        | | |
+  |     NULL      |        | | |
+  +---------------+        | | |
+  | argv[argc-1]  | -------+ | |
+  +---------------+          | |
+  |    ......     |          | |
+  +---------------+          | |
+  |    argv[1]    | ---------+ |
+  +---------------+            |
+  |    argv[0]    | -----------+
+  +---------------+
+  |      argc     |
+  +---------------+ <---- cp->GPRx
+  |               |
+*/
+
+
+
+
 
 /*
 
