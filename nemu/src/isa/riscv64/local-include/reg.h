@@ -44,6 +44,7 @@ static inline int csr_idx(uint32_t idx) {
     case 0x344: return CSR_MIP;
     case 0x180: return CSR_SATP;
     default:  
+      printf("\033[031mGonna to visit CSR %x\033[0m\n", idx);
       panic("Undefined CSR\n");
   }
   return 0;
