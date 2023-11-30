@@ -22,26 +22,23 @@ Context* __am_irq_handle(Context *c) {
   __am_get_cur_as(c);
   if (user_handler) {
     Event ev = {0};
-    /* All of the interrupts will be treated as MODE_MACHINE. */
-    if(c->mcause == MODE_M) {
-      switch(c->GPR1) {
-        case -1:
+    switch(c->mcause) {
+      case MODE_M:
+        if(c->GPR1 == -1)
           ev.event = EVENT_YIELD;
-          break;
-        case 0 ... 19:
+        else if(c->GPR1 <= 19 && c->GPR1 >= 0)
           ev.event = EVENT_SYSCALL;
-          break;
-        default:
-          ev.event = EVENT_ERROR;
-      }
-      c->mepc += 4;
-    }
-    else if(c->mcause == IRQ_TIMER)
-      ev.event = EVENT_IRQ_TIMER;
-    else {
-      printf("\033[33mMode %d is set and event is %d\033[0m\n", c->mcause, c->GPR1);
-      printf("\033[33mUser/Supervisor mode is not supported\033[0m\n");
-      assert(0);
+        else {
+          printf("\033[31mUnknown SYSCALL : %d\033[0m\n", c->GPR1);
+          assert(0);
+        }
+        c->mepc += 4;
+        break;
+      case IRQ_TIMER:
+        ev.event = EVENT_IRQ_TIMER;
+        break;
+      default :
+       ev.event = EVENT_ERROR;
     }
     c = user_handler(ev, c);
     if(c == NULL) {

@@ -14,6 +14,9 @@ static Context* do_event(Event e, Context* c) {
     case EVENT_YIELD:
       c = schedule(c);
       break;
+    case EVENT_ERROR:
+      Log("\033[31mError occured when packing event\033[0m\n");
+      assert(0);
     default: panic("\033[31mUnhandled event ID = %d\033[0m\n", e.event);
   }
   return c;
