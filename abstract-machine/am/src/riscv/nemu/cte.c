@@ -40,7 +40,7 @@ Context* __am_irq_handle(Context *c) {
       c->mepc += 4;
     }
     else {
-      printf("\033[33mMode %d is set and event is %d\033[0m\n", c->mcause, c->GPR1);
+      printf("\033[33mMode %d is set and event is %lx\033[0m\n", c->mcause, c->GPR1);
       printf("\033[33mUser/Supervisor mode is not supported\033[0m\n");
       assert(0);
     }
