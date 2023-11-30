@@ -31,14 +31,13 @@ Context* __am_irq_handle(Context *c) {
         case 0 ... 19:
           ev.event = EVENT_SYSCALL;
           break;
-        case IRQ_TIMER:
-          ev.event = EVENT_IRQ_TIMER;
-          break;
         default:
           ev.event = EVENT_ERROR;
       }
       c->mepc += 4;
     }
+    else if(c->mcause == IRQ_TIMER)
+      ev.event = EVENT_IRQ_TIMER;
     else {
       printf("\033[33mMode %d is set and event is %d\033[0m\n", c->mcause, c->GPR1);
       printf("\033[33mUser/Supervisor mode is not supported\033[0m\n");
