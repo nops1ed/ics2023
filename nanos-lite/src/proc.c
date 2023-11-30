@@ -31,11 +31,11 @@ void hello_fun(void *arg) {
 void init_proc() {
   //switch_boot_pcb();
   //printf("\033[31mtraping here...\033[0m\n");
-  context_kload(&pcb[1], hello_fun, "Message from proc #1");
+  context_kload(&pcb[0], hello_fun, "Message from proc #1");
   //printf("\033[31mpcb 0 finished ...\033[0m\n");
   //context_uload(&pcb[0], "/bin/hello"); 
   //context_uload(&pcb[1], "/bin/pal", args_pal, NULL); 
-  context_uload(&pcb[0], "/bin/nterm", NULL, NULL); 
+  context_uload(&pcb[1], "/bin/nterm", NULL, NULL); 
   //context_uload(&pcb[0], "/bin/nterm", NULL, NULL); 
   //context_uload(&pcb[1], "/bin/nterm", NULL, NULL); 
   //context_kload(&pcb[1], hello_fun, "Message from proc #2");
