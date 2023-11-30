@@ -259,8 +259,8 @@ static void ecall_ctrl(Decode *s) {
 
 static void mret_ctrl(Decode *s) {
   s->dnpc = CR(CSR_MEPC).val;
-  //CR(CSR_MSTATUS).status.MIE = CR(CSR_MSTATUS).status.MPIE;
-  //CR(CSR_MSTATUS).status.MPIE = 1;
+  CR(CSR_MSTATUS).status.MIE = CR(CSR_MSTATUS).status.MPIE;
+  CR(CSR_MSTATUS).status.MPIE = 1;
 }
 
 int isa_exec_once(Decode *s) {
