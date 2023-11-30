@@ -258,7 +258,7 @@ static void ecall_ctrl(Decode *s) {
 }
 
 static void mret_ctrl(Decode *s) {
-  s->dnpc = CR(CSR_MEPC).val;
+  s->dnpc = CR(0x341).val;
   //CR(CSR_MSTATUS).status.MIE = CR(CSR_MSTATUS).status.MPIE;
   //CR(CSR_MSTATUS).status.MPIE = 1;
 }
