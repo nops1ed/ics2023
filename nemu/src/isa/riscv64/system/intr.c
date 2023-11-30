@@ -38,7 +38,7 @@ word_t isa_raise_intr(word_t NO, vaddr_t epc) {
 
 word_t isa_query_intr() {
   /* Query clock interrupt. */
-  if (cpu.INTR && (cpu.csr[CSR_MSTATUS].status.MIE)) {
+  if (cpu.INTR && (cpu.csr[CSR_MSTATUS].status.MIE == 1)) {
     cpu.INTR = false;
     return IRQ_TIMER;
   }
