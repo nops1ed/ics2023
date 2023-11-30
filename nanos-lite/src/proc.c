@@ -12,7 +12,7 @@ void context_uload(PCB *pcb, const char *filename, char *const argv[], char *con
 static PCB pcb[MAX_NR_PROC] __attribute__((used)) = {};
 static PCB pcb_boot = {};
 PCB *current = NULL;
-static int time_chip;
+//static int time_chip;
 
 void switch_boot_pcb() {
   current = &pcb_boot;
@@ -51,11 +51,8 @@ void init_proc() {
 Context* schedule(Context *prev) {
   //printf("\033[33mschedule: Traping here...\033[0m\n");
   current->cp = prev;
-  time_chip++;
-  if (time_chip > 10) {
     current = (current == &pcb[0] ? &pcb[1] : &pcb[0]);
-    time_chip = 0;
-  }
+    //time_chip = 0;
   //printf("\033[33mFinished...\033[0m\n");
   return current->cp;
 }
