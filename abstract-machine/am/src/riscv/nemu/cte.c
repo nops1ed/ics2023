@@ -2,14 +2,24 @@
 #include <riscv/riscv.h>
 #include <klib.h>
 
+#ifndef __MACRO_IRQ_NUM__
+#define __MACRO_IRQ_NUM__
+#if defined(__ISA_X86__)
+#define IRQ_TIMER 32        
+#elif defined(__riscv)
+#define IRQ_TIMER 0x8000000000000007 
+#elif defined(__ISA_MIPS32__)
+#define IRQ_TIMER 0      
+#elif defined(__ISA_LOONGARCH32R__)
+#endif
+#endif
+
 static Context* (*user_handler)(Event, Context*) = NULL;
 void __am_get_cur_as(Context *c);
 void __am_switch(Context *c);
 
 Context* __am_irq_handle(Context *c) {
-  //printf("Before get cur as, pdir is %x\n", c->pdir);
   __am_get_cur_as(c);
-  //printf("After get cur as, pdir is %x\n", c->pdir);
   if (user_handler) {
     Event ev = {0};
     /* All of the interrupts will be treated as MODE_MACHINE. */
@@ -20,6 +30,9 @@ Context* __am_irq_handle(Context *c) {
           break;
         case 0 ... 19:
           ev.event = EVENT_SYSCALL;
+          break;
+        case IRQ_TIMER:
+          ev.event = EVENT_IRQ_TIMER;
           break;
         default:
           ev.event = EVENT_ERROR;
@@ -36,9 +49,7 @@ Context* __am_irq_handle(Context *c) {
       assert(0);
     }
   }
-  //printf("Gonna am switch\n");
   __am_switch(c);
-  //printf("Switch finished\n");
   return c;
 }
 
@@ -59,6 +70,9 @@ Context *kcontext(Area kstack, void (*entry)(void *), void *arg) {
   memset(kctx, 0, sizeof(kctx));
   kctx->gpr[0] = 0;
   kctx->GPRx = (uintptr_t)arg;
+  /* Enable interrupt. */
+  //kctx->mstatus.MIE = 1;
+  kctx->mstatus = 0x1800 | 0x40;
   kctx->pdir = NULL;
   kctx->mepc = (uintptr_t)entry;
   return kctx;

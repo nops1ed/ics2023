@@ -25,9 +25,7 @@ static Area segments[] = {      // Kernel memory mappings
 typedef uint64_t *pagetable_t; // 512 PTEs
 
 static inline void set_satp(void *pdir) {
-  //printf("Now pdir is %x\n", pdir);
   uintptr_t mode = 1ul << (__riscv_xlen - 1);
-  //printf("store data %p in satp \n", mode | ((uintptr_t)pdir >> 12));
   asm volatile("csrw satp, %0" : : "r"(mode | ((uintptr_t)pdir >> 12)));
 }
 
@@ -97,31 +95,6 @@ void __am_switch(Context *c) {
 #define PTE_PPN(x) (((uintptr_t)x & PTE_PPN_MASK) >> 10)
 
 void map(AddrSpace *as, void *va, void *pa, int prot) {
-  /*
-  va = (void *)(((uintptr_t)va) & (~0xfff));
-  pa = (void *)(((uintptr_t)pa) & (~0xfff));
-
-  PTE *page_table_entry = as->ptr + VA_VPN_2(va) * 8;
-  if (!(*page_table_entry & PTE_V)){ 
-    void *alloced_page = pgalloc_usr(PGSIZE);
-    *page_table_entry = (*page_table_entry & ~PTE_PPN_MASK) | (PTE_PPN_MASK & ((uintptr_t)alloced_page >> 2));
-    *page_table_entry = (*page_table_entry | PTE_V);
-  }
-
-  PTE *page2_table_entry = (PTE *)(PTE_PPN(*page_table_entry) * 4096 + VA_VPN_1(va) * 8);
-  if (!(*page2_table_entry & PTE_V)){ 
-    void *alloced_page = pgalloc_usr(PGSIZE);
-    *page2_table_entry = (*page2_table_entry & ~PTE_PPN_MASK) | (PTE_PPN_MASK & ((uintptr_t)alloced_page >> 2));
-    *page2_table_entry = (*page2_table_entry | PTE_V);
-  }
-
-  PTE *leaf_page_table_entry = (PTE *)(PTE_PPN(*page2_table_entry) * 4096 + VA_VPN_0(va) * 8);
-
-  *leaf_page_table_entry = (PTE_PPN_MASK & ((uintptr_t)pa >> 2)) | (PTE_V);
-  //assert(PTE_PPN(*leaf_page_table_entry) * 4096 + VA_OFFSET(va) == (uintptr_t)pa);
-  */
-
-
   /* Perform a page table walk. */
   pagetable_t pagetable = as->ptr;
   PTE *pte;
@@ -169,11 +142,11 @@ void map(AddrSpace *as, void *va, void *pa, int prot) {
 
 Context *ucontext(AddrSpace *as, Area kstack, void *entry) {
   Context *kctx = (Context *)(kstack.end - sizeof(Context)); 
-
   /* Bug occured here. */
   kctx->pdir = as->ptr;
-
   kctx->mepc = (uintptr_t)entry;
+  /* Enable interrupt. */
+  kctx->mstatus = 0xC0000 | 0x80;//MPP设置为U模式，MXR=1，SUM=1
   printf("\033[033mUser context created\033[0m\n");
   return kctx;
 }

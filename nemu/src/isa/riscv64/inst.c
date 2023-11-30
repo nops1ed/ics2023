@@ -26,6 +26,7 @@ static uint64_t _unsigned_multiply_high(uint64_t a, uint64_t b);
 static int64_t _multiply_high(int64_t a, int64_t b);
 static void ecall_ctrl(Decode *s);
 //static word_t csr_ctrl(Decode *s, word_t src1, word_t imm);
+static void mret_ctrl(Decode *s);
 
 #define R(i) gpr(i)
 #define CR(i) csr(i)
@@ -35,6 +36,7 @@ static void ecall_ctrl(Decode *s);
 #define Bc Branch_Cond
 #define XLEN 64 
 
+/* NEMU does not support user mode & supervisor mode. */
 enum {
   MODE_M = 11, MODE_S, MODE_U
 };
@@ -46,10 +48,6 @@ enum {
 enum {
   TYPE_I, TYPE_U, TYPE_S, TYPE_J, TYPE_R, TYPE_B,
   TYPE_N, // none
-};
-
-enum {
-  CSR_RS,
 };
 
 #define src1R() do { *src1 = R(rs1); } while (0)
@@ -158,7 +156,7 @@ static int decode_exec(Decode *s) {
   INSTPAT("0000001 ????? ????? 011 ????? 01100 11", mulhu  , R, R(rd) = _unsigned_multiply_high(src1, src2));
   INSTPAT("0000001 ????? ????? 000 ????? 01110 11", mulw   , R, R(rd) = SEXT(BITS(src1 * src2, 31, 0), 32));
   /* Need extended. */
-  INSTPAT("0011000 00010 00000 000 00000 11100 11", mret   , R, s->dnpc = CR(0x341).val);
+  INSTPAT("0011000 00010 00000 000 00000 11100 11", mret   , R, mret_ctrl(s));
   INSTPAT("??????? ????? ????? ??? ????? 00101 11", auipc  , U, R(rd) = s->pc + imm);
   INSTPAT("??????? ????? ????? ??? ????? 01101 11", lui    , U, R(rd) = SEXT(BITS(imm, 31, 12) << 12, 32));
   INSTPAT("??????? ????? ????? 000 ????? 01000 11", sb     , S, Mw(src1 + imm, 1, BITS(src2, 7, 0)));
@@ -259,13 +257,11 @@ static void ecall_ctrl(Decode *s) {
   s->dnpc = isa_raise_intr(MODE_M, s->pc);
 }
 
-/*
-static word_t csr_ctrl(Decode *s, word_t src1, word_t imm) {
-  word_t ret_val = CR(imm);
-  CR(imm) = ret_val | src1;
-  return ret_val;
+static void mret_ctrl(Decode *s) {
+  s->dnpc = CR(CSR_MEPC).val;
+  CR(CSR_MSTATUS).status.MIE = CR(CSR_MSTATUS).status.MPIE;
+  CR(CSR_MSTATUS).status.MPIE = 1;
 }
-*/
 
 int isa_exec_once(Decode *s) {
   s->isa.inst.val = inst_fetch(&s->snpc, 4);

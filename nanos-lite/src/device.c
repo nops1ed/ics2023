@@ -43,7 +43,6 @@ static char* __itoa(int num, char* str, int base) {
 static AM_GPU_CONFIG_T gpuinfo = {};
 
 size_t serial_write(const void *buf, size_t offset, size_t len) {
-  yield();
   unsigned long int stream = (long int)buf;
   int ret_val = -1;
   /* Indicate stdout/stderr and just call putch(). */
@@ -57,7 +56,6 @@ size_t serial_write(const void *buf, size_t offset, size_t len) {
 }
 
 size_t events_read(void *buf, size_t offset, size_t len) {
-  yield();
   static AM_INPUT_KEYBRD_T kbd;
   ioe_read(AM_INPUT_KEYBRD, &kbd);
   if (kbd.keycode == AM_KEY_NONE) return 0;
@@ -71,7 +69,6 @@ size_t events_read(void *buf, size_t offset, size_t len) {
 
 size_t dispinfo_read(void *buf, size_t offset, size_t len) {
   /* buf does not support lseek. */
-  //printf("DEV: read is called and len is %d\n", len);
   //Log("Display info: %d * %d\n", gpuinfo.width, gpuinfo.height);
   printf("**********\nDev-Display info: %d * %d\n**********\n", gpuinfo.width, gpuinfo.height);
   char _tmp[32], _tmp2[32];
@@ -80,7 +77,6 @@ size_t dispinfo_read(void *buf, size_t offset, size_t len) {
 }
 
 size_t fb_write(const void *buf, size_t offset, size_t len) {
-  yield();
   //printf("DEV: Writing to x: %d y: %d\n", offset / w, offset % w);
   //printf("DEV: len :%d\n", len);
   //printf("DEV: w is %d h is %d\n", w, h);
