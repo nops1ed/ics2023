@@ -37,7 +37,7 @@ static inline int csr_idx(uint32_t idx) {
     case 0x300: return CSR_MSTATUS;
     case 0x304: return CSR_MIE;
     case 0x305: return CSR_MTVEC;
-    case 0x340: return CSR_MSCRATCH;
+    //case 0x340: return CSR_MSCRATCH;
     case 0x341: return CSR_MEPC;
     case 0x342: return CSR_MCAUSE;
     case 0x343: return CSR_MTVAL;
