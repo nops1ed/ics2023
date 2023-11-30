@@ -12,6 +12,7 @@ void context_uload(PCB *pcb, const char *filename, char *const argv[], char *con
 static PCB pcb[MAX_NR_PROC] __attribute__((used)) = {};
 static PCB pcb_boot = {};
 PCB *current = NULL;
+static int time_chip;
 
 void switch_boot_pcb() {
   current = &pcb_boot;
@@ -30,11 +31,11 @@ void hello_fun(void *arg) {
 void init_proc() {
   //switch_boot_pcb();
   //printf("\033[31mtraping here...\033[0m\n");
-  context_kload(&pcb[0], hello_fun, "Message from proc #1");
+  context_kload(&pcb[1], hello_fun, "Message from proc #1");
   //printf("\033[31mpcb 0 finished ...\033[0m\n");
   //context_uload(&pcb[0], "/bin/hello"); 
   //context_uload(&pcb[1], "/bin/pal", args_pal, NULL); 
-  context_uload(&pcb[1], "/bin/nterm", NULL, NULL); 
+  context_uload(&pcb[0], "/bin/nterm", NULL, NULL); 
   //context_uload(&pcb[0], "/bin/nterm", NULL, NULL); 
   //context_uload(&pcb[1], "/bin/nterm", NULL, NULL); 
   //context_kload(&pcb[1], hello_fun, "Message from proc #2");
@@ -50,7 +51,10 @@ void init_proc() {
 Context* schedule(Context *prev) {
   //printf("\033[33mschedule: Traping here...\033[0m\n");
   current->cp = prev;
-  current = (current == &pcb[0] ? &pcb[1] : &pcb[0]);
+  if (time_chip > 10) {
+    current = (current == &pcb[0] ? &pcb[1] : &pcb[0]);
+    time_chip = 0;
+  }
   //printf("\033[33mFinished...\033[0m\n");
   return current->cp;
 }
