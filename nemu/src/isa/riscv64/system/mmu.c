@@ -16,7 +16,6 @@
 #include <isa.h>
 #include <memory/vaddr.h>
 #include <memory/paddr.h>
-#define VA_OFFSET(x) ((vaddr_t)x & 0x00000FFFu)
 
 #define PTE_V 0x01
 #define PTE_R 0x02
@@ -36,6 +35,7 @@ typedef uint64_t PTE;
 /* shift a physical address to the right place for a PTE. */
 #define PA2PTE(pa) ((((uint64_t)pa) >> 12) << 10)
 #define PTE2PA(pte) (((pte) >> 10) << 12)
+#define VA_OFFSET(x) ((vaddr_t)x & 0xFFFu)
 
 paddr_t isa_mmu_translate(vaddr_t vaddr, int len, int type) {
   paddr_t pagetable = (cpu.csr[CSR_SATP].val << 12) + PX(2, vaddr) * 8;
@@ -49,6 +49,6 @@ paddr_t isa_mmu_translate(vaddr_t vaddr, int len, int type) {
   /* PTE dirty bit is ready for TLB. */
   uint64_t MODE_PTE = type == 0 ? PTE_A : PTE_D;
   paddr_write(pagetable, 8, pte | MODE_PTE);
-  paddr_t pa = PTE2PA(pte) + VA_OFFSET(vaddr);
+  paddr_t pa = PTE2PA(pte) + (vaddr & 0xFFF);
   return pa;
 }
