@@ -12,17 +12,17 @@ static Area segments[] = {      // Kernel memory mappings
 };
 
 #define USER_SPACE RANGE(0x40000000, 0x80000000)
+
 #define PGSHIFT         12
 /* extract the three 9-bit page table indices from a virtual address. */
 #define PXMASK          0x1FF // 9 bits
-#define PXSHIFT(level)  (PGSHIFT+(9*(level)))
+#define PXSHIFT(level)  (PGSHIFT + ( 9 * (level)))
 #define PX(level, va) ((((uint64_t) (va)) >> PXSHIFT(level)) & PXMASK)
 
-// shift a physical address to the right place for a PTE.
+/* shift a physical address to the right place for a PTE. */
 #define PA2PTE(pa) ((((uint64_t)pa) >> 12) << 10)
 #define PTE2PA(pte) (((pte) >> 10) << 12)
-
-typedef uint64_t *pagetable_t; // 512 PTEs
+typedef uint64_t *pagetable_t; 
 
 static inline void set_satp(void *pdir) {
   uintptr_t mode = 1ul << (__riscv_xlen - 1);

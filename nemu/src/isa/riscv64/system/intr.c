@@ -23,14 +23,12 @@ word_t isa_raise_intr(word_t NO, vaddr_t epc) {
   cpu.csr[CSR_MCAUSE].val = NO;
 
   cpu.csr[CSR_MSTATUS].status.MPIE = cpu.csr[CSR_MSTATUS].status.MIE;
-  /* Disable Interrupt. */
-  //cpu.csr[CSR_MSTATUS].status.MIE = 0;
-  /* Indicate Machine mode. */
-  //cpu.csr[CSR_MSTATUS].status.MPP = 0xb;
+  /*
   if (cpu.csr[CSR_MSTATUS].status.MIE)
     cpu.csr[CSR_MSTATUS].status.MPIE = 1;
   else
     cpu.csr[CSR_MSTATUS].status.MPIE = 0;
+  */
   cpu.csr[CSR_MSTATUS].status.MIE = 0;
 
   return cpu.csr[CSR_MTVEC].val;
