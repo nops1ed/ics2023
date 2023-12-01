@@ -33,6 +33,7 @@ static inline const char* reg_name(int idx) {
 
 /* The form of idx we defined here was like 0x$$$. */
 static inline int csr_idx(uint32_t idx) {
+  printf("\033[31mCSR %x accessed.\033[0m\n", idx);
   switch(idx) {
     case 0x300: return CSR_MSTATUS;
     case 0x304: return CSR_MIE;

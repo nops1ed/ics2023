@@ -35,7 +35,6 @@ typedef uint64_t PTE;
 /* shift a physical address to the right place for a PTE. */
 #define PA2PTE(pa) ((((uint64_t)pa) >> 12) << 10)
 #define PTE2PA(pte) (((pte) >> 10) << 12)
-#define VA_OFFSET(x) ((vaddr_t)x & 0xFFFu)
 
 paddr_t isa_mmu_translate(vaddr_t vaddr, int len, int type) {
   paddr_t pagetable = (cpu.csr[CSR_SATP].val << 12) + PX(2, vaddr) * 8;
