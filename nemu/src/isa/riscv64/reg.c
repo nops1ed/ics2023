@@ -25,7 +25,7 @@ const char *regs[] = {
 
 const char *csrs[] = {
 	"mtvec", "mepc", "mstatus", "mcause", "mie",
-	"mip", "mtval", "satp"
+	"mip", "mtval", "mscratch", "satp"
 };
 
 static uint32_t nr_regs = sizeof(regs) / sizeof(regs[0]);
@@ -40,7 +40,7 @@ void isa_csr_display() {
 void isa_reg_display() {
 	/* Do not put any repeatedly calculations in ur iteration statement , which causes additional load */
   for (int i = 1 ; i < nr_regs; i++)
-    printf("\033[32m%-10s 0x%-20lx %-20lu\033[0m\n" , regs[i] , cpu.gpr[i] , cpu.gpr[i]);
+    printf("\033[33m%-10s 0x%-20lx %-20lu\033[0m\n" , regs[i] , cpu.gpr[i] , cpu.gpr[i]);
 }
 
 word_t isa_reg_str2val(const char *s, bool *success) {
@@ -57,9 +57,9 @@ word_t isa_reg_str2val(const char *s, bool *success) {
 }
 
 void isa_snapshot_save(FILE *fp) {
-	if(fwrite(&cpu, sizeof(cpu), 1, fp) == 0) panic("\033[31mFatal error: CPU status unknown\033[0m");
+	if(fwrite(&cpu, sizeof(cpu), 1, fp) == 0) panic("\033[31mFatal Error: CPU status unknown\033[0m");
 }
 
 void isa_snapshot_load(FILE *fp) {
-	if(fread(&cpu, sizeof(cpu), 1, fp) == 0) panic("\033[31mFatal error: CPU status unknown\033[0m");
+	if(fread(&cpu, sizeof(cpu), 1, fp) == 0) panic("\033[31mFatal Error: CPU status unknown\033[0m");
 }
