@@ -70,7 +70,9 @@ save_context:
   csrw mstatus, t1
 
   mv a0, sp
+  jal __am_get_cur_as
   jal __am_irq_handle
+  jal __am_switch
   # restore context
   mv sp, a0
 
