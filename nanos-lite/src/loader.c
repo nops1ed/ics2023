@@ -118,6 +118,7 @@ void context_uload(PCB *pcb, const char *filename, char *const argv[], char *con
   Log("\033[33m\nMapping user stack...\033[0m");
   for(int i = NR_PAGE; i > 0; i--) 
     map(as, as->area.end - i * PGSIZE, page_alloc - i * PGSIZE, 1);
+  uint64_t map_offset = (char *)page_alloc - (char *)(pcb->as.area.end);
   Log("\033[33mUser stack established\033[0m");
 
   /* deploy user stack layout. */
@@ -161,6 +162,7 @@ void context_uload(PCB *pcb, const char *filename, char *const argv[], char *con
   stack.start = &pcb->cp;
   stack.end = &pcb->cp + STACK_SIZE;
   Context *ucxt = ucontext(as, stack, (void *)entry);
+  ucxt->mscratch = (uintptr_t)((char *)ptr_brk - map_offset);
   pcb->cp = ucxt;
   ucxt->GPRx = (intptr_t)ptr_brk;
 }
