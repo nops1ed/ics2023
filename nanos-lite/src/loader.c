@@ -118,7 +118,6 @@ void context_uload(PCB *pcb, const char *filename, char *const argv[], char *con
   Log("\033[33m\nMapping user stack...\033[0m");
   for(int i = NR_PAGE; i > 0; i--) 
     map(as, as->area.end - i * PGSIZE, page_alloc - i * PGSIZE, 1);
-  uint64_t map_offset = (char *)page_alloc - (char *)(pcb->as.area.end);
   Log("\033[33mUser stack established\033[0m");
 
   /* deploy user stack layout. */
@@ -161,12 +160,16 @@ void context_uload(PCB *pcb, const char *filename, char *const argv[], char *con
   Area stack;
   stack.start = &pcb->cp;
   stack.end = &pcb->cp + STACK_SIZE;
+
   Context *ucxt = ucontext(as, stack, (void *)entry);
-  ucxt->gpr[2] = (uintptr_t)ptr_brk - (uintptr_t)page_alloc + (uintptr_t)(pcb->as.area.end);
-  ucxt->mscratch = (uintptr_t)((char *)ptr_brk - map_offset);
   pcb->max_brk = 0;
   pcb->cp = ucxt;
   ucxt->GPRx = (intptr_t)ptr_brk;
+   ptr_brk -= 1;
+  *ptr_brk = 0;//为了t0_buffer
+  //设置了sp
+  ucxt->gpr[2]  = (uintptr_t)ptr_brk - (uintptr_t)page_alloc + (uintptr_t)as->area.end;
+  ucxt->GPRx = (uintptr_t)ptr_brk - (uintptr_t)page_alloc + (uintptr_t)as->area.end + 4;
 }
 /*
   |               |

@@ -147,8 +147,8 @@ Context *ucontext(AddrSpace *as, Area kstack, void *entry) {
   kctx->mepc = (uintptr_t)entry;
   /* Enable interrupt. */
   kctx->mstatus = 0xC0000 | 0x80;//MPP设置为U模式，MXR=1，SUM=1
-
-  kctx->mscratch = (uintptr_t)kstack.end;
+  kctx->np = 0;
+  //kctx->mscratch = (uintptr_t)kstack.end;
   printf("\033[033mUser context created\033[0m\n");
   return kctx;
 }

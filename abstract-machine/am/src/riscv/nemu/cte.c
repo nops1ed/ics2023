@@ -14,11 +14,22 @@
 #endif
 #endif
 
+#define KERNEL_MODE 3
+#define USER_MODE 0
+
+
 static Context* (*user_handler)(Event, Context*) = NULL;
 void __am_get_cur_as(Context *c);
 void __am_switch(Context *c);
 
 Context* __am_irq_handle(Context *c) {
+  uintptr_t mscratch = 0;
+  uintptr_t kas = 0;
+  asm volatile("csrr %0, mscratch" : "=r"(mscratch));
+  c->np = (mscratch == 0 ? KERNEL_MODE : USER_MODE);
+  asm volatile("csrw mscratch, %0" : : "r"(kas));
+  __am_get_cur_as(c);
+
   if (user_handler) {
     Event ev = {0};
     switch(c->mcause) {
@@ -45,6 +56,7 @@ Context* __am_irq_handle(Context *c) {
       assert(0);
     }
   }
+  __am_switch(c);
   return c;
 }
 
@@ -61,16 +73,19 @@ bool cte_init(Context*(*handler)(Event, Context*)) {
 }
 
 Context *kcontext(Area kstack, void (*entry)(void *), void *arg) {
+  uintptr_t *t0_buf = kstack.end - 4;
+  *t0_buf = 0;
+
   Context *kctx = (Context *)(kstack.end - sizeof(Context)); 
   memset(kctx, 0, sizeof(kctx));
-  kctx->gpr[0] = 0;
   kctx->GPRx = (uintptr_t)arg;
   /* Enable interrupt. */
   //kctx->mstatus.MIE = 1;
   kctx->mstatus = 0x1800 | 0x40;
   kctx->pdir = NULL;
-  kctx->mscratch = 0;
+  kctx->np = USER_MODE;
   kctx->mepc = (uintptr_t)entry;
+  kctx->gpr[2]  = (uintptr_t)kstack.end - 4;
   return kctx;
 }
 
