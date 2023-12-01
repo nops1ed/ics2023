@@ -36,10 +36,19 @@ f(30) f(31)
 #define OFFSET_CAUSE  ((NR_REGS + 0) * XLEN)
 #define OFFSET_STATUS ((NR_REGS + 1) * XLEN)
 #define OFFSET_EPC    ((NR_REGS + 2) * XLEN)
+#define OFFSET_SCRATCH ((NR_REGS + 3) * XLEN)
 
 .align 3
 .globl __am_asm_trap
 __am_asm_trap:
+  csrrw sp, mscratch, sp   # (1) atomically exchange sp and mscratch
+  bnez sp, save_context    # (2) take the branch if we trapped from user
+  csrr sp, mscratch        # (3) if we trapped from kernel, restore the original sp
+
+  # check whether proc trap from user mode
+
+
+save_context:
   # save context
   addi sp, sp, -CONTEXT_SIZE
 
@@ -48,10 +57,12 @@ __am_asm_trap:
   csrr t0, mcause
   csrr t1, mstatus
   csrr t2, mepc
+  csrr t3, mscratch
 
   STORE t0, OFFSET_CAUSE(sp)
   STORE t1, OFFSET_STATUS(sp)
   STORE t2, OFFSET_EPC(sp)
+  STORE t3, OFFSET_SCRATCH(sp)
 
   # set mstatus.MPRV to pass difftest
   li a0, (1 << 17)
@@ -60,15 +71,23 @@ __am_asm_trap:
 
   mv a0, sp
   jal __am_irq_handle
-  # store context
+  # restore context
   mv sp, a0
 
+restore_context: 
   LOAD t1, OFFSET_STATUS(sp)
   LOAD t2, OFFSET_EPC(sp)
   csrw mstatus, t1
   csrw mepc, t2
+  csrw mscratch, t3
 
   MAP(REGS, POP)
 
   addi sp, sp, CONTEXT_SIZE
+
+  csrrw sp, mscratch, sp 
+  bnez sp, return_from_trap 
+  csrr sp, mscratch 
+
+return_from_trap:
   mret

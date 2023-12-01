@@ -71,6 +71,7 @@ Context *kcontext(Area kstack, void (*entry)(void *), void *arg) {
   //kctx->mstatus.MIE = 1;
   kctx->mstatus = 0x1800 | 0x40;
   kctx->pdir = NULL;
+  kctx->mscratch = 0;
   kctx->mepc = (uintptr_t)entry;
   return kctx;
 }
