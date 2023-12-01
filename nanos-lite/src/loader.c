@@ -162,6 +162,7 @@ void context_uload(PCB *pcb, const char *filename, char *const argv[], char *con
   stack.start = &pcb->cp;
   stack.end = &pcb->cp + STACK_SIZE;
   Context *ucxt = ucontext(as, stack, (void *)entry);
+  ucxt->gpr[2] = (uintptr_t)ptr_brk - (uintptr_t)page_alloc + (uintptr_t)(pcb->as.area.end);
   ucxt->mscratch = (uintptr_t)((char *)ptr_brk - map_offset);
   pcb->max_brk = 0;
   pcb->cp = ucxt;
