@@ -50,10 +50,10 @@ void init_proc() {
 }
 
 Context* schedule(Context *prev) {
-  //printf("\033[33mschedule: Traping here...\033[0m\n");
+  printf("\033[33mschedule: Traping here...\033[0m\n");
   current->cp = prev;
     current = (current == &pcb[0] ? &pcb[1] : &pcb[0]);
     //time_chip = 0;
-  //printf("\033[33mFinished...\033[0m\n");
+  printf("\033[33mFinished...\033[0m\n");
   return current->cp;
 }
