@@ -79,8 +79,6 @@ Context *kcontext(Area kstack, void (*entry)(void *), void *arg) {
   Context *kctx = (Context *)(kstack.end - sizeof(Context)); 
   memset(kctx, 0, sizeof(kctx));
   kctx->GPRx = (uintptr_t)arg;
-  /* Enable interrupt. */
-  //kctx->mstatus.MIE = 1;
   kctx->mstatus = 0x1800 | 0x40;
   kctx->pdir = NULL;
   kctx->np = USER_MODE;

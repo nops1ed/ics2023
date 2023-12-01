@@ -86,58 +86,23 @@ void __am_switch(Context *c) {
 *   12..20 -- 9 bits of level-0 index.
 *    0..11 -- 12 bits of byte offset within the page.
 */
-#define VA_VPN_0(x) (((uintptr_t)x & 0x001FF000u) >> 12)
-#define VA_VPN_1(x) (((uintptr_t)x & 0x3FE00000u) >> 21)
-#define VA_VPN_2(x) (((uintptr_t)x & 0x7FC0000000u) >> 30)
-#define VA_OFFSET(x) ((uintptr_t)x & 0x00000FFFu)
-
-#define PTE_PPN_MASK (0x3FFFFFFFFFFC00u)
-#define PTE_PPN(x) (((uintptr_t)x & PTE_PPN_MASK) >> 10)
-
 void map(AddrSpace *as, void *va, void *pa, int prot) {
   /* Perform a page table walk. */
   pagetable_t pagetable = as->ptr;
   PTE *pte;
   for(int level = 2; level > 0; level--) {
     pte = &pagetable[PX(level, va)];
-    if(*pte & PTE_V) {
+    if(*pte & PTE_V)
       pagetable = (pagetable_t)PTE2PA(*pte);
-    } 
     else {
       pagetable = (pagetable_t)pgalloc_usr(PGSIZE);
       memset(pagetable, 0, PGSIZE);
       *pte = PA2PTE(pagetable) | PTE_V | PTE_R |PTE_W;
     }
-    //printf("\033[34mpagetable is %p and *pte is %p\033[0m\n", pagetable, *pte);
   }
   /* Fill PTE fields. */
   pte = &pagetable[PX(0, va)];
   *pte = PA2PTE(pa) | PTE_V | PTE_R | PTE_W;
-
-
-  //printf("Finally store %p to %p\n\n", *pte, pte);
-  //printf("Mapping %p to %p successfully\n", pa, va);
-  /*
-  uint64_t pa_raw = (uint64_t)pa;
-  uint64_t va_raw = (uint64_t)va;
-  uint64_t **pt_1 = (uint64_t **)as->ptr;
-  if (pt_1[PX(2, va_raw)] == NULL)
-    pt_1[PX(2, va_raw)] = (uint64_t *)pgalloc_usr(PGSIZE);
-
-  uint64_t **pt_2 = (uint64_t **)pt_1[PX(2, va_raw)];
-  if (pt_2[PX(1, va_raw)] == NULL)
-    pt_2[PX(1, va_raw)] = (uint64_t *)pgalloc_usr(PGSIZE);
-
-  uint64_t *pt_3 = pt_2[PX(1, va_raw)];
-  if (pt_3[PX(0, va_raw)] == 0)
-    pt_3[PX(0, va_raw)] = (pa_raw & (~0xfff)) | prot;
-  else
-  {
-    //Assert(0, "remap virtual address\n!");
-    assert(0);
-  }
-   //printf("map vrirtual address %p to physical address %p, pt2 id is %p, store addr %p\n", va_raw, pa_raw, PGT2_ID(va_raw), pt_2[PGT2_ID(va_raw)] >> 12);
-   */
 }
 
 Context *ucontext(AddrSpace *as, Area kstack, void *entry) {
@@ -145,8 +110,8 @@ Context *ucontext(AddrSpace *as, Area kstack, void *entry) {
   /* Bug occured here. */
   kctx->pdir = as->ptr;
   kctx->mepc = (uintptr_t)entry;
-  /* Enable interrupt. */
-  kctx->mstatus = 0xC0000 | 0x80;//MPP设置为U模式，MXR=1，SUM=1
+  /* Set MPP to U, MXR to 1, SUM to 1. */
+  kctx->mstatus = 0xC0000 | 0x80;
   kctx->np = 0;
   //kctx->mscratch = (uintptr_t)kstack.end;
   printf("\033[033mUser context created\033[0m\n");
