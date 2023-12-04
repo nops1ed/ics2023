@@ -47,7 +47,6 @@ void __am_gpu_fbdraw(AM_GPU_FBDRAW_T *ctl) {
       fb[(y + i) * W + x + j] = pi[i * w + j];
     }
   }
-  if (ctl->sync)
     outl(SYNC_ADDR, 1);
 }
 
