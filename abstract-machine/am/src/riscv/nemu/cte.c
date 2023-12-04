@@ -25,9 +25,12 @@ void __am_switch(Context *c);
 Context* __am_irq_handle(Context *c) {
   uintptr_t mscratch = 0;
   uintptr_t kas = 0;
-  __asm__ volatile("csrr %0, mscratch" : "=r"(mscratch));
+  __asm__ __volatile__("csrr %0, mscratch" 
+    : "=r"(mscratch));
   c->np = (mscratch == 0 ? KERNEL_MODE : USER_MODE);
-  __asm__ volatile("csrw mscratch, %0" : : "r"(kas));
+  __asm__ __volatile__("csrw mscratch, %0" 
+    : 
+    : "r"(kas));
   __am_get_cur_as(c);
 
   if (user_handler) {

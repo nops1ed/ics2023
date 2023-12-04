@@ -113,7 +113,6 @@ Context *ucontext(AddrSpace *as, Area kstack, void *entry) {
   /* Set MPP to U, MXR to 1, SUM to 1. */
   kctx->mstatus = 0xC0000 | 0x80;
   kctx->np = 0;
-  //kctx->mscratch = (uintptr_t)kstack.end;
   printf("\033[033mUser context created\033[0m\n");
   return kctx;
 }
