@@ -37,7 +37,8 @@ int fs_close(int fd);
 #define NR_PAGE 8
 #define PAGESIZE 4096
 
- __attribute__ ((__used__)) static void * alloc_section_space(AddrSpace *as, uintptr_t vaddr, size_t p_memsz){
+ __attribute__ ((__used__)) static void * 
+ alloc_section_space(AddrSpace *as, uintptr_t vaddr, size_t p_memsz){
   size_t page_n = ((vaddr + p_memsz - 1) >> 12) - (vaddr >> 12) + 1;
   void *page_start = new_page(page_n);
   Log("\033[32mLoaded Segment from [%x to %x)\033[0m", vaddr, vaddr + p_memsz);
@@ -120,8 +121,6 @@ void context_uload(PCB *pcb, const char *filename, char *const argv[], char *con
   int argc = 0, envc = 0;
   if (envp) for (; envp[envc]; ++envc) ;
   if (argv) for (; argv[argc]; ++argc) ;
-  //char **args = (char **)malloc(sizeof(char*) * argc);
-  //char **envs = (char **)malloc(sizeof(char*) * envc);
   char *args[argc], *envs[envc];
 
   /* Copy String Area. */
@@ -147,9 +146,6 @@ void context_uload(PCB *pcb, const char *filename, char *const argv[], char *con
   for (int i = 0; i < argc; ++i)  ptr_brk[i] = (intptr_t)(args[i]);
   *(--ptr_brk) = argc;
 
-  //free(args);
-  //free(envs);
-
   Log("\033[33mLoading program entry...\033[0m");
   uintptr_t entry = loader(pcb, filename);
   Log("\033[33mloader finished\033[0m");
@@ -160,9 +156,7 @@ void context_uload(PCB *pcb, const char *filename, char *const argv[], char *con
   Context *ucxt = ucontext(as, stack, (void *)entry);
   pcb->max_brk = 0;
   pcb->cp = ucxt;
-  ucxt->GPRx = (intptr_t)ptr_brk;
-  ptr_brk -= 1;
-  *ptr_brk = 0;
+  *(--ptr_brk) = 0;
   ucxt->gpr[2]  = (uintptr_t)ptr_brk - (uintptr_t)page_alloc + (uintptr_t)as->area.end;
   ucxt->GPRx = (uintptr_t)ptr_brk - (uintptr_t)page_alloc + (uintptr_t)as->area.end + 4;
 }
