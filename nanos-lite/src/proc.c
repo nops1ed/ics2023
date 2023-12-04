@@ -13,7 +13,7 @@ static PCB pcb[MAX_NR_PROC] __attribute__((used)) = {};
 static PCB pcb_boot = {};
 PCB *current = NULL;
 static int time_chip __attribute__((used));
-static int proc_running __attribute__((used)) = 1;
+static int proc_running __attribute__((used)) = 2;
 
 void switch_boot_pcb() {
   current = &pcb_boot;
