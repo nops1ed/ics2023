@@ -90,6 +90,7 @@ static void sys_execve(Context *c) {
   else fs_close(fd);
   context_uload(current, (const char *)c->GPR2, (char **const)(uintptr_t)c->GPR3, (char **const)(uintptr_t)c->GPR4);
   switch_boot_pcb();
+  c->GPRx = 0;
   yield();
 }
 

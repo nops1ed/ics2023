@@ -69,7 +69,7 @@ void init_fs() {
   AM_GPU_CONFIG_T gpuinfo;
   ioe_read(AM_GPU_CONFIG, &gpuinfo);
   file_table[FD_FB].size = gpuinfo.width * gpuinfo.height *4;
-  printf("sFS: FD_FB was initialized as %d Bytes\n", file_table[FD_FB].size);
+  //printf("sFS: FD_FB was initialized as %d Bytes\n", file_table[FD_FB].size);
 }
 
 
