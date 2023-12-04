@@ -38,16 +38,11 @@ int fs_close(int fd);
 #define PAGESIZE 4096
 
  __attribute__ ((__used__)) static void * alloc_section_space(AddrSpace *as, uintptr_t vaddr, size_t p_memsz){
-  //size_t page_n = p_memsz % PAGESIZE == 0 ? p_memsz / 4096 : (p_memsz / 4096 + 1);
   size_t page_n = ((vaddr + p_memsz - 1) >> 12) - (vaddr >> 12) + 1;
   void *page_start = new_page(page_n);
-
   Log("\033[32mLoaded Segment from [%x to %x)\033[0m", vaddr, vaddr + p_memsz);
-  
-  for (int i = 0; i < page_n; ++i){
+  for (int i = 0; i < page_n; ++i)
     map(as, (void *)((vaddr & ~0xfff) + i * PAGESIZE), (void *)(page_start + i * PAGESIZE), 1);
-  }
-
   return page_start;
 }
 
@@ -114,7 +109,7 @@ void context_uload(PCB *pcb, const char *filename, char *const argv[], char *con
   Log("\033[33mKernel address space created\033[0m");
   void *page_alloc = new_page(NR_PAGE) + NR_PAGE * PGSIZE;
 
-  /* Mapping user stack here. */
+  /* Mapping user stack. */
   Log("\033[33m\nMapping user stack...\033[0m");
   for(int i = NR_PAGE; i > 0; i--) 
     map(as, as->area.end - i * PGSIZE, page_alloc - i * PGSIZE, 1);
@@ -165,9 +160,8 @@ void context_uload(PCB *pcb, const char *filename, char *const argv[], char *con
   pcb->max_brk = 0;
   pcb->cp = ucxt;
   ucxt->GPRx = (intptr_t)ptr_brk;
-   ptr_brk -= 1;
-  *ptr_brk = 0;//为了t0_buffer
-  //设置了sp
+  ptr_brk -= 1;
+  *ptr_brk = 0;
   ucxt->gpr[2]  = (uintptr_t)ptr_brk - (uintptr_t)page_alloc + (uintptr_t)as->area.end;
   ucxt->GPRx = (uintptr_t)ptr_brk - (uintptr_t)page_alloc + (uintptr_t)as->area.end + 4;
 }
