@@ -21,7 +21,7 @@ void switch_boot_pcb() {
 void hello_fun(void *arg) {
   int j = 1;
   while (1) {
-    Log("Hello World from Nanos-lite with arg '%p' for the %dth time!", (uintptr_t)arg, j);
+    //Log("Hello World from Nanos-lite with arg '%p' for the %dth time!", (uintptr_t)arg, j);
     j ++;
     yield();
   }
@@ -51,7 +51,7 @@ Context* schedule(Context *prev) {
   else 
     current = &pcb[1];
   */
-  current = &pcb[0];
+  current = &pcb[1];
     //current = (current == &pcb[0] ? &pcb[1] : &pcb[0]);
   //printf("\033[33mFinished...\033[0m\n");
   return current->cp;
