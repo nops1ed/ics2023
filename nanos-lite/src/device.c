@@ -64,16 +64,16 @@ size_t events_read(void *buf, size_t offset, size_t len) {
   switch(kbd.keycode) {
     case AM_KEY_F1:
       schedule_proc(1);
-      break;
+      return 0;
     case AM_KEY_F2:
       schedule_proc(2);
-      break;
+      return 0;
     case AM_KEY_F3:
       schedule_proc(3);
-      break;
+      return 0;
     case AM_KEY_F4:
       schedule_proc(4);
-      break;
+      return 0;
     default:
       ; 
   }
