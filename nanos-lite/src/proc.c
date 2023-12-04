@@ -13,7 +13,7 @@ static PCB pcb[MAX_NR_PROC] __attribute__((used)) = {};
 static PCB pcb_boot = {};
 PCB *current = NULL;
 static int time_chip __attribute__((used));
-static int proc_running __attribute__((used)) = 2;
+static int proc_running __attribute__((used)) = 3;
 
 void switch_boot_pcb() {
   current = &pcb_boot;
@@ -33,8 +33,8 @@ void init_proc() {
  
   //context_uload(&pcb[0], "/bin/menu", NULL, NULL); 
   context_kload(&pcb[0], hello_fun, NULL); 
-  context_uload(&pcb[1], "/bin/pal", args_pal, NULL); 
-  context_uload(&pcb[2], "/bin/bird", NULL, NULL); 
+  //context_uload(&pcb[1], "/bin/pal", args_pal, NULL); 
+  //context_uload(&pcb[2], "/bin/bird", NULL, NULL); 
   context_uload(&pcb[3], "/bin/nterm", NULL, NULL); 
   switch_boot_pcb();
 
