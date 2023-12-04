@@ -142,16 +142,16 @@ void context_uload(PCB *pcb, const char *filename, char *const argv[], char *con
   /* Each process holds 32kb of stack space, which we think is sufficient for ics processes. */
   AddrSpace *as = &pcb->as;
   /* Mapping address space. */
-  Log("\033[33mCreating kernel address space...\033[0m");
+  //Log("\033[33mCreating kernel address space...\033[0m");
   protect(&pcb->as);
-  Log("\033[33mKernel address space created\033[0m");
+  //Log("\033[33mKernel address space created\033[0m");
   void *page_alloc = new_page(NR_PAGE) + NR_PAGE * PGSIZE;
 
   /* Mapping user stack. */
-  Log("\033[33m\nMapping user stack...\033[0m");
+  //Log("\033[33m\nMapping user stack...\033[0m");
   for(int i = NR_PAGE; i > 0; i--) 
     map(as, as->area.end - i * PGSIZE, page_alloc - i * PGSIZE, 1);
-  Log("\033[33mUser stack established\033[0m");
+  //Log("\033[33mUser stack established\033[0m");
 
   /* deploy user stack layout. */
   char *brk = (char *)(page_alloc - 4);
@@ -183,9 +183,9 @@ void context_uload(PCB *pcb, const char *filename, char *const argv[], char *con
   for (int i = 0; i < argc; ++i)  ptr_brk[i] = (intptr_t)(args[i]);
   *(--ptr_brk) = argc;
 
-  Log("\033[33mLoading program entry...\033[0m");
+  //Log("\033[33mLoading program entry...\033[0m");
   uintptr_t entry = loader(pcb, filename);
-  Log("\033[33mloader finished\033[0m");
+  //Log("\033[33mloader finished\033[0m");
   Area stack;
   stack.start = &pcb->cp;
   stack.end = &pcb->cp + STACK_SIZE;
