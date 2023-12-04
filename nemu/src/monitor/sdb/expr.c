@@ -238,7 +238,7 @@ static uint32_t domain_find(uint32_t p , uint32_t q) {
 static uint32_t eval(int p , int q) {
 	// Bad expression
   	if (p > q) {
-		printf("\n eval: Bad erxpersion\n");
+		printf("\033[31meval: Bad erxpersion\033[0m\n");
 		assert(0);
   	}
 	/* This could be decimal , hex , addr , register or dereference */
@@ -266,26 +266,18 @@ static uint32_t eval(int p , int q) {
 		}
 
 	}
-  	else if (check_parentheses(p, q)) {
-		//printf("\nHere we detected parentheses\n");
+  	else if (check_parentheses(p, q))
     	return eval(p + 1, q - 1);
-  	}
   	else {
 
-		/*
-    	 * op = the position of "Domain OPERATION" in the token expression;
+		/* op = the position of "Domain OPERATION" in the token expression;
     	 * val1 = eval(p, op - 1);
     	 * val2 = eval(op + 1, q);
 		 */
 
-		//printf("\nI am finding domain from %d to %d\n" , p , q);
 		uint32_t op = domain_find(p , q);
-		//printf("\nThe domain OPERATION could be %d \n" , op);
-		//printf("\nThe domain OPERATION could be %d \n" , tokens[op].type);
 		if (op == -1) assert(0);
-		//printf("\nI am eval %d to %d\n" , p , op - 1);
 		uint32_t val1 = eval(p , op - 1);
-		//printf("\nI am eval %d to %d\n" , op + 1 , q);
 		uint32_t val2 = eval(op + 1 , q);
     	switch (tokens[op].type) {
       		case TK_PLUS:  return val1 + val2;
@@ -293,7 +285,7 @@ static uint32_t eval(int p , int q) {
 			case TK_MULTI: return val1 * val2;
 			case TK_DIV:
 				if (val2 == 0) {
-					printf("\neval: SIGFPE \n");
+					printf("\033[31meval: SIGFPE.\033[0m\n");
 					assert(0);
 				}
 				else return val1 / val2;
@@ -302,7 +294,6 @@ static uint32_t eval(int p , int q) {
 			case TK_EQ:  return (val1 == val2);
 			case TK_LAND:return (val1 && val2);
       		default: 
-				printf("\neval: Seems like u got default branch\nHuh , That is bad\n");
 				assert(0);
     	}
 	}
@@ -330,7 +321,6 @@ word_t expr(char *e, bool *success) {
     return 0;
   }
 
-  /* TODO: Insert codes to evaluate the expression. */
 	for (int i = 0; i < nr_token; i ++) {
 		if (tokens[i].type == '*' && (i == 0 || certain_type(tokens[i - 1].type))) {
 			tokens[i].type = TK_DEREF;

@@ -16,7 +16,6 @@
 #include "sdb.h"
 
 #define NR_WP 32
-
 #define WP_BUF_MAX 64
 
 typedef struct watchpoint {
@@ -173,7 +172,7 @@ bool trace_watchpoint_diff_test(void) {
 	bool success = true;
 	word_t val = expr(_tmp -> stored_expr , &success);
 	if (!success) {
-		printf("trace: eval error\n");
+		printf("\033[31mtrace: eval error\033[0m\n");
 		assert(0);
 	}
 	if (_tmp -> new_val != val) {

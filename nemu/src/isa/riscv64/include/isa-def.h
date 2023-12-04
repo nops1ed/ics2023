@@ -31,6 +31,7 @@ enum { CSR(CSRPREFIX) };
 
 typedef union _csr_ {  
   struct {  
+    /* Using bit-field instead of bit manipulation is more intuitive and convenient. */
     uint32_t UIE: 1;      // User Interrupt Enable  
     uint32_t SIE: 1;      // Supervisor Interrupt Enable  
     uint32_t WPRI_0: 1;   // Waste Bits  
@@ -70,6 +71,7 @@ typedef struct {
   } inst;
 } MUXDEF(CONFIG_RV64, riscv64_ISADecodeInfo, riscv32_ISADecodeInfo);
 
+/* Igonre MMU_FAIL, we think it will never occur in NEMU. */
 #define isa_mmu_check(vaddr, len, type) (cpu.csr[CSR_SATP].val >> 60 == 0 ? MMU_DIRECT : MMU_TRANSLATE)
 
 #endif

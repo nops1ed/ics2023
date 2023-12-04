@@ -74,7 +74,7 @@ static int cmd_si(char *args) {
 }
 
 static int cmd_info(char *args) {
-  /* parse args */
+  /* parse args. */
   char *arg = strtok(NULL , " ");
   if (!strcmp(arg , "r")) {
 		isa_reg_display();
@@ -82,6 +82,7 @@ static int cmd_info(char *args) {
   }
   else if (!strcmp(arg , "w"))
     sdb_watchpoint_display();
+  /* This branch should be removed. */
   else if (!strcmp(arg , "f")) {
     char buf[64];
     //getline(buf , 64 , 0);
@@ -122,8 +123,8 @@ static int cmd_x(char *args) {
     //printf("0x%x: %08x\n" , addr + 4 * j, vaddr_read(addr + 4 * j , 4));
 		printf("0x%lx: " , addr + 4 * j);
 		for (int k = 3 ; k >= 0 ; k--)
-			//Little endian
-			printf("%02lx " , vaddr_read(addr + 4 * j + k, 1));		
+			/* Little endian. */
+			printf("\033[32m%02lx \033[0m" , vaddr_read(addr + 4 * j + k, 1));		
 		printf("\n");
 	}
   return 0;
@@ -200,13 +201,13 @@ static int cmd_attach(char *args) {
   return 0;
 }
 
-/* We hope to imitate the snapshot function of standard virtual machines,
+/* Hope to imitate the snapshot function of standard virtual machines,
 * so we have implemented the following functions
 */
 static void init_snaplist(void) {
   char *__filename = (char *)malloc(sizeof(char) * _FILENAME_SIZE);
   strcpy(__filename, getenv("NEMU_HOME"));
-  if(__filename == NULL) panic("NEMU_HOME does not exist. \nCheck whether your environment is configured correctly");
+  if(__filename == NULL) panic("\033[31mNEMU_HOME does not exist.\nCheck whether your environment is configured correctly\033[0m");
   strcat(__filename, "/snapshot_list"); 
   /* Initialize snaplist file pointer. */
   snaplist_file = fopen(__filename, "a+");
@@ -223,7 +224,7 @@ static int cmd_snaplist(char *args) {
   if (snaplist_file == NULL) {
     /* Try to init snaplist again. */
     init_snaplist();
-    if(snaplist_file == NULL) panic("Snaplist file does not exist");
+    if(snaplist_file == NULL) panic("\033[31mSnaplist file does not exist\033[0m");
   }
   fseek(snaplist_file, 0, SEEK_SET);
   char ch;
@@ -246,10 +247,10 @@ static int cmd_save(char *args) {
     /* It is important to note that the string returned by 'getenv' may be statically allocated,
     * which means it may be modified by subsequent calls to getenv, putenv, setenv, or unsetenv.
     * Therefore, the caller should not modify the returned string, 
-    * nor should they rely on its persistence.
+    *         *nor should they rely on its persistence.*
     */
     strcpy(pathname, getenv("NEMU_HOME"));
-    if(pathname == NULL) panic("NEMU_HOME does not exist. \nCheck whether your environment is configured correctly");
+    if(pathname == NULL) panic("\033[31mNEMU_HOME does not exist. \nCheck whether your environment is configured correctly\033[0m");
     strcat(pathname, "/snapshot"); 
   }
   FILE *fp = fopen(pathname, "w+");
