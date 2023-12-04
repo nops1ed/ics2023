@@ -12,6 +12,7 @@ static char *args_pal[] __attribute__((unused)) = {"/bin/pal", "--skip", NULL};
 static PCB pcb[MAX_NR_PROC] __attribute__((used)) = {};
 static PCB pcb_boot = {};
 PCB *current = NULL;
+static int time_chip __attribute__((unused));
 
 void switch_boot_pcb() {
   current = &pcb_boot;
@@ -41,8 +42,14 @@ void init_proc() {
 Context* schedule(Context *prev) {
   //printf("\033[33mschedule: Traping here...\033[0m\n");
   current->cp = prev;
-    current = (current == &pcb[0] ? &pcb[1] : &pcb[0]);
-    //time_chip = 0;
+  time_chip++;
+  if(time_chip > 10) {
+    current = &pcb[0];
+    time_chip = 0;
+  }
+  else 
+    current = &pcb[1];
+    //current = (current == &pcb[0] ? &pcb[1] : &pcb[0]);
   //printf("\033[33mFinished...\033[0m\n");
   return current->cp;
 }
