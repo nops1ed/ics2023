@@ -45,7 +45,7 @@ void free_page(void *p) {
 int mm_brk(uintptr_t brk) {
   if (current->max_brk == 0) {
     current->max_brk = (brk & PXMASK) ? ((brk & ~PXMASK) + PGSIZE) : brk;
-    printf("\033[33mfirst malloc is at %p\033[0m\n", (void *)current->max_brk);
+    //printf("\033[33mfirst malloc is at %p\033[0m\n", (void *)current->max_brk);
     return 0;
   }
   for (; current->max_brk < brk; current->max_brk += PGSIZE)

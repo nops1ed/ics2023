@@ -14,6 +14,8 @@ typedef struct _AudioData {
   int freq, channels, samples, sbuf_size;
 }_AudioData;
 
+void schedule_proc(int);
+
 static const char *keyname[256] __attribute__((used)) = {
   [AM_KEY_NONE] = "NONE",
   AM_KEYS(NAME)
@@ -59,6 +61,22 @@ size_t events_read(void *buf, size_t offset, size_t len) {
   static AM_INPUT_KEYBRD_T kbd;
   ioe_read(AM_INPUT_KEYBRD, &kbd);
   if (kbd.keycode == AM_KEY_NONE) return 0;
+  switch(kbd.keycode) {
+    case AM_KEY_F1:
+      schedule_proc(1);
+      break;
+    case AM_KEY_F2:
+      schedule_proc(2);
+      break;
+    case AM_KEY_F3:
+      schedule_proc(3);
+      break;
+    case AM_KEY_F4:
+      schedule_proc(4);
+      break;
+    default:
+      ; 
+  }
   if (kbd.keydown) strncat(buf, "kd ", len);
   else
     strncat(buf, "ku ", len);
@@ -69,7 +87,6 @@ size_t events_read(void *buf, size_t offset, size_t len) {
 
 size_t dispinfo_read(void *buf, size_t offset, size_t len) {
   /* buf does not support lseek. */
-  //Log("Display info: %d * %d\n", gpuinfo.width, gpuinfo.height);
   printf("**********\nDev-Display info: %d * %d\n**********\n", gpuinfo.width, gpuinfo.height);
   char _tmp[32], _tmp2[32];
   sprintf(buf, "WIDTH:%s\nHEIGHT:%s\n", __itoa(gpuinfo.width, _tmp, 10), __itoa(gpuinfo.height, _tmp2, 10));
@@ -77,12 +94,8 @@ size_t dispinfo_read(void *buf, size_t offset, size_t len) {
 }
 
 size_t fb_write(const void *buf, size_t offset, size_t len) {
-  //printf("DEV: Writing to x: %d y: %d\n", offset / w, offset % w);
-  //printf("DEV: len :%d\n", len);
-  //printf("DEV: w is %d h is %d\n", w, h);
   /* Call IOE to draw pixels. */
   if (len == 0) {
-    //printf("end!\n");
     AM_GPU_FBDRAW_T fbdraw = {0, 0, (void *)buf, 0, 0, 1};
     ioe_write(AM_GPU_FBDRAW, &fbdraw);
     return 0;
