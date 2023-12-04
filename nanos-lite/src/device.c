@@ -71,9 +71,6 @@ size_t events_read(void *buf, size_t offset, size_t len) {
     case AM_KEY_F3:
       schedule_proc(3);
       return 0;
-    case AM_KEY_F4:
-      schedule_proc(4);
-      return 0;
     default:
       ; 
   }
