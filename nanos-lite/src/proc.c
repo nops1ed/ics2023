@@ -32,7 +32,7 @@ void init_proc() {
  
   //context_uload(&pcb[0], "/bin/menu", NULL, NULL); 
   context_kload(&pcb[0], hello_fun, "MEssage from #0\n"); 
-  context_uload(&pcb[1], "/bin/pal", NULL, NULL); 
+  context_uload(&pcb[1], "/bin/pal", args_pal, NULL); 
   switch_boot_pcb();
 
   Log("Initializing processes...");
