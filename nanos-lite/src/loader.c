@@ -120,8 +120,9 @@ void context_uload(PCB *pcb, const char *filename, char *const argv[], char *con
   int argc = 0, envc = 0;
   if (envp) for (; envp[envc]; ++envc) ;
   if (argv) for (; argv[argc]; ++argc) ;
-  char **args = (char **)malloc(sizeof(char*) * argc);
-  char **envs = (char **)malloc(sizeof(char*) * envc);
+  //char **args = (char **)malloc(sizeof(char*) * argc);
+  //char **envs = (char **)malloc(sizeof(char*) * envc);
+  char *args[argc], *envs[envc];
 
   /* Copy String Area. */
   for (int i = 0; i < argc; ++i) {
@@ -146,8 +147,8 @@ void context_uload(PCB *pcb, const char *filename, char *const argv[], char *con
   for (int i = 0; i < argc; ++i)  ptr_brk[i] = (intptr_t)(args[i]);
   *(--ptr_brk) = argc;
 
-  free(args);
-  free(envs);
+  //free(args);
+  //free(envs);
 
   Log("\033[33mLoading program entry...\033[0m");
   uintptr_t entry = loader(pcb, filename);
