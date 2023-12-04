@@ -158,7 +158,7 @@ void context_uload(PCB *pcb, const char *filename, char *const argv[], char *con
   pcb->cp = ucxt;
   *(--ptr_brk) = 0;
   ucxt->gpr[2]  = (uintptr_t)ptr_brk - (uintptr_t)page_alloc + (uintptr_t)as->area.end;
-  ucxt->GPRx = (uintptr_t)ptr_brk - (uintptr_t)page_alloc + (uintptr_t)as->area.end + 4;
+  //ucxt->GPRx = (uintptr_t)ptr_brk - (uintptr_t)page_alloc + (uintptr_t)as->area.end + 4;
 }
 /*
   |               |
