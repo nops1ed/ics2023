@@ -31,7 +31,7 @@ void init_proc() {
  
   //context_uload(&pcb[0], "/bin/menu", NULL, NULL); 
   context_kload(&pcb[0], hello_fun, "meltdown"); 
-  context_uload(&pcb[1], "/bin/pal", args_pal, NULL); 
+  context_uload(&pcb[1], "/bin/pal", NULL, NULL); 
   switch_boot_pcb();
 
   Log("Initializing processes...");
@@ -42,7 +42,6 @@ void init_proc() {
 Context* schedule(Context *prev) {
   //printf("\033[33mschedule: Traping here...\033[0m\n");
   current->cp = prev;
-  /*
   time_chip++;
   if(time_chip > 100) {
     current = &pcb[0];
@@ -50,8 +49,7 @@ Context* schedule(Context *prev) {
   }
   else 
     current = &pcb[1];
-  */
-  current = (current == &pcb[0] ? &pcb[1] : &pcb[0]);
+    //current = (current == &pcb[0] ? &pcb[1] : &pcb[0]);
   //printf("\033[33mFinished...\033[0m\n");
   return current->cp;
 }
