@@ -64,6 +64,6 @@ void schedule_proc(int index) {
     return;
   switch_boot_pcb();
   proc_running = index;
-  pcb[0].cp->pdir = NULL;
+  //pcb[0].cp->pdir = NULL;
   yield();
 }
