@@ -60,6 +60,7 @@ void schedule_proc(int index) {
   if(index == proc_running) 
     return;
   switch_boot_pcb();
+  pcb[0].cp->pdir = NULL;
   proc_running = index;
   yield();
 }
