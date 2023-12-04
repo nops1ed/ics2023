@@ -12,7 +12,6 @@ static char *args_pal[] __attribute__((unused)) = {"/bin/pal", "--skip", NULL};
 static PCB pcb[MAX_NR_PROC] __attribute__((used)) = {};
 static PCB pcb_boot = {};
 PCB *current = NULL;
-//static int time_chip;
 
 void switch_boot_pcb() {
   current = &pcb_boot;
@@ -21,8 +20,7 @@ void switch_boot_pcb() {
 void hello_fun(void *arg) {
   int j = 1;
   while (1) {
-    //Log("Hello World from Nanos-lite with arg '%p' for the %dth time!", (uintptr_t)arg, j);
-    Log("Message from %s", (uintptr_t)arg);
+    Log("Hello World from Nanos-lite with arg '%p' for the %dth time!", (uintptr_t)arg, j);
     j ++;
     yield();
   }
@@ -31,7 +29,7 @@ void hello_fun(void *arg) {
 void init_proc() {
  
   //context_uload(&pcb[0], "/bin/menu", NULL, NULL); 
-  context_kload(&pcb[0], hello_fun, "hello_fun\n"); 
+  context_kload(&pcb[0], hello_fun, "meltdown"); 
   context_uload(&pcb[1], "/bin/pal", args_pal, NULL); 
   switch_boot_pcb();
 
