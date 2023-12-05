@@ -118,7 +118,17 @@ void *memset(void *s, int c, size_t n) {
 }
 
 void *memmove(void *dst, const void *src, size_t n) {
-  panic("Not implemented");
+  char *char_dst = (char *)dst;
+  char *char_src = (char *)src;
+
+  if (dst < src){
+    for (int i = 0; i < n; ++i)
+      char_dst[i] = char_src[i];
+  }else if(dst > src){
+    for (int i = n-1; i >= 0; --i)
+      char_dst[i] = char_src[i];
+  }
+  return dst;
 }
 
 /* Not Thread-safe */
