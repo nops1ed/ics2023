@@ -47,7 +47,6 @@ void init_proc() {
 Context* schedule(Context *prev) {
   //printf("\033[33mschedule: Traping here...\033[0m\n");
   current->cp = prev;
-  /*
   time_chip++;
   if(time_chip > 100) {
     current = &pcb[0];
@@ -55,8 +54,7 @@ Context* schedule(Context *prev) {
   }
   else 
     current = &pcb[proc_running];
-  */
-  current = (current == &pcb[0] ? &pcb[proc_running] : &pcb[0]);
+  //current = (current == &pcb[0] ? &pcb[proc_running] : &pcb[0]);
   return current->cp;
 }
 
