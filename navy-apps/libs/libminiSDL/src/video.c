@@ -5,7 +5,6 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-
 void SDL_BlitSurface(SDL_Surface *src, SDL_Rect *srcrect, SDL_Surface *dst, SDL_Rect *dstrect) {
   assert(dst && src);
   assert(dst->format->BitsPerPixel == src->format->BitsPerPixel);
@@ -24,14 +23,11 @@ void SDL_BlitSurface(SDL_Surface *src, SDL_Rect *srcrect, SDL_Surface *dst, SDL_
     src_pos = srcrect -> y * src -> w + srcrect -> x;
   }
   uint32_t dst_pos = dstrect == NULL ? 0 : dstrect -> y * dst -> w + dstrect -> x;
-  //printf("Copying...\n");
-  //printf("Debug info: src_col = %d src_row = %d src_pos = %d \ndst_pos = %d dst->w = %d dst->h = %d\n",src_col,src_row,src_pos,dst_pos,dst->w,dst->h);
   if(src -> format -> BytesPerPixel == 4)
     for(int i = 0; i < src_row; i++)
       memcpy((uint32_t*)(dst -> pixels) + dst_pos + i * dst -> w, 
               (uint32_t *)(src -> pixels) + src_pos + i * src -> w, sizeof(uint32_t) * src_col);
   else if(src -> format -> BytesPerPixel == 1) {
-    //printf("8 pixels: Should not reach here\n");
     for(int i = 0; i < src_row; i++)
       memcpy((uint8_t *)(dst -> pixels) + dst_pos + i * dst -> w, 
               (uint8_t *)(src -> pixels) + src_pos + i * src -> w, sizeof(uint8_t) * src_col);
@@ -48,28 +44,23 @@ void SDL_FillRect(SDL_Surface *dst, SDL_Rect *dstrect, uint32_t color) {
     dst_row = dstrect -> h;
     dst_pos = dstrect -> y * dst -> w + dstrect -> x;
   }
-  //printf("Copying...\n");
   if(dst -> format -> BytesPerPixel == 4)
     for(int i = 0; i < dst_row; i++)
       memset((uint32_t *)dst -> pixels + dst_pos + dst -> w * i,
               color, sizeof(uint32_t) * dst_row);
   else if(dst -> format -> BytesPerPixel == 1) {
-    //printf("8 pixels: Should not reach here\n");
     for(int i = 0; i < dst_row; i++)
      memset((uint8_t *)dst -> pixels + dst_pos + dst -> w * i,
               color, sizeof(uint8_t) * dst_col);
   }
   else printf("Pixel format cannot found");
-  //printf("Copy success ~\n");
 }
 
 void SDL_UpdateRect(SDL_Surface *s, int x, int y, int w, int h) {
-  //printf("SDL: x is %d y is %d w is %d h is %d\n",x ,y , w ,h);
   if(x == 0 && y == 0 && w == 0 && h == 0) {
     // Update the whole screen
     w = s -> w;
     h = s -> h;
-    //printf("SDL: Now w is %d h is %d\n",w ,h);
   }
   uint32_t pos = 0;
   uint32_t *_buf = (uint32_t *)malloc(sizeof(uint32_t) * w * h);
@@ -78,7 +69,6 @@ void SDL_UpdateRect(SDL_Surface *s, int x, int y, int w, int h) {
     if(s -> format -> BytesPerPixel == 1)
       for(uint32_t col = 0; col < w; col++) {
       /* The concept of using a palette at 8-bit color depth. */
-        //printf("8 pixels: Should not reach here\n");
         SDL_Color sdlcolor = s -> format -> palette -> colors[s -> pixels[((row + y) * (s -> w) + x + col)]];
         _buf[pos++] = sdlcolor.a << 24 | sdlcolor.r << 16 | sdlcolor.g << 8 | sdlcolor.b;
       }
@@ -86,15 +76,12 @@ void SDL_UpdateRect(SDL_Surface *s, int x, int y, int w, int h) {
     else {
       /* Each pixel is described as a color using a 32-bit integer in the form of AARRGGBB. */
       for(uint32_t col = 0; col < w; col++) {
-          //uint32_t offset = ((row + y) * (s -> w) + x + col) * 4;
           uint32_t offset = x + y * s -> w + (col + row * s->w) * 4;
           _buf[pos++] = s -> pixels[offset + 3] << 24 | s -> pixels[offset + 2] << 16 |
                         s -> pixels[offset + 1] << 8 | s -> pixels[offset + 0];
       }
     }
-    //printf("SDL: BUF initialized successfullly\n");
     NDL_DrawRect(_buf, x, y, w, h);
-    //printf("Drawing success ~\n");
     free(_buf);
 }
 

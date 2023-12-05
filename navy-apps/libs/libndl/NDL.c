@@ -39,16 +39,13 @@ uint32_t NDL_GetTicks() {
 int NDL_PollEvent(char *buf, int len) {
   /* Buffer should be empty. */
   buf[0] = '\0';
-  //printf("Traping into pollevent...\n");
   return read(evtdev, buf, len);
 }
 
 void NDL_OpenCanvas(int *w, int *h) {
-  //printf("OPENCANVAS: Now w is %d h is %d \ndisp_w is %d disp_h is %d\n",*w, *h, disp_w, disp_h);
   if(*w > disp_w || *h > disp_h) assert(0);
   if(*w == 0) *w = disp_w;
   if(*h == 0) *h = disp_h;
-  //printf("Now the w is %d and h is %d\n", *w, *h);
   if (getenv("NWM_APP")) {
     printf("I am in NWM_APP\n");
     int fbctl = 4;
@@ -74,14 +71,11 @@ void NDL_DrawRect(uint32_t *pixels, int x, int y, int w, int h) {
     w = disp_w;
     h = disp_h;
   }
-  //printf("NDL: Now w is %d and www is %d\n", w, www);
   assert(w > 0 && w <= disp_w);
-  //printf("NDL: Now h is %d \n", h);
   assert(h > 0 && h <= disp_h);
 
   for(size_t row = 0; row < h; row++) {
     lseek(fbdev, x + (y + row) * disp_w, SEEK_SET);
-    //printf("NDL: writing to %ld\n", x + (y + row) * disp_w);
     write(fbdev, pixels + row * w, w);  
   }
 }
@@ -121,8 +115,6 @@ int NDL_Init(uint32_t flags) {
   FILE *fp = fopen("/proc/dispinfo",  "r");
   fscanf(fp, "WIDTH:%d\nHEIGHT:%d\n", &disp_w, &disp_h);
   fclose(fp);
-
-  //printf("NDL: Now disp_w is %d, disp_h is %d\n", disp_w, disp_h);
   return 0;
 }
 
