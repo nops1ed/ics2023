@@ -10,10 +10,6 @@
 #define NAME(key) \
   [AM_KEY_##key] = #key,
 
-typedef struct _AudioData {
-  int freq, channels, samples, sbuf_size;
-}_AudioData;
-
 void schedule_proc(int);
 
 static const char *keyname[256] __attribute__((used)) = {
@@ -102,23 +98,28 @@ size_t fb_write(const void *buf, size_t offset, size_t len) {
   return len;
 }
 
-void audioinfo_write(void *audio) {
-  //ioe_write(AM_AUDIO_CTRL, (_AudioData *)audio);
+/* Initialize audio control information. */
+size_t audioctl_write(const void *buf, size_t offset, size_t len) {
+  /* Stream does not support lseek, so offset and len are disabled. */
+  ioe_write(AM_AUDIO_CTRL, (AM_AUDIO_CTRL_T *)buf);
+  return len;
 }
 
-//size_t audioinfo_read(char *buf, );
+/* Query remained buffer size. */
+size_t audioctl_read(void *buf, size_t offset, size_t len) {
+  int audio_bufsize, count;
+  ioe_read(AM_AUDIO_CONFIG + 0x04, audio_bufsize);
+  ioe_read(AM_AUDIO_STATUS, count);
+  *(int *)buf = audio_bufsize - count;
+  return audio_bufsize - count;
+}
 
-void audio_write(void *buf, int len) {
-  /*
-    uint8_t *audio = ctl->buf.start;
-    uint32_t buf_size = inl(AUDIO_SBUF_SIZE_ADDR);
-    uint32_t cnt = inl(AUDIO_COUNT_ADDR);
-    uint32_t len = ctl->buf.end - ctl->buf.start; 
-  */
-  /*
-  ioe_write(AUDIO_SBUF_SIZE_ADDR, len);  
-  ioe_write(AUDIO_COUNT_ADDR, );
-  */
+/* Stream. */
+size_t audio_write(void *buf, size_t offset, size_t len) {
+  /* Blocked. */
+  Area audio_buf = {buf, (void *)((uint8_t *)buf + len)};
+  ioe_write(AM_AUDIO_PLAY, audio_buf);
+  return len;
 }
 
 void init_device() {

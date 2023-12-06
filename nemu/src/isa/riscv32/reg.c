@@ -58,9 +58,9 @@ word_t isa_reg_str2val(const char *s, bool *success) {
 }
 
 void isa_snapshot_save(FILE *fp) {
-	if(fwrite(&cpu, sizeof(cpu), 1, fp) == 0) panic("Fatal error: CPU status unknown");
+	if(fwrite(&cpu, sizeof(cpu), 1, fp) == 0) panic("\033[31mFatal error: CPU status unknown\033[0m");
 }
 
 void isa_snapshot_load(FILE *fp) {
-	if(fread(&cpu, sizeof(cpu), 1, fp) == 0) panic("Fatal error: CPU status unknown");
+	if(fread(&cpu, sizeof(cpu), 1, fp) == 0) panic("\033[31mFatal error: CPU status unknown\033[0m");
 }

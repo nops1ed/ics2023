@@ -1,11 +1,5 @@
 #include <fs.h>
 
-size_t fb_write(const void *buf, size_t offset, size_t len);
-size_t dispinfo_read(void *buf, size_t offset, size_t len);
-size_t events_read(void *buf, size_t offset, size_t len); 
-size_t serial_write(const void *buf, size_t offset, size_t len);
-size_t ramdisk_read(void *buf, size_t offset, size_t len);
-size_t ramdisk_write(const void *buf, size_t offset, size_t len);
 typedef size_t (*ReadFn) (void *buf, size_t offset, size_t len);
 typedef size_t (*WriteFn) (const void *buf, size_t offset, size_t len);
 
@@ -39,8 +33,8 @@ static Finfo file_table[] __attribute__((used)) = {
   [FD_STDOUT] = {"stdout", 0, 0, invalid_read, serial_write},
   [FD_STDERR] = {"stderr", 0, 0, invalid_read, serial_write},
   [FD_FB]     = {"/dev/fb", 0, 0, invalid_read, fb_write},
-                //{"/dev/sb", 0, 0, NULL, NULL},
-                //{"/dev/sbctl", 0, 0, NULL, NULL},
+                {"/dev/sb", 0, 0, invalid_read, audio_write},
+                {"/dev/sbctl", 0, 0, audioctl_read, audioctl_write},
                 {"/dev/events", 0, 0, events_read, invalid_write},
                 {"/proc/dispinfo", 0, 0, dispinfo_read, invalid_write},
 #include "files.h"
@@ -69,7 +63,6 @@ void init_fs() {
   AM_GPU_CONFIG_T gpuinfo;
   ioe_read(AM_GPU_CONFIG, &gpuinfo);
   file_table[FD_FB].size = gpuinfo.width * gpuinfo.height *4;
-  //printf("sFS: FD_FB was initialized as %d Bytes\n", file_table[FD_FB].size);
 }
 
 
@@ -79,15 +72,12 @@ int fs_open(const char *pathname, int flags, int mode) {
   */
   
   /* just compare the filename here. */
-  //printf("\033[31mTraping \033[0m\n");
   for(i = 0; i < NR_FILE; i++) {
     if(!strcmp(pathname, file_table[i].name)) {
       file_table[i].open_offset = 0;
-      //printf("sFS: open file: %s success\n", pathname);
       return i;
     }
   }
-
   printf("\033[31msFS: open file: %s failed\033[0m\n", pathname);
   return -1;
 }
@@ -95,7 +85,7 @@ int fs_open(const char *pathname, int flags, int mode) {
 
 size_t fs_read(int fd, void *buf, size_t len) {
   size_t len_read = len;
-  if(fd > 5) len_read = len > file_table[fd].size - file_table[fd].open_offset ? file_table[fd].size - file_table[fd].open_offset : len;
+  if(fd > 7) len_read = len > file_table[fd].size - file_table[fd].open_offset ? file_table[fd].size - file_table[fd].open_offset : len;
   size_t ret_val = file_table[fd].read(buf, file_table[fd].disk_offset + file_table[fd].open_offset, len_read);
   file_table[fd].open_offset += ret_val;
   return ret_val;
@@ -105,12 +95,12 @@ size_t fs_write(int fd, const void *buf, size_t len) {
   int ret_val = -1;  
   if(fd < NR_FILE) {
     size_t len_write = len;
-    if(fd > 5) len_write = len > file_table[fd].size - file_table[fd].open_offset ? file_table[fd].size - file_table[fd].open_offset : len;
+    if(fd > 7) len_write = len > file_table[fd].size - file_table[fd].open_offset ? file_table[fd].size - file_table[fd].open_offset : len;
     ret_val = file_table[fd].write(buf, file_table[fd].disk_offset + file_table[fd].open_offset, len_write);
     file_table[fd].open_offset += ret_val;
   }
   else
-    panic("Fatal Error: unaccessiable file table. \n");
+    panic("\033[31mFatal Error: Cannot access file table.\033[0m");
   return ret_val;
 }
 
@@ -120,7 +110,7 @@ size_t fs_lseek(int fd, size_t offset, int whence) {
     case SEEK_CUR: file_table[fd].open_offset += offset; break;
     case SEEK_END: file_table[fd].open_offset = file_table[fd].size + offset; break;
     default:
-      panic("No whence. \n");
+      panic("\033[31mUndefined whence.\033[0m");
   }
   return file_table[fd].open_offset;
 }

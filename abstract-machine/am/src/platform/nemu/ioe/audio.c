@@ -14,24 +14,15 @@ typedef struct _AudioData {
   int freq, channels, samples, sbuf_size;
 }_AudioData;
 
-//static _AudioData audio; 
 static uint32_t buf_pos = 0;
 
 void __am_audio_init() {
-  /*
-  audio.freq = inl(AUDIO_FREQ_ADDR);
-  audio.channels = inl(AUDIO_CHANNELS_ADDR);
-  audio.samples = inl(AUDIO_SAMPLES_ADDR);
-  audio.sbuf_size = inl(AUDIO_SBUF_SIZE_ADDR);
-  */
 }
 
 void __am_audio_config(AM_AUDIO_CONFIG_T *cfg) {
   cfg->present = true;
   /* Buf_size will not change. */
-  /*
-  cfg->bufsize = audio.sbuf_size;
-  */
+  cfg->bufsize = inl(AUDIO_SBUF_SIZE_ADDR);
 }
 
 void __am_audio_ctrl(AM_AUDIO_CTRL_T *ctrl) {
