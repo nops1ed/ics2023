@@ -21,14 +21,13 @@
 #include <regex.h>
 
 enum {
-  	TK_NOTYPE = 256, 
+  	TK_NOTYPE = 256,
 	TK_LBT = 1 , TK_RBT , TK_NEG , TK_POS , TK_DEREF , TK_GADDR , 	/* Tier 0 - 1*/
 	TK_MULTI , TK_DIV , TK_MOD , TK_PLUS , TK_MINUS ,				/* Tier 2 - 3*/
-	TK_EQ , TK_NEQ , TK_LAND , 
-	TK_REG , 
-	TK_DEC, TK_HEX ,  
+	TK_EQ , TK_NEQ , TK_LAND ,
+	TK_REG ,
+	TK_DEC, TK_HEX ,
 	// And so on
-	/* TODO: Add more token types */
 
 };
 
@@ -37,9 +36,6 @@ static struct rule {
   int token_type;
 } rules[] = {
 
-  /* TODO: Add more rules.
-   * Pay attention to the precedence level of different rules.
-   */
   	{" +", TK_NOTYPE},					// spaces
   	{"\\+", TK_PLUS},					// plus
 	{"\\-", TK_MINUS},					// minus
@@ -49,7 +45,7 @@ static struct rule {
 	{"\\)", TK_RBT},					// right bracket
 	{"\\$[a-zA-Z]*[0-9]*" , TK_REG},	// register
 	{"0[Xx][0-9a-fA-F]*",TK_HEX}, 		// hex number
-	{"[0-9]*" , TK_DEC},			 	// decimal number								
+	{"[0-9]*" , TK_DEC},			 	// decimal number
 	{"==", TK_EQ},						// bool equal
 	{"!=" , TK_NEQ},					// bool not equal
 	{"&&" , TK_LAND} ,					// logical and
@@ -141,7 +137,7 @@ static bool make_token(char *e) {
 					break;
 				case TK_NOTYPE:
 					break;
-          		default: 
+          		default:
 					//printf("\nIt seems like u got default branch\n");
 					//printf("\nAnd the type could be %d\n", rules[i].token_type);
 					tokens[nr_token++].type = rules[i].token_type;
@@ -166,7 +162,7 @@ static bool make_token(char *e) {
 static bool check_parentheses(int p , int q) {
 	//printf("\noops , Seems like u trap into check_parentheses function\n");
 	//printf("\np is %d , q is %d\n" , p , q);
-	// Check tokens list		
+	// Check tokens list
 	if (tokens[p++].type != TK_LBT || tokens[q].type != TK_RBT)
 		return false;
 	// Simulate stack
@@ -180,7 +176,7 @@ static bool check_parentheses(int p , int q) {
 				left_count -= 1;
 				break;
 			default:
-				// Do nothing 
+				// Do nothing
 				;
 		}
 		if (left_count < 0) {
@@ -195,11 +191,11 @@ static bool check_parentheses(int p , int q) {
 static uint32_t domain_find(uint32_t p , uint32_t q) {
 	uint32_t domain = -1;
 	for (int i = p ; i < q ; i++) {
-		/* All of right brackets should be checked in below case  
-		 * Otherwise it could be bad expression 
+		/* All of right brackets should be checked in below case
+		 * Otherwise it could be bad expression
 		 */
 		if (tokens[i].type == TK_LBT) {
-			uint32_t left_count = 1;	
+			uint32_t left_count = 1;
 			while(++i < q) {
 				switch(tokens[i].type) {
 					case TK_LBT:
@@ -215,9 +211,9 @@ static uint32_t domain_find(uint32_t p , uint32_t q) {
 				}
 				if (left_count == 0) break;
 			}
-			// This should be invalid 
+			// This should be invalid
 			if (i > q) assert(0);
-		}	
+		}
 		else if (tokens[i].type == TK_RBT)
 			// Bad expression
 			assert(0);
@@ -243,8 +239,7 @@ static uint32_t eval(int p , int q) {
   	}
 	/* This could be decimal , hex , addr , register or dereference */
   	else if (p == q) {
-		switch(tokens[p].type)
-		{
+		switch(tokens[p].type) {
 			case TK_DEC:
 				int dec_val;
 				sscanf(tokens[p].str , "%d" , &dec_val);
@@ -281,7 +276,7 @@ static uint32_t eval(int p , int q) {
 		uint32_t val2 = eval(op + 1 , q);
     	switch (tokens[op].type) {
       		case TK_PLUS:  return val1 + val2;
-			case TK_MINUS: return val1 - val2; 
+			case TK_MINUS: return val1 - val2;
 			case TK_MULTI: return val1 * val2;
 			case TK_DIV:
 				if (val2 == 0) {
@@ -293,7 +288,7 @@ static uint32_t eval(int p , int q) {
 			case TK_NEQ: return (val1 != val2);
 			case TK_EQ:  return (val1 == val2);
 			case TK_LAND:return (val1 && val2);
-      		default: 
+      		default:
 				assert(0);
     	}
 	}
@@ -301,8 +296,7 @@ static uint32_t eval(int p , int q) {
 
 static bool certain_type (uint32_t type)
 {
-	switch(type)
-	{
+	switch(type) {
 		case TK_LBT:
 		case TK_PLUS:
 		case TK_MINUS:

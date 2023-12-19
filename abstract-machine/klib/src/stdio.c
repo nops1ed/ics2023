@@ -19,37 +19,37 @@ static void _writeC(char *out, char c) {
 
 /* Write an interger into the buffer according to type we wanna convert to. */
 
-/* Well, this is not a good practice 
+/* Well, this is not a good practice
  * But putch is a default function so we have to treat it differently instead of a file stream
  */
-static int _writeI(char *out, uint64_t _offset_, int64_t num, size_t *n, uint64_t width, 
+static int _writeI(char *out, uint64_t _offset_, int64_t num, size_t *n, uint64_t width,
                        uint64_t type) {
   long long _num = num;
   /* This should be enough, or we consider it as overflow and cut it down */
   char buf[MAX_IBUF];
-  uint64_t offset = 0;  
+  uint64_t offset = 0;
   if(_num == 0) buf[offset++] = '0';
-  else { 
+  else {
     while(_num) {
       buf[offset++] = (_num % type) > 9? 'a' + (_num % type) - 10: _num % type + '0';
       _num /= type;
-    }     
+    }
   }
   if(type == NUM_HEX) {
     buf[offset++] = 'x';
     buf[offset++] = '0';
   }
   for(int j = offset; j < width; j++) {
-    if (out)  _writeC(out + _offset_ + j, '0'); 
+    if (out)  _writeC(out + _offset_ + j, '0');
     else _writeC(out, '0');
   }
 
   int i;
-  for(i = 0; i < offset && *n > 0; i++, (*n)--)  
-    if (out)  _writeC(out + _offset_ + i, *(buf + offset - 1 - i)); 
+  for(i = 0; i < offset && *n > 0; i++, (*n)--)
+    if (out)  _writeC(out + _offset_ + i, *(buf + offset - 1 - i));
     else _writeC(out, *(buf + offset - 1 - i));
     //*(out + offset - 1 - i) = buf[i];
-  return i; 
+  return i;
 }
 
 /* Write a string to buffer */
@@ -75,11 +75,11 @@ int vsprintf(char *out, const char *fmt, va_list ap) {
   return vsnprintf(out, -1, fmt, ap);
 }
 
-/* Trivial implement , We didn`t call _vsprintf_internal 
- * The behavior of copy we implement is just byte copy 
+/* Trivial implement , We didn`t call _vsprintf_internal
+ * The behavior of copy we implement is just byte copy
  */
 int sprintf(char *out, const char *fmt, ...) {
-  va_list ap;  
+  va_list ap;
   va_start(ap, fmt);
   int ret = vsnprintf(out, -1, fmt, ap);
   va_end(ap);
@@ -87,7 +87,7 @@ int sprintf(char *out, const char *fmt, ...) {
 }
 
 int snprintf(char *out, size_t n, const char *fmt, ...) {
-  va_list ap;  
+  va_list ap;
   va_start(ap, fmt);
   int ret = vsnprintf(out, n, fmt, ap);
   va_end(ap);
@@ -97,16 +97,16 @@ int snprintf(char *out, size_t n, const char *fmt, ...) {
 int vsnprintf(char *out, size_t n, const char *fmt, va_list ap) {
   uint64_t offset = 0, len, width;
   for (const char *p = fmt; *p != '\0'; p++) {
-    if (*p == '%') {  
+    if (*p == '%') {
       width = 0;
-      p++;  
+      p++;
       for ( ; *p != '\0' && *p >= '0' && *p <= '9'; ++p) {
         width *= 10;
         width += *p - '0';
       }
 			if (*p == 'd') {
-        /* Some functions should be implemented here 
-        * which returns a value: len, it symbolizes the length we write into 
+        /* Some functions should be implemented here
+        * which returns a value: len, it symbolizes the length we write into
         * the buffer
         */
         int num = va_arg(ap, int);
@@ -118,13 +118,13 @@ int vsnprintf(char *out, size_t n, const char *fmt, va_list ap) {
         offset += _writeI(out, offset, num, &n, width, NUM_HEX);
 			}
 			else if(*p == 's') {
-        char *buf = va_arg(ap, char *);  
+        char *buf = va_arg(ap, char *);
 				len = strlen(buf);
         offset += _writeS(out, offset, buf, &n, len);
 			}
 			else if(*p == 'c') {
         char buf[8];
-        *buf = (char)va_arg(ap, int);  
+        *buf = (char)va_arg(ap, int);
         offset += _writeS(out, offset, buf, &n, 1);
 		  }
       else if(*p == 'p') {
@@ -132,19 +132,20 @@ int vsnprintf(char *out, size_t n, const char *fmt, va_list ap) {
         offset += _writeI(out, offset, num, &n, width, NUM_HEX);
       }
 			else {
+        /* Just warning. */
 				char *buf = "%%";
         offset += _writeS(out, offset, buf, &n, 2);
 		  }
-    }  
-		else {  
+    }
+		else {
 			char buf[8];
 			buf[0] = *p;
       offset += _writeS(out, offset, buf, &n, 1);
-    }  
-  }  
-  if(out && out + offset) _writeC(out + offset, '\0'); 
+    }
+  }
+  if(out && out + offset) _writeC(out + offset, '\0');
   else _writeC(out, '\0');
-  //*(out + offset) = '\0'; 
+  //*(out + offset) = '\0';
   va_end(ap);
   return offset;
 }
