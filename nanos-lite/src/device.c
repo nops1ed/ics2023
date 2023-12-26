@@ -17,26 +17,26 @@ static const char *keyname[256] __attribute__((used)) = {
   AM_KEYS(NAME)
 };
 
-static char* __itoa(int num, char* str, int base) {  
-  int i = 0;  
-  int sign = num < 0 ? -1 : 1;  
-  if (sign == -1) num = -num;  
-  while (num) {  
-    int rem = num % base;  
-    str[i++] = rem > 9 ? (rem - 10) + 'a' : rem + '0';  
-    num = num / base;  
-  }  
-  if (i == 0) str[i++] = '0';  
-  if (sign == -1) str[i++] = '-';  
-  str[i] = '\0';  
-  int j = 0, len = strlen(str) - 1;  
-  while (j < len) {  
-    char tmp = str[j];  
-    str[j++] = str[len];  
-    str[len--] = tmp;  
-  }  
-  return str;  
-}  
+static char* __itoa(int num, char* str, int base) {
+  int i = 0;
+  int sign = num < 0 ? -1 : 1;
+  if (sign == -1) num = -num;
+  while (num) {
+    int rem = num % base;
+    str[i++] = rem > 9 ? (rem - 10) + 'a' : rem + '0';
+    num = num / base;
+  }
+  if (i == 0) str[i++] = '0';
+  if (sign == -1) str[i++] = '-';
+  str[i] = '\0';
+  int j = 0, len = strlen(str) - 1;
+  while (j < len) {
+    char tmp = str[j];
+    str[j++] = str[len];
+    str[len--] = tmp;
+  }
+  return str;
+}
 
 static AM_GPU_CONFIG_T gpuinfo = {};
 
@@ -68,7 +68,7 @@ size_t events_read(void *buf, size_t offset, size_t len) {
       schedule_proc(3);
       return 0;
     default:
-      ; 
+      ;
   }
   if (kbd.keydown) strncat(buf, "kd ", len);
   else
