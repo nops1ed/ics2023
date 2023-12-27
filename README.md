@@ -1,19 +1,6 @@
-# ICS2023 Programming Assignment
+RISCV-64版本的ICS-PA，非常好的一次实验
+尚有待改进的部分，~~未来也许会改进(挖个坑先)~~
+公开的目的是希望给后来者一些参考，但还请尽量独自思考
+代码中尚有问题，欢迎随时探讨，相互学习
 
-This project is the programming assignment of the class ICS(Introduction to Computer System)
-in Department of Computer Science and Technology, Nanjing University.
-
-For the guide of this programming assignment,
-refer to https://nju-projectn.github.io/ics-pa-gitbook/ics2023/
-
-To initialize, run
-```bash
-bash init.sh subproject-name
-```
-See `init.sh` for more details.
-
-The following subprojects/components are included. Some of them are not fully implemented.
-* [NEMU](https://github.com/NJU-ProjectN/nemu)
-* [Abstract-Machine](https://github.com/NJU-ProjectN/abstract-machine)
-* [Nanos-lite](https://github.com/NJU-ProjectN/nanos-lite)
-* [Navy-apps](https://github.com/NJU-ProjectN/navy-apps)
+**Any questions can also be submitted to yingzesun@ustc.edu.cn**
