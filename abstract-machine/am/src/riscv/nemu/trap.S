@@ -44,8 +44,6 @@ __am_asm_trap:
   # addi sp, sp, -XLEN
   # STORE t3, (sp)
   # mv t3, sp
-  mv t3, sp
-  STORE t3, OFFSET_SP(sp)
 
   csrrw sp, mscratch, sp  # (1) atomically exchange sp and mscratch
   bnez sp, save_context   # (2) take the branch if we trapped from user
@@ -54,7 +52,8 @@ __am_asm_trap:
   save_context:
   addi sp, sp, -CONTEXT_SIZE
 
-  # STORE t3, OFFSET_SP(sp)
+  mv t3, sp
+  STORE t3, OFFSET_SP(sp)
 
   MAP(REGS, PUSH)
 
