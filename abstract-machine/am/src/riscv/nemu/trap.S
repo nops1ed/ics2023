@@ -41,8 +41,8 @@ f(30) f(31)
 .align 3
 .globl __am_asm_trap
 __am_asm_trap:
-  addi sp, sp, -XLEN
-  STORE t3, (sp)
+  # addi sp, sp, -XLEN
+  # STORE t3, (sp)
   mv t3, sp
 
   csrrw sp, mscratch, sp  # (1) atomically exchange sp and mscratch
