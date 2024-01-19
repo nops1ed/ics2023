@@ -73,10 +73,10 @@ __am_asm_trap:
   jal __am_irq_handle
   mv sp, a0
 
- LOAD t3, OFFSET_NP(sp)
- bnez t3, restore_contexts
- addi t3, sp, CONTEXT_SIZE
- csrw mscratch, t3
+ # LOAD t3, OFFSET_NP(sp)
+ # bnez t3, restore_contexts
+ # addi t3, sp, CONTEXT_SIZE
+ # csrw mscratch, t3
 
 restore_contexts:
 
@@ -87,9 +87,10 @@ restore_contexts:
 
   MAP(REGS, POP)
 
-  # LOAD t3, OFFSET_NP(sp)
-  # bnez t3, next
-  # csrw mscratch, t3
+  LOAD t3, OFFSET_NP(sp)
+  bnez t3, next
+  addi t3, sp, CONTEXT_SIZE
+  csrw mscratch, t3
 
 next:
   LOAD t3, OFFSET_SP(sp)
