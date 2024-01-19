@@ -41,9 +41,11 @@ f(30) f(31)
 .align 3
 .globl __am_asm_trap
 __am_asm_trap:
-  addi sp, sp, -XLEN
-  STORE t3, (sp)
-  mv t3, sp
+  # addi sp, sp, -XLEN
+  # STORE t3, (sp)
+  # mv t3, sp
+
+
 
   csrrw sp, mscratch, sp  # (1) atomically exchange sp and mscratch
   bnez sp, save_context   # (2) take the branch if we trapped from user
@@ -52,19 +54,19 @@ __am_asm_trap:
   save_context:
   addi sp, sp, -CONTEXT_SIZE
 
-  STORE t3, OFFSET_SP(sp)
+  # STORE t3, OFFSET_SP(sp)
 
   MAP(REGS, PUSH)
 
   csrr t0, mcause
   csrr t1, mstatus
   csrr t2, mepc
-  # csrr t3, mscratch
+  csrr t3, mscratch
 
   STORE t0, OFFSET_CAUSE(sp)
   STORE t1, OFFSET_STATUS(sp)
   STORE t2, OFFSET_EPC(sp)
-  # STORE t3, OFFSET_SP(sp)
+  STORE t3, OFFSET_SP(sp)
 
   # set mstatus.MPRV to pass difftest
   li a0, (1 << 17)
@@ -75,10 +77,10 @@ __am_asm_trap:
   jal __am_irq_handle
   mv sp, a0
 
-   LOAD t3, OFFSET_NP(sp)
-  bnez t3, restore_contexts
-  addi t3, sp, CONTEXT_SIZE
-  csrw mscratch, t3
+  # LOAD t3, OFFSET_NP(sp)
+  # bnez t3, restore_contexts
+  # addi t3, sp, CONTEXT_SIZE
+  # csrw mscratch, t3
 
 restore_contexts:
 
@@ -89,15 +91,15 @@ restore_contexts:
 
   MAP(REGS, POP)
 
-  # LOAD t3, OFFSET_NP(sp)
-  # bnez t3, restore_sp
-  # csrw mscratch, sp
+  LOAD t3, OFFSET_NP(sp)
+  bnez t3, restore_sp
+  csrw mscratch, sp
 
 restore_sp:
   LOAD t3, OFFSET_SP(sp)
-  addi sp, sp, CONTEXT_SIZE
+  # addi sp, sp, CONTEXT_SIZE
   mv sp, t3
-  LOAD t3, (sp)
-  addi sp, sp, XLEN
+  # LOAD t3, (sp)
+  # addi sp, sp, XLEN
 
   mret
