@@ -5,11 +5,11 @@
 #ifndef __MACRO_IRQ_NUM__
 #define __MACRO_IRQ_NUM__
 #if defined(__ISA_X86__)
-#define IRQ_TIMER 32        
+#define IRQ_TIMER 32
 #elif defined(__riscv)
-#define IRQ_TIMER 0x8000000000000007 
+#define IRQ_TIMER 0x8000000000000007
 #elif defined(__ISA_MIPS32__)
-#define IRQ_TIMER 0      
+#define IRQ_TIMER 0
 #elif defined(__ISA_LOONGARCH32R__)
 #endif
 #endif
@@ -23,13 +23,13 @@ void __am_get_cur_as(Context *c);
 void __am_switch(Context *c);
 
 Context* __am_irq_handle(Context *c) {
-  uintptr_t mscratch = 0;
+  uintptr_t mscratch_val = 0;
   uintptr_t kas = 0;
-  __asm__ __volatile__("csrr %0, mscratch" 
-    : "=r"(mscratch));
-  c->np = (mscratch == 0 ? KERNEL_MODE : USER_MODE);
-  __asm__ __volatile__("csrw mscratch, %0" 
-    : 
+  __asm__ __volatile__("csrr %0, mscratch"
+    : "=r"(mscratch_val));
+  c->np = (mscratch_val == 0 ? KERNEL_MODE : USER_MODE);
+  __asm__ __volatile__("csrw mscratch, %0"
+    :
     : "r"(kas));
   __am_get_cur_as(c);
 
@@ -79,7 +79,7 @@ Context *kcontext(Area kstack, void (*entry)(void *), void *arg) {
   uintptr_t *t0_buf = kstack.end - 4;
   *t0_buf = 0;
 
-  Context *kctx = (Context *)(kstack.end - sizeof(Context)); 
+  Context *kctx = (Context *)(kstack.end - sizeof(Context));
   memset(kctx, 0, sizeof(kctx));
   kctx->GPRx = (uintptr_t)arg;
   kctx->mstatus = 0x1800 | 0x40;
