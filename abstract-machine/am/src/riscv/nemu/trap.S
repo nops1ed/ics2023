@@ -41,7 +41,7 @@ f(30) f(31)
 .align 3
 .globl __am_asm_trap
 __am_asm_trap:
-  # addi sp, sp, -XLEN
+  addi sp, sp, -XLEN
   STORE t3, (sp)
   mv t3, sp
 
