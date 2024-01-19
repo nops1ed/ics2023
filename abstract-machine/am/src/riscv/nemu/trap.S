@@ -94,7 +94,7 @@ restore_contexts:
 
 next:
   LOAD t3, OFFSET_SP(sp)
-  addi sp, sp, CONTEXT_SIZE
+  # addi sp, sp, CONTEXT_SIZE
   mv sp, t3
   LOAD t3, (sp)
   addi sp, sp, XLEN
