@@ -36,7 +36,7 @@ f(30) f(31)
 #define OFFSET_CAUSE  ((NR_REGS + 0) * XLEN)
 #define OFFSET_STATUS ((NR_REGS + 1) * XLEN)
 #define OFFSET_EPC    ((NR_REGS + 2) * XLEN)
-#define OFFSET_NP ((NR_REGS + 3) * XLEN)
+#define OFFSET_NP     ((NR_REGS + 3) * XLEN)
 
 .align 3
 .globl __am_asm_trap
@@ -45,8 +45,8 @@ __am_asm_trap:
   STORE t3, (sp)
   mv t3, sp
 
-  csrrw sp, mscratch, sp  # (1) atomically exchange sp and mscratch 
-  bnez sp, save_context   # (2) take the branch if we trapped from user 
+  csrrw sp, mscratch, sp  # (1) atomically exchange sp and mscratch
+  bnez sp, save_context   # (2) take the branch if we trapped from user
   csrrw sp, mscratch, sp  # (3) if we trapped from kernel, restore the original sp
 
   save_context:
@@ -92,5 +92,5 @@ restore_contexts:
   mv sp, t3
   LOAD t3, (sp)
   addi sp, sp, XLEN
-  
+
   mret

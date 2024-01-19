@@ -10,7 +10,7 @@ static Context* do_event(Event e, Context* c) {
       break;
     case EVENT_IRQ_TIMER:
       /* fall through here. */
-      Log("\033[33mTimer interrupt emit\033[0m");
+      //Log("\033[33mTimer interrupt emit\033[0m");
     case EVENT_YIELD:
       c = schedule(c);
       break;
