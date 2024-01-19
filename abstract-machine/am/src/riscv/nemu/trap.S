@@ -96,6 +96,6 @@ next:
   LOAD t3, OFFSET_SP(sp)
   mv sp, t3
   LOAD t3, (sp)
-  addi sp, sp, XLEN
+  # addi sp, sp, XLEN
 
   mret
