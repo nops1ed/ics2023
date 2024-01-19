@@ -41,18 +41,18 @@ f(30) f(31)
 .align 3
 .globl __am_asm_trap
 __am_asm_trap:
-  # addi sp, sp, -XLEN
-  # STORE t3, (sp)
-  mv t3, sp
+  addi sp, sp, -XLEN
+  STORE t4, (sp)
+  mv t4, sp
 
-  csrrw sp, mscratch, sp  # (1) atomically exchange sp and mscratch
-  bnez sp, save_context   # (2) take the branch if we trapped from user
-  csrr sp, mscratch       # (3) if we trapped from kernel, restore the original sp
+  csrrw sp, mscratch, sp   # (1) atomically exchange sp and mscratch
+  bnez sp, save_context    # (2) take the branch if we trapped from user
+  csrrw sp, mscratch, sp   # (3) if we trapped from kernel, 恢复之前的状态
 
   save_context:
   addi sp, sp, -CONTEXT_SIZE
 
-  STORE t3, OFFSET_SP(sp)
+  STORE t4, OFFSET_SP(sp)
 
   MAP(REGS, PUSH)
 
@@ -73,10 +73,10 @@ __am_asm_trap:
   jal __am_irq_handle
   mv sp, a0
 
-  LOAD t3, OFFSET_NP(sp)
-  bnez t3, restore_contexts
-  addi t3, sp, CONTEXT_SIZE
-  csrw mscratch, t3
+  LOAD t4, OFFSET_NP(sp)
+  bnez t4, restore_contexts
+  addi t4, sp, CONTEXT_SIZE
+  csrw mscratch, t4
 
 restore_contexts:
 
@@ -87,10 +87,11 @@ restore_contexts:
 
   MAP(REGS, POP)
 
-  LOAD t3, OFFSET_SP(sp)
+  LOAD t4, OFFSET_SP(sp)
   addi sp, sp, CONTEXT_SIZE
-  mv sp, t3
-  LOAD t3, (sp)
+
+  mv sp, t4
+  LOAD t4, (sp)
   addi sp, sp, XLEN
 
   mret
