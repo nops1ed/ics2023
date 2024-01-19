@@ -89,8 +89,7 @@ restore_contexts:
 
   LOAD t3, OFFSET_NP(sp)
   bnez t3, next
-  addi t3, sp, CONTEXT_SIZE
-  csrw mscratch, t3
+  csrw mscratch, sp
 
 
 next:
