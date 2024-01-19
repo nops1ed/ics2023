@@ -76,8 +76,8 @@ bool cte_init(Context*(*handler)(Event, Context*)) {
 }
 
 Context *kcontext(Area kstack, void (*entry)(void *), void *arg) {
-  //uintptr_t *t0_buf = kstack.end - 4;
-  //*t0_buf = 0;
+  uintptr_t *t0_buf = kstack.end - 4;
+  *t0_buf = 0;
 
   Context *kctx = (Context *)(kstack.end - sizeof(Context));
   memset(kctx, 0, sizeof(kctx));
