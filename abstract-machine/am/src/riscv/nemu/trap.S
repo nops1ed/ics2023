@@ -45,8 +45,8 @@ __am_asm_trap:
   STORE t3, (sp)
   mv t3, sp
 
-  csrrw sp, mscratch, sp  # (1) atomically exchange sp and mscratch 
-  bnez sp, save_context   # (2) take the branch if we trapped from user 
+  csrrw sp, mscratch, sp  # (1) atomically exchange sp and mscratch
+  bnez sp, save_context   # (2) take the branch if we trapped from user
   csrrw sp, mscratch, sp  # (3) if we trapped from kernel, restore the original sp
 
   save_context:
@@ -92,5 +92,5 @@ restore_contexts:
   mv sp, t3
   LOAD t3, (sp)
   addi sp, sp, XLEN
-  
+
   mret
