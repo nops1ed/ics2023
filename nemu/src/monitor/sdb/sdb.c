@@ -63,13 +63,13 @@ static int cmd_q(char *args) {
 
 static int cmd_help(char *args);
 
-static int cmd_si(char *args) {	
+static int cmd_si(char *args) {
   //parse args
   char *arg = strtok(NULL," ");
   int i = 0;
   if (!arg)	i = 1;
 	else sscanf(arg , "%d" , &i);
-  cpu_exec(i);	  
+  cpu_exec(i);
   return 0;
 }
 
@@ -106,7 +106,7 @@ static int cmd_x(char *args) {
   if (!arg) {
     printf("Arguments parse failed.\n");
     return 0;
-  } 
+  }
   sscanf(arg , "%d" , &i);
   arg = strtok(NULL , "\0");
   if (!arg) {
@@ -124,7 +124,7 @@ static int cmd_x(char *args) {
 		printf("0x%lx: " , addr + 4 * j);
 		for (int k = 3 ; k >= 0 ; k--)
 			/* Little endian. */
-			printf("\033[32m%02lx \033[0m" , vaddr_read(addr + 4 * j + k, 1));		
+			printf("\033[32m%02lx \033[0m" , vaddr_read(addr + 4 * j + k, 1));
 		printf("\n");
 	}
   return 0;
@@ -208,7 +208,7 @@ static void init_snaplist(void) {
   char *__filename = (char *)malloc(sizeof(char) * _FILENAME_SIZE);
   strcpy(__filename, getenv("NEMU_HOME"));
   if(__filename == NULL) panic("\033[31mNEMU_HOME does not exist.\nCheck whether your environment is configured correctly\033[0m");
-  strcat(__filename, "/snapshot_list"); 
+  strcat(__filename, "/snapshot_list");
   /* Initialize snaplist file pointer. */
   snaplist_file = fopen(__filename, "a+");
   free(__filename);
@@ -228,13 +228,13 @@ static int cmd_snaplist(char *args) {
   }
   fseek(snaplist_file, 0, SEEK_SET);
   char ch;
-  while ((ch = fgetc(snaplist_file)) != EOF)  printf("%c", ch); 
+  while ((ch = fgetc(snaplist_file)) != EOF)  printf("%c", ch);
   fseek(snaplist_file, 0, SEEK_END);
   return 0;
 }
 
 /* The save and load operations create and load snapshots , respectively
-* 'save' accepts an absolute path and creates (overwrites if a file with the same name exists) a file, 
+* 'save' accepts an absolute path and creates (overwrites if a file with the same name exists) a file,
 *     writing to the current system snapshot
 * 'load' reads the file name and loads the corresponding snapshot to the system
 * Note that the above two operations will execute the default path when the parameters are empty
@@ -246,12 +246,12 @@ static int cmd_save(char *args) {
     pathname = (char *)malloc(sizeof(char) * _FILENAME_SIZE);
     /* It is important to note that the string returned by 'getenv' may be statically allocated,
     * which means it may be modified by subsequent calls to getenv, putenv, setenv, or unsetenv.
-    * Therefore, the caller should not modify the returned string, 
+    * Therefore, the caller should not modify the returned string,
     *         *nor should they rely on its persistence.*
     */
     strcpy(pathname, getenv("NEMU_HOME"));
     if(pathname == NULL) panic("\033[31mNEMU_HOME does not exist. \nCheck whether your environment is configured correctly\033[0m");
-    strcat(pathname, "/snapshot"); 
+    strcat(pathname, "/snapshot");
   }
   FILE *fp = fopen(pathname, "w+");
   if(fp == NULL) {
@@ -285,7 +285,7 @@ static int cmd_load(char *args) {
     return 0;
   }
   FILE *fp = fopen(pathname, "r");
-  if(fp == NULL) {  
+  if(fp == NULL) {
     printf("File %s opened(or created) failed\nCheck whether your nemu path is valid\n", pathname);
     return 0;
   }
@@ -303,20 +303,20 @@ static struct {
   int (*handler) (char *);
 } cmd_table [] = {
   { "help",     "Display information about all supported commands", cmd_help },
-  { "c",        "Continue the execution of the program", cmd_c },
-  { "q",        "Exit NEMU", cmd_q },
-  { "si" ,      "Execute by single step" , cmd_si },
-  { "info" ,    "Show information" , cmd_info },
-  { "x" ,       "Scan Memory" , cmd_x },
-  { "p" ,       "Evaluate the expression" , cmd_p },
-  { "w" ,       "Set watchpoint" , cmd_w },
-  { "d" ,       "Delete watchpoint" , cmd_d },
-//{ "b" ,       "Set breakpoint" , cmd_b },
-  { "detach" ,  "Disable Difftest Mode" , cmd_detach },
-  { "attach" ,  "Enable Difftest Mode" , cmd_attach },
-  { "save" ,    "Create a new snapshot" , cmd_save },
-  { "load" ,    "Load a snapshot" , cmd_load},
-  { "snaplist", "Display all existing or created system snapshots" , cmd_snaplist},
+  { "c",        "Continue the execution of the program",            cmd_c },
+  { "q",        "Exit NEMU",                                        cmd_q },
+  { "si" ,      "Execute by single step" ,                          cmd_si },
+  { "info" ,    "Show information" ,                                cmd_info },
+  { "x" ,       "Scan Memory" ,                                     cmd_x },
+  { "p" ,       "Evaluate the expression" ,                         cmd_p },
+  { "w" ,       "Set watchpoint" ,                                  cmd_w },
+  { "d" ,       "Delete watchpoint" ,                               cmd_d },
+//{ "b" ,       "Set breakpoint" ,                                  cmd_b },
+  { "detach" ,  "Disable Difftest Mode" ,                           cmd_detach },
+  { "attach" ,  "Enable Difftest Mode" ,                            cmd_attach },
+  { "save" ,    "Create a new snapshot" ,                           cmd_save },
+  { "load" ,    "Load a snapshot" ,                                 cmd_load},
+  { "snaplist", "Display all existing or created system snapshots", cmd_snaplist},
 };
 
 #define NR_CMD ARRLEN(cmd_table)
