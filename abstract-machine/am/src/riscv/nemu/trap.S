@@ -41,9 +41,9 @@ f(30) f(31)
 .align 3
 .globl __am_asm_trap
 __am_asm_trap:
-  addi sp, sp, -XLEN
-  STORE t4, (sp)
-  mv t4, sp
+  # addi sp, sp, -XLEN
+  # STORE t4, (sp)
+  # mv t4, sp
 
   csrrw sp, mscratch, sp   # (1) atomically exchange sp and mscratch
   bnez sp, save_context    # (2) take the branch if we trapped from user
@@ -52,7 +52,7 @@ __am_asm_trap:
   save_context:
   addi sp, sp, -CONTEXT_SIZE
 
-  STORE t4, OFFSET_SP(sp)
+  # STORE t4, OFFSET_SP(sp)
 
   MAP(REGS, PUSH)
 
@@ -74,8 +74,8 @@ __am_asm_trap:
   mv sp, a0
 
   LOAD t4, OFFSET_NP(sp)
-  bnez t4, restore_contexts
-  addi t4, sp, CONTEXT_SIZE
+  # bnez t4, restore_contexts
+  # addi t4, sp, CONTEXT_SIZE
   csrw mscratch, t4
 
 restore_contexts:
@@ -87,11 +87,15 @@ restore_contexts:
 
   MAP(REGS, POP)
 
-  LOAD t4, OFFSET_SP(sp)
+  # LOAD t4, OFFSET_SP(sp)
   addi sp, sp, CONTEXT_SIZE
 
-  mv sp, t4
-  LOAD t4, (sp)
-  addi sp, sp, XLEN
+  # mv sp, t4
+  # LOAD t4, (sp)
+  # addi sp, sp, XLEN
+  csrrw sp, mscratch, sp
+  bnez sp, return
+  csrrw sp, mscratch, sp
 
+return:
   mret
