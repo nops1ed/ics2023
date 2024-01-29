@@ -148,62 +148,75 @@ void context_kload(PCB *pcb, void (*entry)(void *), void *arg){
   pcb->cp = kcontext(karea, entry, arg);
 }
 
-void context_uload(PCB *pcb, const char *filename, char *const argv[], char *const envp[]) {
-  /* Each process holds 32kb of stack space, which we think is sufficient for ics processes. */
-  AddrSpace *as = &pcb->as;
-  /* Mapping address space. */
-  //Log("\033[33mCreating kernel address space...\033[0m");
-  protect(&pcb->as);
-  //Log("\033[33mKernel address space created\033[0m");
-  void *page_alloc = new_page(NR_PAGE) + NR_PAGE * PGSIZE;
-
-  /* Mapping user stack. */
-  //Log("\033[33m\nMapping user stack...\033[0m");
-  for(int i = NR_PAGE; i > 0; i--)
-    map(as, as->area.end - i * PGSIZE, page_alloc - i * PGSIZE, 1);
-  //Log("\033[33mUser stack established\033[0m");
-
-  /* deploy user stack layout. */
-  char *brk = (char *)(page_alloc - 4);
-  int argc = 0, envc = 0;
-  if (envp) for (; envp[envc]; ++envc) ;
-  if (argv) for (; argv[argc]; ++argc) ;
-  char *args[argc], *envs[envc];
-
-  /* Copy String Area. */
-  for (int i = 0; i < argc; ++i) {
-    /* Note that it is neccessary to make memory *align*. */
-    brk -= ROUNDUP(strlen(argv[i]) + 1, sizeof(int));
-    args[i] = brk;
-    strcpy(brk, argv[i]);
-  }
-  for (int i = 0; i < envc; ++i) {
-    brk -= ROUNDUP(strlen(envp[i]) + 1, sizeof(int));
-    envs[i] = brk;
-    strcpy(brk, envp[i]);
+void context_uload(PCB *ptr_pcb, const char *filename, char *const argv[], char *const envp[]) {
+   protect(&ptr_pcb->as);
+  uintptr_t ustack = (uintptr_t)new_page(8);
+  uintptr_t ustack_mapped = (uintptr_t)ptr_pcb->as.area.end;
+  for (int i = 0; i < 8; ++ i) {
+    map(&ptr_pcb->as,
+        (void*)(ptr_pcb->as.area.end - (8 - i) * PGSIZE),
+        (void*)(ustack + i * PGSIZE),
+        MMAP_READ | MMAP_WRITE);
+    // Log("map 0x%8lx -> 0x%8lx", ptr_pcb->as.area.end - (8 - i) * PGSIZE, ustack + i * PGSIZE);
   }
 
-  /* Copy envp & argv area. */
-  intptr_t *ptr_brk = (intptr_t *)brk;
-  *(--ptr_brk) = 0;
-  ptr_brk -= envc;
-  for (int i = 0; i < envc; ++i)  ptr_brk[i] = (intptr_t)(envs[i]);
-  *(--ptr_brk) = 0;
-  ptr_brk = ptr_brk - argc;
-  for (int i = 0; i < argc; ++i)  ptr_brk[i] = (intptr_t)(args[i]);
-  *(--ptr_brk) = argc;
+//* Set argv, envp
+  //* collect arg count
+  int argv_count = 0;
+  int envp_count = 0;
+  if (argv) {
+    while (argv[argv_count]) argv_count ++;
+  }
+  if (envp) {
+    while (envp[envp_count]) envp_count ++;
+  }
+  // char* _argv[20] = {0};
+  // char* _envp[20] = {0};
+  char** _argv = (char**)ustack;
+  char** _envp = (char**)(ustack + (argv_count+1)*sizeof(char*));
+  //* use ustack bottom as temporary buffer for new argv and envp
 
-  //Log("\033[33mLoading program entry...\033[0m");
-  uintptr_t entry = loader(pcb, filename);
-  //Log("\033[33mloader finished\033[0m");
-  Area stack;
-  stack.start = &pcb->cp;
-  stack.end = &pcb->cp + STACK_SIZE;
+  // Log("argv_count:%d, envp_count:%d", argv_count, envp_count);
+  // Log("envp: %p", envp[0]);
+  //* copy strings
+  ustack += 8 * PGSIZE; // put on the bottom of the stack
 
-  Context *ucxt = ucontext(as, stack, (void *)entry);
-  pcb->max_brk = 0;
-  pcb->cp = ucxt;
-  *(--ptr_brk) = 0;
-  ucxt->gpr[2]  = (uintptr_t)ptr_brk - (uintptr_t)page_alloc + (uintptr_t)as->area.end;
-  ucxt->GPRx = (uintptr_t)ptr_brk - (uintptr_t)page_alloc + (uintptr_t)as->area.end + 8;
+  for (int i = 0; i < envp_count; ++ i) {
+    size_t len = strlen(envp[i]) + 1;
+    ustack -= len;
+    ustack_mapped -= len;
+    strcpy((char*)ustack, envp[i]);
+    _envp[i] = (char*)ustack_mapped;
+  }
+
+  for (int i = 0; i < argv_count; ++ i) {
+    size_t len = strlen(argv[i]) + 1;
+    ustack -= len;
+    ustack_mapped -= len;
+    strcpy((char*)ustack, argv[i]);
+    _argv[i] = (char*)ustack_mapped;
+  }
+  //* copy argv table
+  size_t envp_size = sizeof(char*) * (envp_count + 1); // there should be a null at the end
+  size_t argv_size = sizeof(char*) * (argv_count + 1);
+  ustack -= envp_size;
+  ustack_mapped -= envp_size;
+  memcpy((void*) ustack, _envp, envp_size);
+  ustack -= argv_size;
+  ustack_mapped -= argv_size;
+  memcpy((void*) ustack, _argv, argv_size);
+
+  //* set argc
+  ustack -= sizeof(uintptr_t);
+  ustack_mapped -= sizeof(uintptr_t);
+  *(uintptr_t *)ustack = argv_count;
+
+  uintptr_t entry = loader(ptr_pcb, filename);
+
+  Area kstack;
+  kstack.start = ptr_pcb; // this is for PCB on stack, processed by kernel
+  kstack.end = &ptr_pcb->stack[sizeof(ptr_pcb->stack)];
+  ptr_pcb->cp = ucontext(&ptr_pcb->as, kstack, (void*)entry);
+  ptr_pcb->cp->GPRx = ustack_mapped;
+  // Log("updir %p sp: %p", ptr_pcb->as.ptr, ustack_mapped);
 }
