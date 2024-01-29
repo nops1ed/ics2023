@@ -1,5 +1,6 @@
 #include <proc.h>
 #include <fs.h>
+#include <device.h>
 #include <common.h>
 
 #define MAX_NR_PROC 4
@@ -46,16 +47,17 @@ void init_proc() {
 }
 
 Context* schedule(Context *prev) {
-  //printf("\033[33mschedule: Traping here...\033[0m\n");
+   static int prio_count = 0;
   current->cp = prev;
-  time_chip++;
-  if(time_chip > 100) {
+  assert(1 <= fg_pcb); assert(fg_pcb <= 3);
+  if (prio_count < 100) {
+    prio_count ++;
+    current = &pcb[fg_pcb];
+  } else {
+    prio_count = 0;
     current = &pcb[0];
-    time_chip = 0;
   }
-  else
-    current = &pcb[proc_running];
-  //current = (current == &pcb[0] ? &pcb[proc_running] : &pcb[0]);
+  // Log("schedule %p(updir %p) -> %p(updir %p)", prev, prev->pdir, current->cp, current->cp->pdir);
   return current->cp;
 }
 

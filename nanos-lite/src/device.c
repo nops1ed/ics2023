@@ -21,26 +21,26 @@ static const char *keyname[256] __attribute__((used)) = {
   AM_KEYS(NAME)
 };
 
-static char* __itoa(int num, char* str, int base) {  
-  int i = 0;  
-  int sign = num < 0 ? -1 : 1;  
-  if (sign == -1) num = -num;  
-  while (num) {  
-    int rem = num % base;  
-    str[i++] = rem > 9 ? (rem - 10) + 'a' : rem + '0';  
-    num = num / base;  
-  }  
-  if (i == 0) str[i++] = '0';  
-  if (sign == -1) str[i++] = '-';  
-  str[i] = '\0';  
-  int j = 0, len = strlen(str) - 1;  
-  while (j < len) {  
-    char tmp = str[j];  
-    str[j++] = str[len];  
-    str[len--] = tmp;  
-  }  
-  return str;  
-}  
+static char* __itoa(int num, char* str, int base) {
+  int i = 0;
+  int sign = num < 0 ? -1 : 1;
+  if (sign == -1) num = -num;
+  while (num) {
+    int rem = num % base;
+    str[i++] = rem > 9 ? (rem - 10) + 'a' : rem + '0';
+    num = num / base;
+  }
+  if (i == 0) str[i++] = '0';
+  if (sign == -1) str[i++] = '-';
+  str[i] = '\0';
+  int j = 0, len = strlen(str) - 1;
+  while (j < len) {
+    char tmp = str[j];
+    str[j++] = str[len];
+    str[len--] = tmp;
+  }
+  return str;
+}
 
 static AM_GPU_CONFIG_T gpuinfo = {};
 
@@ -57,22 +57,24 @@ size_t serial_write(const void *buf, size_t offset, size_t len) {
   return ret_val;
 }
 
+
+int fg_pcb;
 size_t events_read(void *buf, size_t offset, size_t len) {
   static AM_INPUT_KEYBRD_T kbd;
   ioe_read(AM_INPUT_KEYBRD, &kbd);
   if (kbd.keycode == AM_KEY_NONE) return 0;
   switch(kbd.keycode) {
     case AM_KEY_F1:
-      schedule_proc(1);
+      fg_pcb = 1;
       return 0;
     case AM_KEY_F2:
-      schedule_proc(2);
+      fg_pcb = 2;
       return 0;
     case AM_KEY_F3:
-      schedule_proc(3);
+      fg_pcb = 3;
       return 0;
     default:
-      ; 
+      ;
   }
   if (kbd.keydown) strncat(buf, "kd ", len);
   else
@@ -113,10 +115,10 @@ void audio_write(void *buf, int len) {
     uint8_t *audio = ctl->buf.start;
     uint32_t buf_size = inl(AUDIO_SBUF_SIZE_ADDR);
     uint32_t cnt = inl(AUDIO_COUNT_ADDR);
-    uint32_t len = ctl->buf.end - ctl->buf.start; 
+    uint32_t len = ctl->buf.end - ctl->buf.start;
   */
   /*
-  ioe_write(AUDIO_SBUF_SIZE_ADDR, len);  
+  ioe_write(AUDIO_SBUF_SIZE_ADDR, len);
   ioe_write(AUDIO_COUNT_ADDR, );
   */
 }
