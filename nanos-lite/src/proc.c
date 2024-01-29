@@ -47,6 +47,7 @@ void init_proc() {
 }
 
 Context* schedule(Context *prev) {
+  Log("Scheduling...");
    static int prio_count = 0;
   current->cp = prev;
   assert(1 <= fg_pcb); assert(fg_pcb <= 3);
