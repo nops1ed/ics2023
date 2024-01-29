@@ -47,7 +47,6 @@ void init_proc() {
 }
 
 Context* schedule(Context *prev) {
-  Log("Scheduling...");
    static int prio_count = 0;
   current->cp = prev;
   assert(1 <= fg_pcb); assert(fg_pcb <= 3);
@@ -58,7 +57,7 @@ Context* schedule(Context *prev) {
     prio_count = 0;
     current = &pcb[0];
   }
-  // Log("schedule %p(updir %p) -> %p(updir %p)", prev, prev->pdir, current->cp, current->cp->pdir);
+  Log("schedule %p(updir %p) -> %p(updir %p)", prev, prev->pdir, current->cp, current->cp->pdir);
   return current->cp;
 }
 
