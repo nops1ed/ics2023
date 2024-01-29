@@ -58,7 +58,7 @@ size_t serial_write(const void *buf, size_t offset, size_t len) {
 }
 
 
-int fg_pcb;
+int fg_pcb = 1;
 size_t events_read(void *buf, size_t offset, size_t len) {
   static AM_INPUT_KEYBRD_T kbd;
   ioe_read(AM_INPUT_KEYBRD, &kbd);
