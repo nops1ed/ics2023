@@ -22,7 +22,7 @@ static Area segments[] = {      // Kernel memory mappings
 /* shift a physical address to the right place for a PTE. */
 #define PA2PTE(pa) ((((uint64_t)pa) >> 12) << 10)
 #define PTE2PA(pte) (((pte) >> 10) << 12)
-typedef uint64_t *pagetable_t; 
+typedef uint64_t *pagetable_t;
 
 static inline void set_satp(void *pdir) {
   uintptr_t mode = 1ul << (__riscv_xlen - 1);
@@ -77,7 +77,7 @@ void __am_switch(Context *c) {
   }
 }
 
-/* The risc-v Sv39 scheme has three levels of page-table pages. 
+/* The risc-v Sv39 scheme has three levels of page-table pages.
 * A page-table page contains 512 64-bit PTEs.
 * A 64-bit virtual address is split into five fields:
 *   39..63 -- must be zero.
@@ -106,12 +106,13 @@ void map(AddrSpace *as, void *va, void *pa, int prot) {
 }
 
 Context *ucontext(AddrSpace *as, Area kstack, void *entry) {
-  Context *kctx = (Context *)(kstack.end - sizeof(Context)); 
+  Context *kctx = (Context *)(kstack.end - sizeof(Context));
   /* Bug occured here. */
   kctx->pdir = as->ptr;
   kctx->mepc = (uintptr_t)entry;
   /* Set MPP to U, MXR to 1, SUM to 1. */
   kctx->mstatus = 0xC0000 | 0x80;
+  kctx->mcause = 0;
   kctx->np = 0;
   printf("\033[033mUser context created\033[0m\n");
   return kctx;

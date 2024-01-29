@@ -86,9 +86,12 @@ Context *kcontext(Area kstack, void (*entry)(void *), void *arg) {
   kctx->GPRx = (uintptr_t)arg;
   kctx->mstatus = 0x1800 | 0x40;
   kctx->pdir = NULL;
+
+  kctx->mcause = 0;
+
   kctx->np = USER_MODE;
   kctx->mepc = (uintptr_t)entry;
-  kctx->gpr[2]  = (uintptr_t)kstack.end - 4;
+  //kctx->gpr[2]  = (uintptr_t)kstack.end - 4;
   return kctx;
 }
 
