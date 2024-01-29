@@ -54,8 +54,8 @@ Context* schedule(Context *prev) {
     time_chip = 0;
   }
   else
-    current = &pcb[proc_running];
-  current = (current == &pcb[0] ? &pcb[proc_running] : &pcb[0]);
+    current = &pcb[fg_pcb];
+  current = (current == &pcb[0] ? &pcb[fg_pcb] : &pcb[0]);
   return current->cp;
 }
 
