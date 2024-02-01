@@ -34,7 +34,7 @@ static void mret_ctrl(Decode *s);
 #define Mr vaddr_read
 #define Mw vaddr_write
 #define Bc Branch_Cond
-#define XLEN 64 
+#define XLEN 64
 
 /* NEMU does not support user mode & supervisor mode. */
 enum {
@@ -125,7 +125,7 @@ static int decode_exec(Decode *s) {
   INSTPAT("0000001 ????? ????? 110 ????? 01110 11", remw   , R, R(rd) = SEXT(BITS(src1, 31, 0) % BITS(src2, 31, 0), 32));
   INSTPAT("0000001 ????? ????? 111 ????? 01110 11", remuw  , R, R(rd) = SEXT(BITS(src1, 31, 0) % BITS(src2, 31, 0), 32));
   INSTPAT("0000000 ????? ????? 011 ????? 01100 11", sltu   , R, R(rd) = src1 < src2 ? 1 : 0);
-  INSTPAT("0000000 ????? ????? 010 ????? 01100 11", slt    , R, R(rd) = (int64_t)src1 < (int64_t)src2 ? 1 : 0); 
+  INSTPAT("0000000 ????? ????? 010 ????? 01100 11", slt    , R, R(rd) = (int64_t)src1 < (int64_t)src2 ? 1 : 0);
   INSTPAT("0000000 ????? ????? 001 ????? 01100 11", sll    , R, R(rd) = src1 << BITS(src2, 5, 0));
   INSTPAT("0000000 ????? ????? 001 ????? 01110 11", sllw   , R, R(rd) = SEXT(BITS(src1, 31, 0) << BITS(src2, 5, 0), 32));
   INSTPAT("0000000 ????? ????? 101 ????? 01100 11", srl    , R, R(rd) = src1 >> BITS(src2, 5, 0));
@@ -155,7 +155,7 @@ static int decode_exec(Decode *s) {
 
   INSTPAT("??????? ????? ????? 000 ????? 11000 11", beq    , B, Bc(s, src1, src2, imm, COND_BEQ));
   INSTPAT("??????? ????? ????? 001 ????? 11000 11", bne    , B, Bc(s, src1, src2, imm, COND_BNE));
-  INSTPAT("??????? ????? ????? 100 ????? 11000 11", blt    , B, Bc(s, src1, src2, imm, COND_BLT)); 
+  INSTPAT("??????? ????? ????? 100 ????? 11000 11", blt    , B, Bc(s, src1, src2, imm, COND_BLT));
   INSTPAT("??????? ????? ????? 101 ????? 11000 11", bge    , B, Bc(s, src1, src2, imm, COND_BGE));
   INSTPAT("??????? ????? ????? 110 ????? 11000 11", bltu   , B, Bc(s, src1, src2, imm, COND_BLTU));
   INSTPAT("??????? ????? ????? 111 ????? 11000 11", bgeu   , B, Bc(s, src1, src2, imm, COND_BGEU));
@@ -182,7 +182,7 @@ static void ftrace(Decode *s, word_t snpc, word_t dnpc) {
 
 static void Branch_Cond(Decode *s, word_t src1, word_t src2, word_t imm, uint32_t Cond) {
   switch(Cond) {
-    case COND_BEQ:  if (!(src1 == src2)) return;  break; 
+    case COND_BEQ:  if (!(src1 == src2)) return;  break;
     case COND_BNE:  if (!(src1 != src2)) return;  break;
     case COND_BLT:  if (!((int64_t)src1 < (int64_t)src2)) return; break;
     case COND_BGE:  if (!((int64_t)src1 >= (int64_t)src2)) return; break;
@@ -228,18 +228,18 @@ static int64_t _multiply_high(int64_t a, int64_t b) {
   return high_result;
 }
 
-/* What should be done in ecall ? 
+/* What should be done in ecall ?
 * 1. Save the instruction address where the exception occurs to the mepc register
 * 2. Save the interrupt type code to the mcause register (11 indicates an ecall from M mode)
 * 3. If the interrupt has additional information, save it to the mtval register (omitted here)
 * 4. If it is an externally triggered interrupt, set mstatus[MPIE] = mstatus[MIE] (save), and then set mstatus[MIE] = 0 (close the interrupt)
 * 5. Save the current privilege mode to mstatus[MPP]
 * 6. Set the current privilege mode to Machine mode
-* 7. Jump to the corresponding interrupt response program according to the setting of the mtvec register 
+* 7. Jump to the corresponding interrupt response program according to the setting of the mtvec register
 */
 static void ecall_ctrl(Decode *s) {
   /* ics-project does not support multi-user mode, so we use MODE_M by default
-  * The following code may change in the future. 
+  * The following code may change in the future.
   */
 #ifdef CONFIG_ETRACE
   Log("An exception occured at pc:" FMT_WORD " privilege mode: " FMT_WORD, s->pc, MODE_M);
