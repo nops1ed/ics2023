@@ -78,7 +78,7 @@ int fs_close(int fd);
  alloc_section_space(AddrSpace *as, uintptr_t vaddr, size_t p_memsz){
   size_t page_n = ((vaddr + p_memsz - 1) >> 12) - (vaddr >> 12) + 1;
   void *page_start = new_page(page_n);
-  Log("\033[32mLoaded Segment from [%x to %x)\033[0m", vaddr, vaddr + p_memsz);
+  Log("\033[32mLoad memory from %x to %x\033[0m", vaddr, vaddr + p_memsz);
   for (int i = 0; i < page_n; ++i)
     map(as, (void *)((vaddr & ~0xfff) + i * PAGESIZE), (void *)(page_start + i * PAGESIZE), 1);
   return page_start;
