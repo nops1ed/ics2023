@@ -1,7 +1,6 @@
 #include <proc.h>
 #include <fs.h>
 #include <common.h>
-#include <device.h>
 
 #define MAX_NR_PROC 4
 
@@ -33,11 +32,12 @@ void hello_fun(void *arg) {
 void init_proc() {
 
   //context_uload(&pcb[0], "/bin/menu", NULL, NULL);
-  //context_kload(&pcb[0], hello_fun, NULL);
-  context_uload(&pcb[0], "/bin/nterm", NULL, NULL);
+  context_kload(&pcb[0], hello_fun, NULL);
   context_uload(&pcb[1], "/bin/pal", args_pal, NULL);
+  //context_uload(&pcb[1], "/bin/nterm", NULL, NULL);
   context_uload(&pcb[2], "/bin/bird", NULL, NULL);
-  //context_uload(&pcb[3], "/bin/nterm", NULL, NULL);
+  //Log("Before menu created");
+  //context_uload(&pcb[3], "/bin/menu", NULL, NULL);
   switch_boot_pcb();
 
   Log("Initializing processes...");
@@ -54,10 +54,10 @@ Context* schedule(Context *prev) {
     time_chip = 0;
   }
   else
-    current = &pcb[fg_pcb];
-  current = (current == &pcb[0] ? &pcb[fg_pcb] : &pcb[0]);
+    current = &pcb[proc_running];
+  //current = (current == &pcb[0] ? &pcb[proc_running] : &pcb[0]);
   return current->cp;
-}
+ }
 
 void schedule_proc(int index) {
   if(index == proc_running)

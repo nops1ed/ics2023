@@ -1,6 +1,5 @@
 #include <common.h>
 #include <string.h>
-#include <device.h>
 
 #if defined(MULTIPROGRAM) && !defined(TIME_SHARING)
 # define MULTIPROGRAM_YIELD() yield()
@@ -58,21 +57,19 @@ size_t serial_write(const void *buf, size_t offset, size_t len) {
   return ret_val;
 }
 
-
-int fg_pcb;
 size_t events_read(void *buf, size_t offset, size_t len) {
   static AM_INPUT_KEYBRD_T kbd;
   ioe_read(AM_INPUT_KEYBRD, &kbd);
   if (kbd.keycode == AM_KEY_NONE) return 0;
   switch(kbd.keycode) {
     case AM_KEY_F1:
-      fg_pcb = 0;
+      schedule_proc(1);
       return 0;
     case AM_KEY_F2:
-      fg_pcb = 1;
+      schedule_proc(2);
       return 0;
     case AM_KEY_F3:
-      fg_pcb = 2;
+      schedule_proc(3);
       return 0;
     default:
       ;
