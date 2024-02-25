@@ -36,7 +36,7 @@ void init_proc() {
   context_uload(&pcb[0], "/bin/hello", NULL, NULL);
   context_uload(&pcb[1], "/bin/pal", args_pal, NULL);
   //context_uload(&pcb[1], "/bin/nterm", NULL, NULL);
-  context_uload(&pcb[2], "/bin/bird", NULL, NULL);
+  //context_uload(&pcb[2], "/bin/bird", NULL, NULL);
   //Log("Before menu created");
   //context_uload(&pcb[3], "/bin/menu", NULL, NULL);
   switch_boot_pcb();
