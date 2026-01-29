@@ -17,6 +17,8 @@
 #include <cpu/cpu.h>
 #include <readline/readline.h>
 #include <readline/history.h>
+#include <common.h>
+#include <utils.h>
 #include "sdb.h"
 #include <memory/vaddr.h>
 
@@ -92,7 +94,7 @@ static int cmd_info(char *args) {
       printf("Error\n");
       return 0;
     }
-    else printf("The val is %ld\n" , val);
+    else printf("The val is %llu\n" , val);
   }
   else {
     printf("Unknown info command: \"%s\".  Try \"help info\".\n" , arg);
@@ -121,10 +123,10 @@ static int cmd_x(char *args) {
   }
   for (int j = 0 ; j < i ; j++) {
     //printf("0x%x: %08x\n" , addr + 4 * j, vaddr_read(addr + 4 * j , 4));
-		printf("0x%lx: " , addr + 4 * j);
+		printf("0x%llx: " , addr + 4 * j);
 		for (int k = 3 ; k >= 0 ; k--)
 			/* Little endian. */
-			printf("\033[32m%02lx \033[0m" , vaddr_read(addr + 4 * j + k, 1));
+			printf("\033[32m%02llx \033[0m" , vaddr_read(addr + 4 * j + k, 1));
 		printf("\n");
 	}
   return 0;
@@ -142,7 +144,7 @@ static int cmd_p(char *args) {
     printf("A syntax error in expression, near '%s'.\n" , arg);
     return 0;
   }
-  printf("%-10s : 0x%-5lx\n" ,arg , val);
+  printf("%-10s : 0x%-5llx\n" ,arg , val);
   return 0;
 }
 

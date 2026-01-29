@@ -242,7 +242,7 @@ static void ecall_ctrl(Decode *s) {
   * The following code may change in the future.
   */
 #ifdef CONFIG_ETRACE
-  Log("An exception occured at pc:" FMT_WORD " privilege mode: " FMT_WORD, s->pc, MODE_M);
+  Log("An exception occured at pc:" FMT_WORD " privilege mode: %d", s->pc, MODE_M);
 #endif
   s->dnpc = isa_raise_intr(MODE_M, s->pc);
 }
