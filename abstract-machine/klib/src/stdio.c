@@ -95,6 +95,7 @@ int snprintf(char *out, size_t n, const char *fmt, ...) {
 }
 
 int vsnprintf(char *out, size_t n, const char *fmt, va_list ap) {
+  size_t capacity = n;
   uint64_t offset = 0, len, width;
   for (const char *p = fmt; *p != '\0'; p++) {
     if (*p == '%') {  
@@ -142,8 +143,10 @@ int vsnprintf(char *out, size_t n, const char *fmt, va_list ap) {
       offset += _writeS(out, offset, buf, &n, 1);
     }  
   }  
-  if(out && out + offset) _writeC(out + offset, '\0'); 
-  else _writeC(out, '\0');
+  if (out && capacity > 0) {
+    size_t terminator = offset < capacity ? offset : capacity - 1;
+    _writeC(out + terminator, '\0');
+  }
   //*(out + offset) = '\0'; 
   va_end(ap);
   return offset;

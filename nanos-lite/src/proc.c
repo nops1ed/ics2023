@@ -15,9 +15,18 @@ static PCB pcb_boot = {};
 PCB *current = NULL;
 static int time_chip __attribute__((used));
 static int proc_running __attribute__((used)) = 1;
+extern int fg_pcb;
 
 void switch_boot_pcb() {
   current = &pcb_boot;
+}
+
+bool select_fg_pcb(int index) {
+  if (index < 1 || index >= MAX_NR_PROC || pcb[index].cp == NULL) {
+    return false;
+  }
+  fg_pcb = index;
+  return true;
 }
 
 void hello_fun(void *arg) {
@@ -49,7 +58,10 @@ void init_proc() {
 Context* schedule(Context *prev) {
    static int prio_count = 0;
   current->cp = prev;
-  assert(1 <= fg_pcb); assert(fg_pcb <= 3);
+  if (fg_pcb < 1 || fg_pcb >= MAX_NR_PROC || pcb[fg_pcb].cp == NULL) {
+    fg_pcb = 1;
+  }
+  assert(pcb[fg_pcb].cp != NULL);
   if (prio_count < 100) {
     prio_count ++;
     current = &pcb[fg_pcb];
