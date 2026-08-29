@@ -90,7 +90,6 @@ static void sys_execve(Context *c) {
   else fs_close(fd);
   context_uload(current, (const char *)c->GPR2, (char **const)(uintptr_t)c->GPR3, (char **const)(uintptr_t)c->GPR4);
   switch_boot_pcb();
-  c->GPRx = 0;
   yield();
 }
 
@@ -99,7 +98,7 @@ static void sys_exit(Context *c) {
   fs_curfilename();
   printf("sys_exit(0) = 0\n");
 #endif
-  context_uload(current, "/bin/menu", (char **const)(uintptr_t)c->GPR3, (char **const)(uintptr_t)c->GPR4);
+  context_uload(current, "/bin/menu", NULL, NULL);
   switch_boot_pcb();
   yield();
 }

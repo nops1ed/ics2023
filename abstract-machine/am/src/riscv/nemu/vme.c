@@ -107,13 +107,14 @@ void map(AddrSpace *as, void *va, void *pa, int prot) {
 
 Context *ucontext(AddrSpace *as, Area kstack, void *entry) {
   Context *kctx = (Context *)(kstack.end - sizeof(Context));
-  /* Bug occured here. */
+  memset(kctx, 0, sizeof(*kctx));
   kctx->pdir = as->ptr;
   kctx->mepc = (uintptr_t)entry;
   /* Set MPP to U, MXR to 1, SUM to 1. */
   kctx->mstatus = 0xC0000 | 0x80;
   kctx->mcause = 0;
-  kctx->np = 0;
+  /* trap.S restores mscratch from np before entering user mode. */
+  kctx->np = (uintptr_t)kstack.end;
   printf("\033[033mUser context created\033[0m\n");
   return kctx;
 }

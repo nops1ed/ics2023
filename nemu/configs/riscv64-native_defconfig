@@ -1,0 +1,11 @@
+CONFIG_RV64=y
+CONFIG_TARGET_NATIVE_ELF=y
+# CONFIG_TRACE is not set
+# CONFIG_WATCHPOINT is not set
+# CONFIG_DTRACE is not set
+# CONFIG_ETRACE is not set
+# CONFIG_STARCE is not set
+CONFIG_DEVICE=y
+# CONFIG_HAS_DISK is not set
+# CONFIG_MEM_RANDOM is not set
+# CONFIG_MTRACE is not set

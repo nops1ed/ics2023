@@ -34,13 +34,13 @@ static uint32_t nr_csrs = sizeof(csrs) / sizeof(csrs[0]);
 void isa_csr_display() {
 	/* Do not put any repeatedly calculations in ur iteration statement , which causes additional load */
   for (int i = 1 ; i < nr_csrs; i++)
-    printf("%-10s 0x%-20llx %-20llu\n" , csrs[i] , cpu.csr[i].val , cpu.csr[i].val);
+    printf("%-10s " FMT_WORD " %-20" PRIu64 "\n" , csrs[i] , cpu.csr[i].val , (uint64_t)cpu.csr[i].val);
 }
 
 void isa_reg_display() {
 	/* Do not put any repeatedly calculations in ur iteration statement , which causes additional load */
   for (int i = 1 ; i < nr_regs; i++)
-    printf("\033[33m%-10s 0x%-20llx %-20llu\033[0m\n" , regs[i] , cpu.gpr[i] , cpu.gpr[i]);
+    printf("\033[33m%-10s " FMT_WORD " %-20" PRIu64 "\033[0m\n" , regs[i] , cpu.gpr[i] , (uint64_t)cpu.gpr[i]);
 }
 
 word_t isa_reg_str2val(const char *s, bool *success) {

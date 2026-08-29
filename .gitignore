@@ -9,5 +9,8 @@
 !README.md
 !.gitignore
 !init.sh
+!STATUS.md
+!/docs/
+!/docs/**
 /fceux-am
 /am-kernels

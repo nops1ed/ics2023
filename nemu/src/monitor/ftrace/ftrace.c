@@ -163,8 +163,8 @@ static void Push_Trace_Frame(word_t _addr) {
   _depth += 2;
  for(int i = 0; i < ST_SIZE; i++) {
     if (FFFFFF == 1) {
-        printf("Now ST[%d].addr equal to 0x%llx\n", i, ST[i].addr);
-        printf("Now addr equal to 0x%llx\n", _addr);
+        printf("Now ST[%d].addr equal to 0x%" PRIx64 "\n", i, ST[i].addr);
+        printf("Now addr equal to " FMT_WORD "\n", _addr);
     }
     if (ST[i].addr == _addr) {
         _tmp->func_name = ST[i].func_name;
@@ -172,7 +172,7 @@ static void Push_Trace_Frame(word_t _addr) {
     }
   }
   for(int i = 0 ; i < _depth; i++) printf(" "); 
-  printf("call [%s@0x%llx]\n", _tmp->func_name, _tmp->addr);
+  printf("call [%s@" FMT_WORD "]\n", _tmp->func_name, _tmp->addr);
   top = _tmp;
 }
 
@@ -187,11 +187,11 @@ static void Pop_Trace_Frame(void) {
 }
 
 void ftrace_call(word_t snpc, word_t dnpc) {
-    printf("0x%llx: ", snpc);
+    printf(FMT_WORD ": ", snpc);
     Push_Trace_Frame(dnpc);
 }
 
 void ftrace_ret(word_t snpc) {
-    printf("0x%llx: ", snpc);
+    printf(FMT_WORD ": ", snpc);
     Pop_Trace_Frame();
 }

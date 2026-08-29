@@ -14,7 +14,7 @@ typedef struct _AudioData {
   int freq, channels, samples, sbuf_size;
 }_AudioData;
 
-void schedule_proc(int);
+bool select_fg_pcb(int index);
 
 static const char *keyname[256] __attribute__((used)) = {
   [AM_KEY_NONE] = "NONE",
@@ -60,28 +60,41 @@ size_t serial_write(const void *buf, size_t offset, size_t len) {
 
 int fg_pcb = 1;
 size_t events_read(void *buf, size_t offset, size_t len) {
+  if (buf == NULL || len == 0) return 0;
   static AM_INPUT_KEYBRD_T kbd;
   ioe_read(AM_INPUT_KEYBRD, &kbd);
   if (kbd.keycode == AM_KEY_NONE) return 0;
   switch(kbd.keycode) {
     case AM_KEY_F1:
-      fg_pcb = 1;
+      if (kbd.keydown) select_fg_pcb(1);
       return 0;
     case AM_KEY_F2:
-      fg_pcb = 2;
+      if (kbd.keydown) select_fg_pcb(2);
       return 0;
     case AM_KEY_F3:
-      fg_pcb = 3;
+      if (kbd.keydown) select_fg_pcb(3);
       return 0;
     default:
       ;
   }
-  if (kbd.keydown) strncat(buf, "kd ", len);
-  else
-    strncat(buf, "ku ", len);
-  strncat(buf, keyname[kbd.keycode], len - 3);
-  strncat(buf, "\n", len - strlen(keyname[kbd.keycode] - 3));
-  return strlen(buf);
+  if ((size_t)kbd.keycode >= LENGTH(keyname) ||
+      keyname[kbd.keycode] == NULL) {
+    return 0;
+  }
+
+  char *out = (char *)buf;
+  const char *name = keyname[kbd.keycode];
+  size_t name_len = strlen(name);
+  size_t event_len = 3 + name_len + 1;
+  if (event_len >= len) return 0;
+
+  out[0] = 'k';
+  out[1] = kbd.keydown ? 'd' : 'u';
+  out[2] = ' ';
+  memcpy(out + 3, name, name_len);
+  out[3 + name_len] = '\n';
+  out[event_len] = '\0';
+  return event_len;
 }
 
 size_t dispinfo_read(void *buf, size_t offset, size_t len) {
