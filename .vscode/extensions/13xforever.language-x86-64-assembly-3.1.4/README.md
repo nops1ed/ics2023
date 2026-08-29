@@ -1,0 +1,34 @@
+About
+=====
+This is a TextMate/Sublime/VS Code bundle providing language support for x86_64 assembly language in a variety of dialects (nasm/yasm primarily, but could highlight tasm to some extent).
+
+Features
+========
+* Basic support for NASM/YASM/TASM syntaxes
+* Most up-to-date instruction sets:
+  * Legacy/undocumented registers and instructions
+  * FPU/MMX/3DNow!
+  * SSE/SSE2/(S)SSE3/SSE4/SSE4.1/SSE4.2/SSE4.a
+  * AVX/AVX2/AVX512, including pseudo-ops
+  * AES-NI/SHA
+  * VMX/SMX/MPX/SGX
+  * Key Locker
+  * APX
+  * other AMD/Cyrix/VIA and planned future Intel extensions
+
+Source code
+===========
+VS Code package is exported from [Textmate/Sublime Bundle](https://github.com/13xforever/x86-assembly-textmate-bundle), all issues and pull requests should be filed there.
+
+To compile the yaml sources to tmLanguage, you'll need [PackageDev](https://packagecontrol.io/packages/PackageDev) (`x86_64 Assembly.YAML-tmLanguage`).
+
+Contributors
+============
+[YASM tests](https://github.com/13xforever/x86_64-assembly-vscode/blob/HEAD/Tests/yasm-regression) are provided by [yasm-regression](https://github.com/yasm/yasm-regression) project.
+
+Examples
+========
+* Sublime Text 4
+  ![Sublime Text 4 with Breakers theme](https://github.com/13xforever/x86-assembly-textmate-bundle/blob/master/Screenshots/Sublime%20Text%204%20-%20Light%20-%20Breakers.png?raw=true)
+* Visual Studio Code with Eva theme
+  ![Visual Studio Code with Eva Light theme](https://github.com/13xforever/x86-assembly-textmate-bundle/blob/master/Screenshots/Visual%20Studio%20Code%20-%20Light%20-%20Eva.png?raw=true)
