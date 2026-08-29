@@ -245,15 +245,17 @@ static uint32_t eval(int p , int q) {
   	else if (p == q) {
 		switch(tokens[p].type)
 		{
-			case TK_DEC:
+			case TK_DEC: {
 				int dec_val;
 				sscanf(tokens[p].str , "%d" , &dec_val);
 				return dec_val;
-			case TK_HEX:
+			}
+			case TK_HEX: {
 				int hex_val;
 				sscanf(tokens[p].str , "%x" , &hex_val);
 				return hex_val;
-			case TK_REG:
+			}
+			case TK_REG: {
 				bool success = true;
 				word_t reg_val = isa_reg_str2val(tokens[p].str , &success);
 				if (!success) {
@@ -261,6 +263,7 @@ static uint32_t eval(int p , int q) {
 					return 0;
 				}
 				return reg_val;
+			}
 			default:
 				return 0;
 		}
@@ -311,6 +314,7 @@ static bool certain_type (uint32_t type)
 		case TK_MOD:
 			return true;
 		default:
+			break;
 	}
 	return false;
 }

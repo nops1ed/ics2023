@@ -27,7 +27,7 @@ word_t vaddr_read(vaddr_t addr, int len) {
 #ifdef CONFIG_MTRACE
   //Log("Memory Read: " FMT_PADDR "at pc: " FMT_WORD, addr, cpu.pc);
   /* This performed better */
-  printf("Memory Read : 0x%lx at pc: 0x%lx\n", addr, cpu.pc);
+  printf("Memory Read : 0x%llx at pc: 0x%llx\n", addr, cpu.pc);
 #endif
   if(isa_mmu_check(addr, len, MEM_TYPE_READ) == MMU_TRANSLATE) 
     return paddr_read(isa_mmu_translate(addr, len, 0), len);
@@ -36,8 +36,8 @@ word_t vaddr_read(vaddr_t addr, int len) {
 
 void vaddr_write(vaddr_t addr, int len, word_t data) {
 #ifdef CONFIG_MTRACE
-  printf("Memory Write: 0x%lx at pc: 0x%lx\n", addr, cpu.pc);
-  printf("Try to write %lx\n", data);
+  printf("Memory Write: 0x%llx at pc: 0x%llx\n", addr, cpu.pc);
+  printf("Try to write %llx\n", data);
   //Log("Memory Write: " FMT_PADDR "at pc: " FMT_WORD, addr, cpu.pc);
   //Log("Try to write  " FMT_WORD, data);
 #endif

@@ -191,7 +191,7 @@ void trace_watchpoint_diff_display(void) {
   WP* _tmp = head;
   while(_tmp) {
 	if (_tmp -> flag)
-		printf("Hardware watchpoint %d: %s\nOld value = 0x%lx\nNew value = 0x%lx\n"
+		printf("Hardware watchpoint %d: %s\nOld value = 0x%llx\nNew value = 0x%llx\n"
 				, _tmp -> NO , _tmp -> stored_expr , _tmp -> old_val , _tmp -> new_val);
 	_tmp = _tmp -> next;
   }

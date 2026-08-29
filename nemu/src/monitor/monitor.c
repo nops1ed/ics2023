@@ -110,7 +110,11 @@ void init_monitor(int argc, char *argv[]) {
 
   /* Parse elf files. */
 #ifdef CONFIG_FTRACE
-  INIT_SYMBOL_TABLE(elf_file);
+  if (elf_file != NULL) {
+    INIT_SYMBOL_TABLE(elf_file);
+  } else {
+    Log("No ELF file is given. Function trace will not work properly.");
+  }
 #endif
 
   /* Set random seed. */

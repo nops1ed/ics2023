@@ -1,5 +1,2 @@
-RISC-V version 
-
-A simple but powerful ISA, plz refer to: [click me to view RICSV ISA](https://mirror.iscas.ac.cn/riscv-toolchains/release/riscv/riscv-isa-manual/RISC-V%20ISA%20Manual%2C%20Version%2020250508/riscv-unprivileged.pdf)
-
-Any questions can also be submitted to yingzesun@mail.ustc.edu.cn
+古法编程的RISCV模拟器在harness的加持下堂堂复活！！
+持续为旧时代的产物注入新时代的血液

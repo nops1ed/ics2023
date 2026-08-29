@@ -1,5 +1,9 @@
 #include "ftrace.h"
+#ifdef __APPLE__
+#include "/opt/homebrew/Cellar/riscv-gnu-toolchain/main/riscv64-unknown-elf/include/elf.h"
+#else
 #include <elf.h>
+#endif
 
 
 /*
@@ -155,12 +159,12 @@ static void Push_Trace_Frame(word_t _addr) {
   _Trace_Node *_tmp = (_Trace_Node *)malloc(sizeof(_Trace_Node));
   _tmp->addr = _addr;
   _tmp->next = top;
-  _tmp->func_name = '\0';
+  _tmp->func_name = NULL;
   _depth += 2;
  for(int i = 0; i < ST_SIZE; i++) {
     if (FFFFFF == 1) {
-        printf("Now ST[%d].addr equal to 0x%lx\n", i, ST[i].addr);
-        printf("Now addr equal to 0x%lx\n", _addr);
+        printf("Now ST[%d].addr equal to 0x%llx\n", i, ST[i].addr);
+        printf("Now addr equal to 0x%llx\n", _addr);
     }
     if (ST[i].addr == _addr) {
         _tmp->func_name = ST[i].func_name;
@@ -168,7 +172,7 @@ static void Push_Trace_Frame(word_t _addr) {
     }
   }
   for(int i = 0 ; i < _depth; i++) printf(" "); 
-  printf("call [%s@0x%lx]\n", _tmp->func_name, _tmp->addr);
+  printf("call [%s@0x%llx]\n", _tmp->func_name, _tmp->addr);
   top = _tmp;
 }
 
@@ -183,11 +187,11 @@ static void Pop_Trace_Frame(void) {
 }
 
 void ftrace_call(word_t snpc, word_t dnpc) {
-    printf("0x%lx: ", snpc);
+    printf("0x%llx: ", snpc);
     Push_Trace_Frame(dnpc);
 }
 
 void ftrace_ret(word_t snpc) {
-    printf("0x%lx: ", snpc);
+    printf("0x%llx: ", snpc);
     Pop_Trace_Frame();
 }

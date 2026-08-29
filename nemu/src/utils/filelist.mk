@@ -15,6 +15,8 @@
 
 ifneq ($(CONFIG_ITRACE)$(CONFIG_IQUEUE),)
 CXXSRC = src/utils/disasm.cc
-CXXFLAGS += $(shell llvm-config --cxxflags) -fPIE
-LIBS += $(shell llvm-config --libs)
+LLVM_CONFIG := $(shell which llvm-config 2>/dev/null || echo /opt/homebrew/Cellar/llvm/19.1.7_1/bin/llvm-config)
+CXXFLAGS += $(shell $(LLVM_CONFIG) --cxxflags) -fPIE
+LIBS += $(shell $(LLVM_CONFIG) --libs)
+LDFLAGS += $(shell $(LLVM_CONFIG) --ldflags)
 endif
